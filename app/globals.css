@@ -138,10 +138,38 @@
 }
 
 @theme {
-  --color-bg: #100f12;
-  --color-headerBg: #141317;
-  --color-sunken: #161519;
-  --color-card: #1b1a1f;
-  --color-card-hot: #221518;
-  --color-control: #26242c;
+  /* Surfaces */
+  --color-bg: var(--bg);
+  --color-headerBg: var(--chrome);
+  --color-sunken: var(--sunken);
+  --color-card: var(--card);
+  --color-card-hot: var(--hot);
+  --color-control: var(--control);
+  --color-track: var(--track);
+
+  /* Brand & state */
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-deep: var(--accent-deep);
+  --color-wrong: var(--wrong);
+  --color-wrong-chip: var(--wrong-chip);
+  --color-void: var(--void);
+
+  /* Text */
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+  --color-ink-faint: var(--ink-faint);
+
+  /* Hairline �� border-line / border-line-strong */
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  /* Categories */
+  --color-cat-politics: var(--cat-politics);
+  --color-cat-sports: var(--cat-sports);
+  --color-cat-esports: var(--cat-esports);
+  --color-cat-ent: var(--cat-ent);
+  --color-cat-econ: var(--cat-econ);
+  --color-cat-weather: var(--cat-weather);
 }

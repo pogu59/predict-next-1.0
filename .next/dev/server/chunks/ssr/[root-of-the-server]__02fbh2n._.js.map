@@ -3,5 +3,5 @@
   "sources": [],
   "sections": [
     {"offset": {"line": 13, "column": 0}, "map": {"version":3,"sources":["file:///Users/jhpark/Workspace/predict-next-1.0/app/favicon.ico.mjs%20(structured%20image%20object)"],"sourcesContent":["import src from \"IMAGE\";\nexport default { src, width: 256, height: 256 }\n"],"names":["src","width","height"],"mappings":";;;;AAAA;;uCACe;IAAEA,KAAAA,mIAAG;IAAEC,OAAO;IAAKC,QAAQ;AAAI"}},
-    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":["file:///Users/jhpark/Workspace/predict-next-1.0/app/page.tsx"],"sourcesContent":["import { Button } from \"@/components/ui/button\";\n\nexport default function Home() {\n  return <div>\n    <Button>Home</Button>\n  </div>\n}"],"names":["Home"],"mappings":";;;;;AAAA;;;AAEe,SAASA;IACtB,qBAAO,8OAAC;kBACN,cAAA,8OAAC,qIAAM;sBAAC;;;;;;;;;;;AAEZ"}}]
+    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":["file:///Users/jhpark/Workspace/predict-next-1.0/app/page.tsx"],"sourcesContent":["import { Button } from \"@/components/button\"\n\nexport default function Home() {\n  return (\n    <div>\n      <Button>Home</Button>\n    </div>\n  )\n}\n"],"names":["Home","Button"],"mappings":";;;;;;;;;;;;AAEe,SAASA;IACtB,qBACE,8OAAC;kBACC,cAAA,8OAACC;sBAAO;;;;;;;;;;;AAGd"}}]
 }

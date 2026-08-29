@@ -40,13 +40,13 @@ function Home() {
             children: "Home"
         }, void 0, false, {
             fileName: "[project]/app/page.tsx",
-            lineNumber: 5,
-            columnNumber: 5
+            lineNumber: 6,
+            columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/page.tsx",
-        lineNumber: 4,
-        columnNumber: 10
+        lineNumber: 5,
+        columnNumber: 5
     }, this);
 }
 }),
