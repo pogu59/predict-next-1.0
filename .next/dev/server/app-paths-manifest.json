@@ -1,6 +1,0 @@
-{
-  "/(pages)/issue/page": "app/(pages)/issue/page.js",
-  "/(pages)/my/page": "app/(pages)/my/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/page": "app/page.js"
-}
