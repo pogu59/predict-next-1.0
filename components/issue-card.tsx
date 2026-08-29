@@ -1,12 +1,14 @@
 "use client"
 
-import { CATEGORY_MAP, formatRemaining, isUrgent, type Issue } from "@/lib/mock"
+import { categoryMeta } from "@/lib/category-meta"
+import { formatRemaining, isUrgent, type UiIssue } from "@/lib/issues"
 import { Icon } from "@/components/icon"
 
 type IssueCardProps = {
-  issue: Issue
-  onVote?: (id: string, choice: "yes" | "no") => void
-  onOpen?: (id: string) => void
+  issue: UiIssue
+  categoryName: string
+  onVote?: (id: number, choice: "yes" | "no") => void
+  onOpen?: (id: number) => void
 }
 
 /**
@@ -14,10 +16,10 @@ type IssueCardProps = {
  * open    → 인라인 투표 버튼, 비율 비공개
  * voted   → 내 선택 + 소수 배지 (본인에게만)
  * pending → sunken 표면, 저채도
- * settled → hot 표면 + 획득 점수
+ * settled → hot 표면 + 결과 배지 (적중 점수는 백엔드에 별도 조회 API가 없어 표시하지 않음)
  */
-export function IssueCard({ issue, onVote, onOpen }: IssueCardProps) {
-  const cat = CATEGORY_MAP[issue.category]
+export function IssueCard({ issue, categoryName, onVote, onOpen }: IssueCardProps) {
+  const cat = categoryMeta(categoryName)
   const settled = issue.status === "settled"
   const pending = issue.status === "pending"
   const result = issue.settlement?.result
@@ -38,15 +40,6 @@ export function IssueCard({ issue, onVote, onOpen }: IssueCardProps) {
       : result === "wrong"
         ? "text-wrong"
         : "text-void"
-
-  const deltaLabel =
-    issue.settlement === undefined
-      ? ""
-      : issue.settlement.result === "void"
-        ? "±0"
-        : issue.settlement.delta > 0
-          ? `+${issue.settlement.delta}`
-          : `${issue.settlement.delta}`
 
   return (
     <article
@@ -81,7 +74,7 @@ export function IssueCard({ issue, onVote, onOpen }: IssueCardProps) {
                 : cat.color,
             }}
           >
-            {cat.label}
+            {categoryName}
           </span>
 
           <div className="flex-auto" />
@@ -93,14 +86,18 @@ export function IssueCard({ issue, onVote, onOpen }: IssueCardProps) {
                   ? "rounded-md bg-accent px-2 py-1 text-[11.5px] leading-none font-extrabold text-accent-ink"
                   : result === "wrong"
                     ? "rounded-md bg-wrong-chip px-2 py-1 text-[11.5px] leading-none font-extrabold text-[#D6DEEC]"
-                    : "rounded-md border border-[color:color-mix(in_oklab,var(--void)_45%,transparent)] px-2 py-[3px] text-[11.5px] leading-none font-extrabold text-void"
+                    : result === "void"
+                      ? "rounded-md border border-[color:color-mix(in_oklab,var(--void)_45%,transparent)] px-2 py-[3px] text-[11.5px] leading-none font-extrabold text-void"
+                      : "rounded-md border border-line-strong px-2 py-[3px] text-[11.5px] leading-none font-extrabold text-ink-subtle"
               }
             >
               {result === "correct"
                 ? `소수 ${minorityPct}% 적중`
                 : result === "wrong"
                   ? "오답"
-                  : "무효"}
+                  : result === "void"
+                    ? "무효"
+                    : "결과 확정"}
             </span>
           ) : pending ? (
             <span className="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-ink-subtle">
@@ -179,13 +176,11 @@ export function IssueCard({ issue, onVote, onOpen }: IssueCardProps) {
           </>
         )}
 
-        {pending && issue.myChoice && (
+        {pending && (
           <p className="text-[11.5px] font-semibold text-ink-faint tabular-nums">
-            {new Date(issue.settlesAt).toLocaleTimeString("ko-KR", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}{" "}
-            판정 예정 · 내 선택 {issue.labels[issue.myChoice]}
+            {issue.myChoice
+              ? `결과 판정 예정 · 내 선택 ${issue.labels[issue.myChoice]}`
+              : "결과 판정 예정"}
           </p>
         )}
 
@@ -199,17 +194,17 @@ export function IssueCard({ issue, onVote, onOpen }: IssueCardProps) {
                   ? "맞혔어요"
                   : result === "wrong"
                     ? "아쉽게 틀렸어요"
-                    : "무효 처리"}
+                    : result === "void"
+                      ? "무효 처리"
+                      : "결과가 확정됐어요"}
               </span>
               <span className="text-[11.5px] leading-[1.55] font-semibold text-pretty text-ink-faint">
-                {issue.settlement.note}
+                {issue.settlement.answer &&
+                  `정답 · ${issue.labels[issue.settlement.answer]}`}
+                {issue.totalVotes !== undefined &&
+                  ` · 총 ${issue.totalVotes.toLocaleString()}명 참여`}
               </span>
             </div>
-            <span
-              className={`text-[32px] leading-[0.9] font-extrabold tracking-[-0.045em] tabular-nums ${deltaColor}`}
-            >
-              {deltaLabel}
-            </span>
           </div>
         )}
       </div>
