@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="플래티넘 티어">
+<title>플래티넘</title>
+<defs>
+  <linearGradient id="g1" x1="24" y1="4" x2="24" y2="44" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#DBF1FF"></stop><stop offset=".52" stop-color="#6FC5FF"></stop><stop offset="1" stop-color="#276B9C"></stop>
+  </linearGradient>
+  <linearGradient id="g2" x1="24" y1="9" x2="24" y2="38.8" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#276B9C"></stop><stop offset="1" stop-color="#6FC5FF"></stop>
+  </linearGradient>
+  <linearGradient id="g3" x1="18" y1="13" x2="30" y2="35" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#F2FBFF"></stop><stop offset=".55" stop-color="#DBF1FF"></stop><stop offset="1" stop-color="#6FC5FF"></stop>
+  </linearGradient>
+</defs>
+<path d="M24 4 41 12.5 41 31 24 44 7 31 7 12.5Z" fill="url(#g1)" stroke="#123E5D" stroke-width="2" stroke-linejoin="round"></path>
+<path d="M24 9 11.5 15.2 11.5 29 24 38.8Z" fill="#123E5D" fill-opacity=".14"></path>
+<path d="M24 9 36.5 15.2 36.5 29 24 38.8 11.5 29 11.5 15.2Z" fill="url(#g2)" fill-opacity=".55" stroke="#123E5D" stroke-opacity=".35" stroke-width="1.2" stroke-linejoin="round"></path>
+<path d="M7 12.5 24 4 41 12.5 24 10.2Z" fill="#F2FBFF" fill-opacity=".3"></path>
+
+  <path d="M24 13.6 32.4 23.6 24 33.6 15.6 23.6Z" fill="url(#g3)" stroke="#123E5D" stroke-opacity=".45" stroke-width="1.1"></path>
+  <path d="M24 13.6 24 33.6 15.6 23.6Z" fill="#123E5D" fill-opacity=".18"></path>
+  <path d="M24 18.4 27.8 23.6 24 28.8 20.2 23.6Z" fill="#F2FBFF" fill-opacity=".55"></path>
+</svg>

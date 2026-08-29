@@ -1,10 +1,11 @@
 import type { BackendChoice, TopicDto } from "@/lib/api"
 
 /**
- * 백엔드는 "이 유저가 투표했는지/무엇을 골랐는지"를 목록 조회로 내려주지 않는다
- * (개인별 투표 이력 조회 엔드포인트 자체가 없음). 그래서 이 브라우저에서 실제로
- * 투표에 성공했을 때의 결과만 로컬에 남겨 화면에 반영한다 — 서버 데이터를 대신
- * 지어내는 게 아니라, 서버가 응답으로 내려준 값(liveYesCount/liveNoCount)을 그대로 보관한다.
+ * 이슈 목록(GET /api/topics)은 "이 유저가 투표했는지/무엇을 골랐는지"를 함께 내려주지 않는다.
+ * 개인별 투표 이력은 /api/users/{id}/votes(마이페이지 전용)로 따로 조회해야 하는데,
+ * 이슈 목록 화면에서 매번 이 호출을 추가로 하는 대신 이 브라우저에서 실제로 투표에
+ * 성공했을 때의 결과만 로컬에 남겨 화면에 반영한다 — 서버 데이터를 대신 지어내는 게
+ * 아니라, 서버가 응답으로 내려준 값(liveYesCount/liveNoCount)을 그대로 보관한다.
  */
 export type LocalVote = {
   choice: "yes" | "no"
@@ -26,7 +27,11 @@ export function loadLocalVotes(userId: number): Record<number, LocalVote> {
   }
 }
 
-export function saveLocalVote(userId: number, topicId: number, vote: LocalVote) {
+export function saveLocalVote(
+  userId: number,
+  topicId: number,
+  vote: LocalVote,
+) {
   if (typeof window === "undefined") return
   const votes = loadLocalVotes(userId)
   votes[topicId] = vote
@@ -67,7 +72,10 @@ const DEFAULT_LABELS = { yes: "그렇다", no: "아니다" }
 function ratioFromCounts(yes: number, no: number) {
   const total = yes + no
   if (total === 0) return { yes: 0, no: 0 }
-  return { yes: Math.round((yes / total) * 100), no: Math.round((no / total) * 100) }
+  return {
+    yes: Math.round((yes / total) * 100),
+    no: Math.round((no / total) * 100),
+  }
 }
 
 export function toUiIssue(topic: TopicDto, localVote?: LocalVote): UiIssue {
@@ -100,11 +108,19 @@ export function toUiIssue(topic: TopicDto, localVote?: LocalVote): UiIssue {
   const totalVotes = yes + no
 
   if (topic.status === "PENDING_RESULT") {
-    return { ...base, status: "pending", myChoice: localVote?.choice, ratio, totalVotes }
+    return {
+      ...base,
+      status: "pending",
+      myChoice: localVote?.choice,
+      ratio,
+      totalVotes,
+    }
   }
 
   // CONFIRMED / VOID
-  const answer = topic.correctAnswer ? toLocalChoice(topic.correctAnswer) : undefined
+  const answer = topic.correctAnswer
+    ? toLocalChoice(topic.correctAnswer)
+    : undefined
   const result: "correct" | "wrong" | "void" | "unknown" =
     topic.status === "VOID"
       ? "void"
@@ -133,7 +149,9 @@ export function formatRemaining(iso: string, now = new Date()) {
   const m = Math.floor((total % 3600) / 60)
   const s = total % 60
   const pad = (n: number) => String(n).padStart(2, "0")
-  return d > 0 ? `${d}일 ${pad(h)}:${pad(m)}` : `${pad(h)}:${pad(m)}:${pad(s)}`
+  return d > 0
+    ? `${d}일 ${pad(h)}:${pad(m)}`
+    : `${pad(h)}:${pad(m)}:${pad(s)} 남음`
 }
 
 /** 마감 임박 여부 — 4시간 이내면 액센트 컬러로 표시 */

@@ -25,6 +25,7 @@ export type Me = {
   nickname: string
   credibilityScore: number
   tier: string
+  role: "USER" | "ADMIN"
 }
 
 export async function fetchMe(): Promise<Me | null> {

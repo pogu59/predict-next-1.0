@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0">
+<style>
+  html,body{margin:0;background:#0A0A0C}
+  body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif}
+  a{color:#FF5A48}a:hover{color:#D93B6B}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:52px;padding:44px;background:#0A0A0C">
+
+<div style="display:flex;flex-direction:column;gap:11px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font:800 11px ui-monospace,Menlo,monospace;color:#100F12;background:#F5F3F0;border-radius:5px;padding:4px 7px">a</span>
+    <span style="font-weight:800;font-size:14px;color:#F5F3F0;letter-spacing:-.02em">비로그인 헤더 · 1440px</span>
+    <span style="font-weight:600;font-size:12px;color:rgba(245,243,240,.4)">신용도 배지·알림벨 자리에 로그인 버튼 · 카드 투표 버튼은 로그인 유도 상태</span>
+  </div>
+
+  <div style="width:1440px;background:#100F12;color:#F5F3F0;border-radius:14px;overflow:hidden">
+    <div style="height:66px;display:flex;align-items:center;gap:26px;padding:0 44px;border-bottom:1px solid rgba(255,255,255,.07);background:#141317">
+      <span style="font-weight:800;font-size:22px;letter-spacing:-.045em">predict</span>
+      <div style="display:flex;align-items:center;gap:24px;margin-left:10px">
+        <span style="font-weight:800;font-size:14px;color:#F5F3F0">오늘</span>
+        <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">진행 중</span>
+        <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">결과</span>
+        <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">랭킹</span>
+      </div>
+      <div style="flex:1"></div>
+      <span style="font-weight:700;font-size:12.5px;color:rgba(245,243,240,.4)">티어와 기록은 로그인 후 저장됩니다</span>
+      <button style="background:#F5F3F0;color:#100F12;border:none;border-radius:999px;padding:10px 20px;font-family:inherit;font-weight:800;font-size:13.5px;letter-spacing:-.02em;cursor:pointer" style-hover="background:#fff">로그인</button>
+    </div>
+
+    <div style="padding:26px 44px 34px;display:flex;gap:30px;justify-content:center">
+      <div style="width:760px;flex:none;display:flex;flex-direction:column;gap:13px">
+        <div style="display:flex;align-items:baseline;gap:11px;padding:0 2px">
+          <span style="font-weight:800;font-size:25px;letter-spacing:-.04em">오늘의 예측</span>
+          <span style="font-weight:700;font-size:12.5px;color:rgba(245,243,240,.4)">마감 임박순 · 11개</span>
+        </div>
+        <div style="display:flex;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden">
+          <div style="width:4px;flex:none;background:#6FC5FF"></div>
+          <div style="flex:1;padding:17px 18px;display:flex;flex-direction:column;gap:13px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#6FC5FF;font-variation-settings:'FILL' 1">rainy</span>
+              <span style="font-weight:700;font-size:12px;color:#6FC5FF">날씨</span>
+              <div style="flex:1"></div>
+              <span style="font-weight:800;font-size:12.5px;color:#FF5A48;font-variant-numeric:tabular-nums">03:12:40 남음</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:20px">
+              <div style="flex:1;font-weight:700;font-size:21px;line-height:1.35;letter-spacing:-.03em">내일 서울에 비 올까?</div>
+              <div style="flex:none;display:flex;gap:8px">
+                <button style="width:150px;background:#26242C;color:#F5F3F0;border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:14px 0;font-family:inherit;font-weight:700;font-size:14px;letter-spacing:-.02em;cursor:pointer" style-hover="border-color:rgba(245,243,240,.4)">올 것 같다</button>
+                <button style="width:150px;background:#26242C;color:#F5F3F0;border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:14px 0;font-family:inherit;font-weight:700;font-size:14px;letter-spacing:-.02em;cursor:pointer" style-hover="border-color:rgba(245,243,240,.4)">안 올 것 같다</button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px">
+              <span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:rgba(245,243,240,.32)">lock</span>
+              <span style="font-weight:600;font-size:11.5px;color:rgba(245,243,240,.4)">투표를 누르면 로그인 창이 열립니다 · 기상청 공식 발표 기준</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden">
+          <div style="width:4px;flex:none;background:#4C8DFF"></div>
+          <div style="flex:1;padding:17px 18px;display:flex;align-items:center;gap:20px">
+            <div style="flex:1;display:flex;flex-direction:column;gap:9px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#4C8DFF;font-variation-settings:'FILL' 1">sports_soccer</span>
+                <span style="font-weight:700;font-size:12px;color:#4C8DFF">스포츠</span>
+              </div>
+              <div style="font-weight:700;font-size:20px;line-height:1.35;letter-spacing:-.03em">오늘 경기, A팀이 이길까?</div>
+            </div>
+            <span style="flex:none;font-weight:700;font-size:12.5px;color:rgba(245,243,240,.45);font-variant-numeric:tabular-nums">01:40:02 남음</span>
+          </div>
+        </div>
+      </div>
+      <div style="width:290px;flex:none;display:flex;flex-direction:column;gap:13px">
+        <div style="background:#1B1A1F;border:1px dashed rgba(255,255,255,.15);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-weight:800;font-size:15px;letter-spacing:-.03em">로그인하고 기록 남기기</span>
+          <span style="font-weight:500;font-size:12.5px;line-height:1.65;color:rgba(245,243,240,.5);text-wrap:pretty">투표 기록과 신용도 점수·티어는 로그인한 계정에만 쌓입니다.</span>
+          <button style="background:#F5F3F0;color:#100F12;border:none;border-radius:12px;padding:12px 0;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer" style-hover="background:#fff">로그인</button>
+          <span style="font-weight:600;font-size:11.5px;color:rgba(245,243,240,.45)">카카오 로그인만 지원합니다</span>
+        </div>
+        <div style="background:#1B1A1F;border:1px dashed rgba(255,255,255,.13);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:7px">
+          <span style="font-weight:700;font-size:12.5px">돈은 걸지 않습니다</span>
+          <span style="font-weight:500;font-size:11.5px;line-height:1.6;color:rgba(245,243,240,.45);text-wrap:pretty">현금·코인·아이템 없이 신용도 점수와 티어만 오갑니다.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:11px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font:800 11px ui-monospace,Menlo,monospace;color:#100F12;background:#F5F3F0;border-radius:5px;padding:4px 7px">b</span>
+    <span style="font-weight:800;font-size:14px;color:#F5F3F0;letter-spacing:-.02em">로그인 모달 · 데스크톱 센터 440px</span>
+    <span style="font-weight:600;font-size:12px;color:rgba(245,243,240,.4)">스크림 + 블러 · ESC / 스크림 클릭으로 닫힘</span>
+  </div>
+
+  <div style="width:1440px;height:720px;border-radius:14px;overflow:hidden;position:relative;background:#100F12">
+    <div style="position:absolute;inset:0;filter:blur(3px);opacity:.5">
+      <div style="height:66px;display:flex;align-items:center;gap:26px;padding:0 44px;border-bottom:1px solid rgba(255,255,255,.07);background:#141317;color:#F5F3F0">
+        <span style="font-weight:800;font-size:22px;letter-spacing:-.045em">predict</span>
+        <div style="flex:1"></div>
+        <div style="background:#F5F3F0;border-radius:999px;padding:10px 20px;font-weight:800;font-size:13.5px;color:#100F12">로그인</div>
+      </div>
+      <div style="padding:26px 44px;display:flex;flex-direction:column;gap:13px;color:#F5F3F0">
+        <div style="font-weight:800;font-size:25px;letter-spacing:-.04em">오늘의 예측</div>
+        <div style="height:120px;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:18px"></div>
+        <div style="height:96px;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:18px"></div>
+        <div style="height:96px;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:18px"></div>
+      </div>
+    </div>
+    <div style="position:absolute;inset:0;background:rgba(6,6,8,.72)"></div>
+
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:440px;box-sizing:border-box;background:#1B1A1F;border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:28px;box-shadow:0 28px 70px rgba(0,0,0,.55);color:#F5F3F0;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:flex-start">
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+          <span style="font-weight:800;font-size:22px;letter-spacing:-.045em">predict</span>
+          <span style="font-weight:500;font-size:13.5px;line-height:1.65;color:rgba(245,243,240,.62);text-wrap:pretty">로그인하면 투표 기록이 저장되고, 적중에 따라 신용도 점수와 티어가 쌓입니다.</span>
+        </div>
+        <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:rgba(245,243,240,.4);cursor:pointer;margin-top:-2px">close</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <button style="width:100%;height:52px;background:#FEE500;border:none;border-radius:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer">
+          <span style="width:19px;height:19px;border:1px dashed rgba(0,0,0,.42);border-radius:5px;flex:none"></span>
+          <span style="font-weight:700;font-size:15.5px;letter-spacing:-.02em;color:rgba(0,0,0,.85)">카카오 로그인</span>
+        </button>
+        <span style="font-weight:600;font-size:11.5px;line-height:1.55;color:rgba(245,243,240,.45)">현재 카카오 로그인만 지원합니다.</span>
+        <span style="font:500 10.5px/1.5 ui-monospace,Menlo,monospace;color:rgba(245,243,240,.3)">배경 #FEE500 / 심볼 #000 / 텍스트 검정 85% / radius 12px — 카카오 공식 정책상 임의 변경 금지. 점선 자리에 kakao_symbol.svg 삽입.</span>
+      </div>
+
+      <div style="background:#161519;border:1px dashed rgba(255,255,255,.14);border-radius:14px;padding:15px 16px;display:flex;gap:11px">
+        <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1.3;color:rgba(245,243,240,.45);flex:none">info</span>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <span style="font-weight:700;font-size:12.5px">이 서비스는 투표 게임입니다</span>
+          <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.48);text-wrap:pretty">신용도 점수는 순위·티어 표시용이며 현금화할 수 없습니다. 현금·코인 베팅과 환전 기능은 제공하지 않습니다.</span>
+        </div>
+      </div>
+
+      <span style="font-weight:500;font-size:11.5px;line-height:1.7;color:rgba(245,243,240,.45);text-wrap:pretty">로그인하면 <a href="#" style="font-weight:700">이용약관</a> 및 <a href="#" style="font-weight:700">개인정보처리방침</a>에 동의한 것으로 봅니다.</span>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:11px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font:800 11px ui-monospace,Menlo,monospace;color:#100F12;background:#F5F3F0;border-radius:5px;padding:4px 7px">c</span>
+    <span style="font-weight:800;font-size:14px;color:#F5F3F0;letter-spacing:-.02em">카카오 인증 진행 중</span>
+    <span style="font-weight:600;font-size:12px;color:rgba(245,243,240,.4)">버튼 색·문구·심볼 유지 · 라벨 오른쪽 스피너 · 모달 전체 상호작용 차단</span>
+  </div>
+
+  <div style="display:flex;gap:24px;align-items:flex-start">
+    <div style="width:440px;flex:none;box-sizing:border-box;background:#1B1A1F;border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:28px;color:#F5F3F0;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <span style="font-weight:800;font-size:22px;letter-spacing:-.045em">predict</span>
+        <span style="font-weight:500;font-size:13.5px;line-height:1.65;color:rgba(245,243,240,.62);text-wrap:pretty">로그인하면 투표 기록이 저장되고, 적중에 따라 신용도 점수와 티어가 쌓입니다.</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <button style="width:100%;height:52px;background:#FEE500;border:none;border-radius:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:9px;cursor:progress">
+          <span style="width:19px;height:19px;border:1px dashed rgba(0,0,0,.42);border-radius:5px;flex:none"></span>
+          <span style="font-weight:700;font-size:15.5px;letter-spacing:-.02em;color:rgba(0,0,0,.85)">카카오 로그인</span>
+          <span style="width:16px;height:16px;border:2px solid rgba(0,0,0,.25);border-top-color:rgba(0,0,0,.85);border-radius:50%;animation:spin .8s linear infinite;flex:none"></span>
+        </button>
+        <div style="display:flex;align-items:center;gap:7px">
+          <span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:rgba(245,243,240,.4)">open_in_new</span>
+          <span style="font-weight:600;font-size:11.5px;color:rgba(245,243,240,.5)">카카오 창에서 로그인을 완료해주세요</span>
+        </div>
+      </div>
+      <div style="background:#161519;border:1px dashed rgba(255,255,255,.14);border-radius:14px;padding:15px 16px;display:flex;flex-direction:column;gap:5px;opacity:.55">
+        <span style="font-weight:700;font-size:12.5px">이 서비스는 투표 게임입니다</span>
+        <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.48);text-wrap:pretty">신용도 점수는 순위·티어 표시용이며 현금화할 수 없습니다.</span>
+      </div>
+      <span style="font-weight:600;font-size:11.5px;color:rgba(245,243,240,.35)">창이 열리지 않으면 팝업 차단을 확인해주세요 · 취소하려면 ESC</span>
+    </div>
+
+    <div style="width:330px;flex:none;box-sizing:border-box;background:#141317;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px;color:#F5F3F0;display:flex;flex-direction:column;gap:11px">
+      <span style="font-weight:800;font-size:12px;color:rgba(245,243,240,.45);letter-spacing:.04em">로딩 처리 규칙</span>
+      <span style="font-weight:500;font-size:12px;line-height:1.7;color:rgba(245,243,240,.6);text-wrap:pretty">버튼 배경·문구·심볼은 그대로 두고 라벨 오른쪽에만 스피너를 추가합니다. 버튼 투명도 조절, 색 톤다운, 라벨을 "로그인 중…"으로 바꾸는 처리는 하지 않습니다.</span>
+      <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+      <span style="font-weight:500;font-size:12px;line-height:1.7;color:rgba(245,243,240,.6);text-wrap:pretty">상호작용 차단은 버튼 자체가 아니라 모달 레벨에서 `pointer-events:none` + 닫기 버튼만 활성으로 처리합니다. 하단 안내 블록은 55% 불투명도로 후퇴시켜 초점을 진행 상태에 둡니다.</span>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:11px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font:800 11px ui-monospace,Menlo,monospace;color:#100F12;background:#F5F3F0;border-radius:5px;padding:4px 7px">d</span>
+    <span style="font-weight:800;font-size:14px;color:#F5F3F0;letter-spacing:-.02em">로그인 성공 후 헤더</span>
+    <span style="font-weight:600;font-size:12px;color:rgba(245,243,240,.4)">로그인 버튼 → 신용도 배지 + 알림벨로 전환</span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <span style="font-weight:700;font-size:12px;color:rgba(245,243,240,.4)">신규 유저 · 언랭크 0점</span>
+      <div style="width:1440px;height:66px;display:flex;align-items:center;gap:26px;padding:0 44px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:#141317;color:#F5F3F0;box-sizing:border-box">
+        <span style="font-weight:800;font-size:22px;letter-spacing:-.045em">predict</span>
+        <div style="display:flex;align-items:center;gap:24px;margin-left:10px">
+          <span style="font-weight:800;font-size:14px;color:#F5F3F0">오늘</span>
+          <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">진행 중</span>
+          <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">결과</span>
+          <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">랭킹</span>
+          <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">내 기록</span>
+        </div>
+        <div style="flex:1"></div>
+        <span style="font-weight:700;font-size:12px;color:rgba(245,243,240,.4)">첫 예측을 하면 티어가 배정됩니다</span>
+        <div style="display:flex;align-items:center;gap:8px;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:999px;padding:7px 15px 7px 8px">
+          <span style="font-weight:800;font-size:10.5px;line-height:1;color:rgba(245,243,240,.7);background:#26242C;border-radius:6px;padding:4px 6px">언랭크</span>
+          <span style="font-weight:800;font-size:15px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0</span>
+        </div>
+        <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:rgba(245,243,240,.5)">notifications</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <span style="font-weight:700;font-size:12px;color:rgba(245,243,240,.4)">기존 유저 · 골드 3 · 1,240</span>
+      <div style="width:1440px;height:66px;display:flex;align-items:center;gap:26px;padding:0 44px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:#141317;color:#F5F3F0;box-sizing:border-box">
+        <span style="font-weight:800;font-size:22px;letter-spacing:-.045em">predict</span>
+        <div style="display:flex;align-items:center;gap:24px;margin-left:10px">
+          <span style="font-weight:800;font-size:14px;color:#F5F3F0">오늘</span>
+          <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">진행 중</span>
+          <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">결과</span>
+          <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">랭킹</span>
+          <span style="position:relative;font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">내 기록<span style="position:absolute;top:-2px;right:-8px;width:5px;height:5px;border-radius:50%;background:#FF5A48"></span></span>
+        </div>
+        <div style="flex:1"></div>
+        <div style="display:flex;align-items:center;gap:8px;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:999px;padding:7px 15px 7px 8px">
+          <span style="font-weight:800;font-size:10.5px;line-height:1;color:#100F12;background:#F2C14E;border-radius:6px;padding:4px 6px">골드 3</span>
+          <span style="font-weight:800;font-size:15px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">1,240</span>
+        </div>
+        <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:rgba(245,243,240,.5)">notifications</span>
+      </div>
+    </div>
+
+    <div style="width:770px;box-sizing:border-box;background:#141317;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px;color:#F5F3F0;display:flex;gap:14px;align-items:flex-start">
+      <span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1.2;color:rgba(245,243,240,.4);flex:none">animation</span>
+      <span style="font-weight:500;font-size:12.5px;line-height:1.7;color:rgba(245,243,240,.6);text-wrap:pretty">전환 모션: 모달이 스케일 0.97로 축소되며 사라지는 동안 로그인 버튼 자리에서 배지가 pill 폭으로 늘어나고(180ms), 티어 배지와 점수가 8px 위에서 떨어져 붙습니다. 알림벨은 마지막에 페이드로 등장.</span>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:11px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font:800 11px ui-monospace,Menlo,monospace;color:#100F12;background:#F5F3F0;border-radius:5px;padding:4px 7px">e</span>
+    <span style="font-weight:800;font-size:14px;color:#F5F3F0;letter-spacing:-.02em">로그인 실패</span>
+    <span style="font-weight:600;font-size:12px;color:rgba(245,243,240,.4)">에러는 카카오 버튼 위 인라인 · 원인별 문구와 액션 분기</span>
+  </div>
+
+  <div style="display:flex;gap:20px;align-items:flex-start">
+    <div style="width:440px;flex:none;box-sizing:border-box;background:#1B1A1F;border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:28px;color:#F5F3F0;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:flex-start">
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+          <span style="font-weight:800;font-size:22px;letter-spacing:-.045em">predict</span>
+          <span style="font-weight:500;font-size:13.5px;line-height:1.65;color:rgba(245,243,240,.62);text-wrap:pretty">로그인하면 투표 기록이 저장되고, 적중에 따라 신용도 점수와 티어가 쌓입니다.</span>
+        </div>
+        <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:rgba(245,243,240,.4);cursor:pointer;margin-top:-2px">close</span>
+      </div>
+
+      <div style="background:rgba(255,90,72,.1);border:1px solid rgba(255,90,72,.4);border-radius:14px;padding:14px 15px;display:flex;gap:11px">
+        <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1.3;color:#FF5A48;flex:none;font-variation-settings:'FILL' 1">error</span>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <span style="font-weight:800;font-size:12.5px;color:#FF8878">로그인을 마치지 못했습니다</span>
+          <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.6);text-wrap:pretty">카카오 인증이 완료되지 않았습니다. 잠시 후 다시 시도해주세요.</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <button style="width:100%;height:52px;background:#FEE500;border:none;border-radius:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer">
+          <span style="width:19px;height:19px;border:1px dashed rgba(0,0,0,.42);border-radius:5px;flex:none"></span>
+          <span style="font-weight:700;font-size:15.5px;letter-spacing:-.02em;color:rgba(0,0,0,.85)">카카오 로그인</span>
+        </button>
+        <span style="font-weight:600;font-size:11.5px;color:rgba(245,243,240,.45)">현재 카카오 로그인만 지원합니다.</span>
+      </div>
+
+      <span style="font-weight:500;font-size:11.5px;line-height:1.7;color:rgba(245,243,240,.45);text-wrap:pretty">계속 실패하면 <a href="#" style="font-weight:700">문의하기</a>로 알려주세요.</span>
+    </div>
+
+    <div style="width:520px;flex:none;box-sizing:border-box;background:#141317;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px;color:#F5F3F0;display:flex;flex-direction:column;gap:12px">
+      <span style="font-weight:800;font-size:12px;color:rgba(245,243,240,.45);letter-spacing:.04em">원인별 분기</span>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <span style="font-weight:700;font-size:12.5px;color:#FF8878">사용자 취소</span>
+        <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.55);text-wrap:pretty">"로그인을 취소했습니다" · 에러 톤을 약하게(보더 없이 서브 배경만), 버튼 라벨 유지, 자동 재시도 없음</span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <span style="font-weight:700;font-size:12.5px;color:#FF8878">네트워크 오류</span>
+        <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.55);text-wrap:pretty">"연결이 불안정합니다" · 위 아트보드와 같은 레드 인라인 에러 + 즉시 재시도 유도</span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <span style="font-weight:700;font-size:12.5px;color:#FF8878">카카오 계정 문제</span>
+        <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.55);text-wrap:pretty">"카카오 계정에서 동의가 필요합니다" · 재시도 대신 문의하기 링크를 에러 블록 안으로 올림</span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+      <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.4);text-wrap:pretty">레드 액센트는 에러 블록에만 쓰고, 카카오 버튼에는 어떤 상태에서도 보더·글로우·오버레이를 얹지 않습니다.</span>
+    </div>
+  </div>
+</div>
+
+<sc-if value="{{ showSpec }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:11px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font:800 11px ui-monospace,Menlo,monospace;color:#100F12;background:#F5F3F0;border-radius:5px;padding:4px 7px">spec</span>
+    <span style="font-weight:800;font-size:14px;color:#F5F3F0;letter-spacing:-.02em">Visual spec · 홈 화면에서 추출한 토큰</span>
+  </div>
+
+  <div style="width:980px;box-sizing:border-box;background:#141317;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px 22px;color:#F5F3F0;display:flex;flex-direction:column;gap:2px">
+    <div style="display:flex;gap:14px;padding:0 0 10px">
+      <span style="width:170px;flex:none;font:800 11px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">TOKEN</span>
+      <span style="width:150px;flex:none;font:800 11px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">VALUE</span>
+      <span style="width:180px;flex:none;font:800 11px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">추출 위치</span>
+      <span style="flex:1;font:800 11px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">로그인 화면에서의 용도</span>
+    </div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">bg/page</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#100F12</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">홈 페이지 배경</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">모달 뒤 페이지 · 아트보드 바탕</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">bg/header</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#141317</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">홈 헤더 바</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">헤더 · 스펙 노트 카드</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">bg/card</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#1B1A1F</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">예측 카드 · 사이드 카드</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">모달 본체</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">bg/sub</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#161519</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">카드 내부 블록</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">서비스 성격 안내 블록</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">bg/control</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#26242C</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">투표 버튼 · 선택된 카테고리</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">언랭크 배지 · 보조 컨트롤</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">text/primary</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#F5F3F0</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">홈 제목·질문</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">워드마크 · 헤더 로그인 버튼 배경</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">text/2 · 3 · 4</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">62% / 45% / 32%</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">홈 본문·메타·캡션</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">소개 카피 / 안내 / 캡션</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">accent/red</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#FF5A48</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">마감 임박 · 적중</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">인라인 에러 · 링크</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">accent/gold</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#F2C14E</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">골드 티어 배지</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">로그인 후 헤더 티어 배지</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">brand/kakao</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">#FEE500</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:#FF8878">카카오 공식 가이드</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">로그인 버튼 전용 · 변경 금지</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">border/hairline</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">rgba(255,255,255,.07)</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">모든 카드 보더</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">모달·헤더 보더 (모달만 .09)</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">radius</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">20 / 14 / 12 / 999</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">카드 / 블록 / 버튼 / pill</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">모달 20 · 안내 14 · 버튼 12 · 배지 pill</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">type</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">500 / 700 / 800</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">Pretendard Variable</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">본문 / 라벨 / 타이틀 · 숫자 tabular-nums</span></div>
+    <div style="display:flex;gap:14px;padding:10px 0 0;border-top:1px solid rgba(255,255,255,.06)"><span style="width:170px;flex:none;font-weight:700;font-size:12.5px">spacing</span><span style="width:150px;flex:none;font:700 12px ui-monospace,Menlo,monospace">28 / 18 / 9</span><span style="width:180px;flex:none;font-weight:600;font-size:12px;color:rgba(245,243,240,.5)">홈 카드 패딩·스택·인라인</span><span style="flex:1;font-weight:600;font-size:12px;color:rgba(245,243,240,.6)">모달 패딩 / 섹션 간격 / 요소 간격</span></div>
+  </div>
+
+  <div style="width:980px;box-sizing:border-box;background:#141317;border:1px dashed rgba(255,255,255,.14);border-radius:16px;padding:20px 22px;color:#F5F3F0;display:flex;flex-direction:column;gap:12px">
+    <span style="font-weight:800;font-size:12px;color:rgba(245,243,240,.45);letter-spacing:.04em">열린 질문</span>
+    <span style="font-weight:600;font-size:12.5px;line-height:1.7;color:rgba(245,243,240,.65);text-wrap:pretty">1. 신규 유저 온보딩(닉네임 설정·첫 예측 안내)을 이 모달에서 바로 이어갈까요, 별도 화면으로 뺄까요?</span>
+    <span style="font-weight:600;font-size:12.5px;line-height:1.7;color:rgba(245,243,240,.65);text-wrap:pretty">2. 약관 동의를 지금처럼 "로그인 시 동의 간주"로 갈지, 체크박스를 둘지 — 서비스 성격상 간주 방식으로 제안했습니다.</span>
+    <span style="font-weight:600;font-size:12.5px;line-height:1.7;color:rgba(245,243,240,.65);text-wrap:pretty">3. 비로그인 유저가 투표를 눌렀을 때, 로그인 후 그 투표를 자동으로 반영할까요(선택 유지) 아니면 다시 누르게 할까요?</span>
+    <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+    <span style="font-weight:500;font-size:11.5px;line-height:1.7;color:rgba(245,243,240,.4);text-wrap:pretty">모바일 바텀시트 전환 시 끊어지는 지점: 모달 440px 고정폭과 우상단 닫기 버튼 — 바텀시트에서는 전폭 + 상단 드래그 핸들로 바뀌고, 카카오 버튼은 safe-area 위에 sticky로 고정해야 합니다.</span>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showSpec&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;문서&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { showSpec: this.props.showSpec ?? true };
+  }
+}
+</script>
+</body>
+</html>

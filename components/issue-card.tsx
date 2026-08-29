@@ -18,7 +18,12 @@ type IssueCardProps = {
  * pending → sunken 표면, 저채도
  * settled → hot 표면 + 결과 배지 (적중 점수는 백엔드에 별도 조회 API가 없어 표시하지 않음)
  */
-export function IssueCard({ issue, categoryName, onVote, onOpen }: IssueCardProps) {
+export function IssueCard({
+  issue,
+  categoryName,
+  onVote,
+  onOpen,
+}: IssueCardProps) {
   const cat = categoryMeta(categoryName)
   const settled = issue.status === "settled"
   const pending = issue.status === "pending"
@@ -92,7 +97,7 @@ export function IssueCard({ issue, categoryName, onVote, onOpen }: IssueCardProp
               }
             >
               {result === "correct"
-                ? `소수 ${minorityPct}% 적중`
+                ? `${minorityPct}% 적중`
                 : result === "wrong"
                   ? "오답"
                   : result === "void"
@@ -110,7 +115,7 @@ export function IssueCard({ issue, categoryName, onVote, onOpen }: IssueCardProp
                 isUrgent(issue.closesAt) ? "text-accent" : "text-ink-subtle"
               }`}
             >
-              {formatRemaining(issue.closesAt)} 남음
+              {formatRemaining(issue.closesAt)}
             </span>
           )}
         </div>

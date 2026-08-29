@@ -15,6 +15,8 @@ const NAV_LIST = [
   { label: "마이페이지", value: "my" },
 ]
 
+const ADMIN_NAV_ITEM = { label: "관리자", value: "admin" }
+
 export function HeaderLayout({ children }: HeaderLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -37,7 +39,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
         <div className="text-2xl font-extrabold tracking-[-0.04em] text-ink">Predict</div>
 
         <nav className="flex items-center gap-2">
-          {NAV_LIST.map((menu) => {
+          {(me?.role === "ADMIN" ? [...NAV_LIST, ADMIN_NAV_ITEM] : NAV_LIST).map((menu) => {
             const active = pathname?.startsWith(`/${menu.value}`)
             return (
               <button

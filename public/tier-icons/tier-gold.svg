@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="골드 티어">
+<title>골드</title>
+<defs>
+  <linearGradient id="g1" x1="24" y1="4" x2="24" y2="44" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#FFE9A8"></stop><stop offset=".52" stop-color="#F2C14E"></stop><stop offset="1" stop-color="#A0700C"></stop>
+  </linearGradient>
+  <linearGradient id="g2" x1="24" y1="9" x2="24" y2="38.8" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#A0700C"></stop><stop offset="1" stop-color="#F2C14E"></stop>
+  </linearGradient>
+  <linearGradient id="g3" x1="18" y1="13" x2="30" y2="35" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#FFF6D6"></stop><stop offset=".55" stop-color="#FFE9A8"></stop><stop offset="1" stop-color="#F2C14E"></stop>
+  </linearGradient>
+</defs>
+<path d="M24 4 41 12.5 41 31 24 44 7 31 7 12.5Z" fill="url(#g1)" stroke="#5E4207" stroke-width="2" stroke-linejoin="round"></path>
+<path d="M24 9 11.5 15.2 11.5 29 24 38.8Z" fill="#5E4207" fill-opacity=".14"></path>
+<path d="M24 9 36.5 15.2 36.5 29 24 38.8 11.5 29 11.5 15.2Z" fill="url(#g2)" fill-opacity=".55" stroke="#5E4207" stroke-opacity=".35" stroke-width="1.2" stroke-linejoin="round"></path>
+<path d="M7 12.5 24 4 41 12.5 24 10.2Z" fill="#FFF6D6" fill-opacity=".3"></path>
+
+  <path d="M24 14.6 31.4 23.2 28 23.2 24 18.6 20 23.2 16.6 23.2Z" fill="url(#g3)" stroke="#5E4207" stroke-opacity=".4" stroke-width=".9"></path>
+  <path d="M24 22 31.4 30.6 28 30.6 24 26 20 30.6 16.6 30.6Z" fill="url(#g3)" stroke="#5E4207" stroke-opacity=".4" stroke-width=".9"></path>
+  <path d="M24 29.4 28.4 34.6 19.6 34.6Z" fill="#F2C14E" stroke="#5E4207" stroke-opacity=".3" stroke-width=".9"></path>
+</svg>

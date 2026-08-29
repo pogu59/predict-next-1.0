@@ -25,7 +25,7 @@ export default function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href="<https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0>"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0"
         />
       </head>
       <body className="font-sans antialiased">
