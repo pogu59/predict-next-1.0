@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react"
+
 import type { Topic, TopicOption } from "@/lib/api"
 
 /**
@@ -142,7 +144,7 @@ export function formatRemaining(iso: string, now = new Date()) {
   const s = total % 60
   const pad = (n: number) => String(n).padStart(2, "0")
   return d > 0
-    ? `${d}일 ${pad(h)}:${pad(m)}`
+    ? `${d}일 ${pad(h)}:${pad(m)} 남음`
     : `${pad(h)}:${pad(m)}:${pad(s)} 남음`
 }
 
@@ -150,4 +152,14 @@ export function formatRemaining(iso: string, now = new Date()) {
 export function isUrgent(iso: string, now = new Date()) {
   const ms = new Date(iso).getTime() - now.getTime()
   return ms > 0 && ms < 1000 * 60 * 60 * 4
+}
+
+/** 1초마다 갱신되는 현재 시각. 남은 시간 카운트다운을 새로고침 없이 자동으로 최신화하는 데 쓴다. */
+export function useNow(intervalMs = 1000) {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), intervalMs)
+    return () => clearInterval(id)
+  }, [intervalMs])
+  return now
 }

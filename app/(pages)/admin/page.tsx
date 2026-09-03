@@ -148,7 +148,7 @@ export default function AdminTopicsPage() {
             setCategoryId(e.target.value)
           }}
         >
-          <option>전체 카테고리</option>
+          <option value="">전체 카테고리</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -223,7 +223,7 @@ export default function AdminTopicsPage() {
             placeholder="설명(선택)"
           />
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-ink-subtle">
+            <label className="text-label text-ink-subtle">
               선택지(2개 이상)
             </label>
             {form.options.map((option, i) => (
@@ -266,9 +266,7 @@ export default function AdminTopicsPage() {
             </Button>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <label className="text-xs font-bold text-ink-subtle">
-              투표 시작
-            </label>
+            <label className="text-label text-ink-subtle">투표 시작</label>
             <TextInput
               type="datetime-local"
               value={toDateTimeLocal(form.voteStartAt)}
@@ -276,7 +274,7 @@ export default function AdminTopicsPage() {
                 setForm((f) => ({ ...f, voteStartAt: e.target.value }))
               }
             />
-            <label className="text-xs font-bold text-ink-subtle">마감</label>
+            <label className="text-label text-ink-subtle">마감</label>
             <TextInput
               type="datetime-local"
               value={toDateTimeLocal(form.voteDeadlineAt)}
@@ -286,7 +284,7 @@ export default function AdminTopicsPage() {
             />
           </div>
           {createError && (
-            <div className="text-sm font-bold text-wrong">{createError}</div>
+            <div className="text-label text-wrong">{createError}</div>
           )}
           <Button type="submit" disabled={creating}>
             {creating ? "등록 중..." : "등록"}
@@ -295,7 +293,7 @@ export default function AdminTopicsPage() {
       )}
 
       {error && (
-        <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-[13px] font-bold text-[#D6DEEC]">
+        <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
           {error}
         </div>
       )}

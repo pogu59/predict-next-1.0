@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  html,body{margin:0;background:#0A0A0C}
+  body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif}
+  a{color:#FF5436}a:hover{color:#D93B6B}
+  svg{display:block}
+</style>
+</helmet>
+<div style="width:1180px;box-sizing:border-box;display:flex;flex-direction:column;gap:40px;padding:44px;background:#0A0A0C">
+
+<div style="display:flex;flex-direction:column;gap:7px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font-weight:800;font-size:22px;color:#F5F3F0;letter-spacing:-.04em">predict 확정 에셋</span>
+    <span style="font-weight:700;font-size:12px;color:#FF5436">v3</span>
+  </div>
+  <span style="font-weight:600;font-size:12.5px;line-height:1.6;color:rgba(245,243,240,.45);width:700px;text-wrap:pretty">지금까지 고른 것만 모았습니다. 강조색 D, 카테고리 아이콘 3차(플랫 멀티톤), 티어 아이콘 1b(기하 결정). 탈락안은 각 탐색 파일에 남아 있습니다.</span>
+</div>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <span style="font-weight:800;font-size:15px;color:#F5F3F0;letter-spacing:-.03em">01 · 강조색</span>
+  <div style="display:flex;gap:12px;align-items:stretch">
+    <div style="width:300px;flex:none;background:#FF5436;padding:20px 22px;display:flex;flex-direction:column;gap:10px">
+      <span style="font-weight:700;font-size:11px;color:rgba(23,13,12,.62)">accent · 단독 강조색</span>
+      <span style="font-weight:800;font-size:30px;line-height:1;letter-spacing:-.045em;color:#170D0C">#FF5436</span>
+      <span style="font-weight:700;font-size:11.5px;color:rgba(23,13,12,.65)">색 위 텍스트는 #170D0C</span>
+    </div>
+    <div style="flex:1;background:#141317;border:1px solid rgba(255,255,255,.07);padding:20px 22px;display:flex;flex-direction:column;gap:11px">
+      <span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.4);letter-spacing:.04em">규칙</span>
+      <span style="font-weight:500;font-size:12px;line-height:1.7;color:rgba(245,243,240,.6);text-wrap:pretty">이전 레드(#FF5A48)와 중간 단계였던 #FF4500은 모두 이 색으로 통일했습니다. 강조색은 하나뿐입니다.</span>
+      <span style="font-weight:500;font-size:12px;line-height:1.7;color:rgba(245,243,240,.6);text-wrap:pretty">쓰는 곳: 마감 임박 시간, 적중 점수, 신용도 카드 배경, 주 버튼, 강등 위기 경고, 선택된 사이드바 항목.</span>
+      <span style="font-weight:500;font-size:12px;line-height:1.7;color:rgba(245,243,240,.6);text-wrap:pretty">그라데이션 금지. hover는 #FF6E52, 옅은 배경은 rgba(255,84,54,.12~.14).</span>
+    </div>
+    <div style="width:220px;flex:none;background:#141317;border:1px solid rgba(255,255,255,.07);padding:20px 22px;display:flex;flex-direction:column;gap:9px">
+      <span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.4);letter-spacing:.04em">파생값</span>
+      <div style="display:flex;align-items:center;gap:9px"><span style="width:16px;height:16px;background:#FF6E52"></span><span style="font:700 11.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.7)">#FF6E52</span></div>
+      <div style="display:flex;align-items:center;gap:9px"><span style="width:16px;height:16px;background:rgba(255,84,54,.14)"></span><span style="font:700 11.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.7)">14% 배경</span></div>
+      <div style="display:flex;align-items:center;gap:9px"><span style="width:16px;height:16px;background:#221518;border:1px solid rgba(255,84,54,.4)"></span><span style="font:700 11.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.7)">#221518 경고</span></div>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font-weight:800;font-size:15px;color:#F5F3F0;letter-spacing:-.03em">02 · 카테고리 아이콘</span>
+    <span style="font-weight:600;font-size:12px;color:rgba(245,243,240,.4)">플랫 멀티톤 · 48px 그리드 · 사이드바 22px / 카드 헤더 17px / 기록 리스트 20px</span>
+  </div>
+  <div style="background:#100F12;border:1px solid rgba(255,255,255,.07);padding:26px 24px;display:grid;grid-template-columns:repeat(7,1fr);gap:18px 12px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M27 4 12 27h9l-3 17 18-25H26l4-15z" fill="#FF5436"></path><path d="M27 4 12 27h9l2-9z" fill="#FF8A4C"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">전체</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#FF5436</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><rect x="17" y="6" width="14" height="14" fill="#E4D7FF"></rect><path d="m20 13 2.6 2.6L28 10" stroke="#8A5CF0" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><rect x="9" y="24" width="30" height="18" fill="#A97BFF"></rect><rect x="7" y="19" width="34" height="7" fill="#C4A3FF"></rect><rect x="20" y="21" width="8" height="3" fill="#7B52D6"></rect></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">정치</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#A97BFF</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M13 7h22v9a11 11 0 0 1-22 0z" fill="#4C8DFF"></path><path d="M13 7h6v9a11 11 0 0 0 3 7.6A11 11 0 0 1 13 16z" fill="#7FAEFF"></path><path d="M12 9H6v4a8 8 0 0 0 6 7.7v-4A4 4 0 0 1 10 13v-1h2zM36 9h6v4a8 8 0 0 1-6 7.7v-4A4 4 0 0 0 38 13v-1h-2z" fill="#7FAEFF"></path><rect x="21" y="27" width="6" height="7" fill="#3A6FCC"></rect><rect x="14" y="34" width="20" height="6" fill="#3A6FCC"></rect></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">스포츠</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#4C8DFF</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M14 14h20a11 11 0 0 1 0 22H14a11 11 0 0 1 0-22z" fill="#2ED3C0"></path><path d="M14 14h8a11 11 0 0 0 0 22h-8a11 11 0 0 1 0-22z" fill="#6FE8DA"></path><rect x="15" y="23" width="10" height="4" fill="#12796E"></rect><rect x="18" y="20" width="4" height="10" fill="#12796E"></rect><circle cx="31" cy="22" r="2.6" fill="#12796E"></circle><circle cx="36" cy="28" r="2.6" fill="#12796E"></circle></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">E스포츠</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#2ED3C0</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><rect x="18" y="5" width="12" height="21" rx="6" fill="#FF6FB0"></rect><rect x="18" y="5" width="5" height="21" rx="2.5" fill="#FFA3CD"></rect><path d="M12 20h4a8 8 0 0 0 16 0h4a12 12 0 0 1-24 0z" fill="#D94D8C"></path><rect x="22" y="32" width="4" height="7" fill="#D94D8C"></rect><rect x="16" y="39" width="16" height="4" fill="#D94D8C"></rect></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">연예</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#FF6FB0</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><rect x="8" y="27" width="8" height="14" fill="#FFDF9E"></rect><rect x="20" y="21" width="8" height="20" fill="#F2C14E"></rect><rect x="32" y="14" width="8" height="27" fill="#F2C14E"></rect><path d="M9 20l8-7 6 5 12-11" stroke="#C08A1E" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><path d="M28 6h9v9" stroke="#C08A1E" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">경제</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#F2C14E</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M14 27a7 7 0 0 1 .6-13.9A9 9 0 0 1 32 14.5a6.2 6.2 0 0 1 .6 12.5z" fill="#6FC5FF"></path><path d="M14 27a7 7 0 0 1 .6-13.9A9 9 0 0 1 22 9a9 9 0 0 0-3.5 5.5A7 7 0 0 0 18 27z" fill="#A8DCFF"></path><path d="M16 31h4l-2.5 8h-4zM23 31h4l-2.5 8h-4zM30 31h4l-2.5 8h-4z" fill="#3E9BE0"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">날씨</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#6FC5FF</span>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <span style="font-weight:800;font-size:15px;color:#F5F3F0;letter-spacing:-.03em">03 · 티어 아이콘</span>
+    <span style="font-weight:600;font-size:12px;color:rgba(245,243,240,.4)">기하 결정 · 면 수로 등급 상승 · 기본 16px / 작은 칩 14px</span>
+  </div>
+  <div style="background:#100F12;border:1px solid rgba(255,255,255,.07);padding:26px 24px;display:grid;grid-template-columns:repeat(6,1fr);gap:18px 12px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><rect x="12" y="12" width="24" height="24" fill="#D9A06A"></rect><path d="M12 12h24L24 24z" fill="#E8BE94"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">브론즈</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#D9A06A</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M24 8 40 20v16H8V20z" fill="#C9D3DE"></path><path d="M24 8 8 20v16h16z" fill="#E3E9EF"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">실버</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#C9D3DE</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M24 6 39 15v18l-15 9-15-9V15z" fill="#F2C14E"></path><path d="M24 6 9 15v18l15 9z" fill="#FBDA92"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">골드</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#F2C14E</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M24 6 39 15v18l-15 9-15-9V15z" fill="#7FD8C8"></path><path d="M24 6 9 15v18l15 9z" fill="#B2EBE0"></path><path d="M24 16 32 24l-8 8-8-8z" fill="#2C7F72"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">플래티넘</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#7FD8C8</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M24 4 42 24 24 44 6 24z" fill="#6FC5FF"></path><path d="M24 4 6 24l18 20z" fill="#A8DCFF"></path><path d="M24 14 34 24 24 34 14 24z" fill="#1F6EA8"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">다이아</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#6FC5FF</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <svg width="48" height="48" viewBox="0 0 48 48"><path d="M17 5h14l10 10v18L31 43H17L7 33V15z" fill="#FF5436"></path><path d="M17 5 7 15v18l10 10z" fill="#FF8A4C"></path><path d="M24 13 33 24l-9 11-9-11z" fill="#8A2300"></path><path d="M24 19l4.5 5-4.5 6-4.5-6z" fill="#FFD1BC"></path></svg>
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">마스터</span>
+      <span style="font:700 10.5px ui-monospace,Menlo,monospace;color:rgba(245,243,240,.4)">#FF5436</span>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <span style="font-weight:800;font-size:15px;color:#F5F3F0;letter-spacing:-.03em">04 · 실사용 조합</span>
+  <div style="display:flex;gap:12px;align-items:flex-start">
+    <div style="width:300px;flex:none;background:#100F12;border:1px solid rgba(255,255,255,.07);padding:20px 22px;display:flex;flex-direction:column;gap:4px">
+      <span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.35);padding:0 0 10px;letter-spacing:.04em">사이드바 · 22px</span>
+      <div style="display:flex;align-items:center;gap:11px;background:#26242C;padding:9px 12px">
+        <svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><path d="M27 4 12 27h9l-3 17 18-25H26l4-15z" fill="#FF5436"></path><path d="M27 4 12 27h9l2-9z" fill="#FF8A4C"></path></svg>
+        <span style="font-weight:800;font-size:13.5px;color:#F5F3F0">전체</span><div style="flex:1"></div>
+        <span style="font-weight:800;font-size:11.5px;color:rgba(245,243,240,.4);font-variant-numeric:tabular-nums">28</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:11px;padding:9px 12px">
+        <svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><path d="M14 27a7 7 0 0 1 .6-13.9A9 9 0 0 1 32 14.5a6.2 6.2 0 0 1 .6 12.5z" fill="#6FC5FF"></path><path d="M16 31h4l-2.5 8h-4zM23 31h4l-2.5 8h-4zM30 31h4l-2.5 8h-4z" fill="#3E9BE0"></path></svg>
+        <span style="font-weight:700;font-size:13.5px;color:rgba(245,243,240,.7)">날씨</span><div style="flex:1"></div>
+        <span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.3);font-variant-numeric:tabular-nums">4</span>
+      </div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;background:#1B1A1F;border:1px solid rgba(255,255,255,.07)">
+        <div style="width:4px;flex:none;background:#6FC5FF"></div>
+        <div style="flex:1;padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="17" height="17" viewBox="0 0 48 48" style="flex:none"><path d="M14 27a7 7 0 0 1 .6-13.9A9 9 0 0 1 32 14.5a6.2 6.2 0 0 1 .6 12.5z" fill="#6FC5FF"></path><path d="M16 31h4l-2.5 8h-4zM23 31h4l-2.5 8h-4zM30 31h4l-2.5 8h-4z" fill="#3E9BE0"></path></svg>
+            <span style="font-weight:700;font-size:12px;color:#6FC5FF">날씨</span>
+            <div style="flex:1"></div>
+            <span style="font-weight:800;font-size:12.5px;color:#FF5436;font-variant-numeric:tabular-nums">03:12:40 남음</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px">
+            <span style="flex:1;font-weight:700;font-size:19px;line-height:1.35;letter-spacing:-.03em;color:#F5F3F0">내일 서울에 비 올까?</span>
+            <button style="width:130px;flex:none;background:#26242C;color:#F5F3F0;border:1px solid rgba(255,255,255,.09);padding:14px 0;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer">올 것 같다</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px">
+        <div style="flex:1;display:flex;align-items:center;gap:8px;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);padding:12px 16px">
+          <span style="display:inline-flex;align-items:center;gap:5px">
+            <svg width="16" height="16" viewBox="0 0 48 48" style="flex:none"><path d="M24 6 39 15v18l-15 9-15-9V15z" fill="#F2C14E"></path><path d="M24 6 9 15v18l15 9z" fill="#FBDA92"></path></svg>
+            <span style="font-weight:800;font-size:11px;color:rgba(245,243,240,.6);white-space:nowrap">골드 3</span>
+          </span>
+          <span style="font-weight:800;font-size:15px;color:#F5F3F0;letter-spacing:-.02em;font-variant-numeric:tabular-nums">1,336</span>
+          <div style="flex:1"></div>
+          <span style="font-weight:800;font-size:11.5px;color:#FF5436;font-variant-numeric:tabular-nums">+96</span>
+        </div>
+        <button style="width:180px;flex:none;background:#FF5436;color:#170D0C;border:none;padding:14px 20px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">지금 예측하기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <span style="font-weight:800;font-size:15px;color:#F5F3F0;letter-spacing:-.03em">05 · 함께 확정된 형태 규칙</span>
+  <div style="display:flex;gap:12px">
+    <div style="flex:1;background:#141317;border:1px solid rgba(255,255,255,.07);padding:20px 22px;display:flex;flex-direction:column;gap:7px">
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">직각</span>
+      <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.5);text-wrap:pretty">모든 버튼·카드 radius 0. 프로그레스 바와 카카오 버튼(radius 12px)만 예외.</span>
+    </div>
+    <div style="flex:1;background:#141317;border:1px solid rgba(255,255,255,.07);padding:20px 22px;display:flex;flex-direction:column;gap:7px">
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">패딩·그림자</span>
+      <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.5);text-wrap:pretty">섹션 카드 20/22px, 내부 블록 16px. 버튼 세로 14px. 카드 그림자 없음, 모달만 오버레이 그림자.</span>
+    </div>
+    <div style="flex:1;background:#141317;border:1px solid rgba(255,255,255,.07);padding:20px 22px;display:flex;flex-direction:column;gap:7px">
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">그라데이션</span>
+      <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.5);text-wrap:pretty">전면 금지. 신용도 카드·공유 카드 모두 #FF5436 단색.</span>
+    </div>
+    <div style="flex:1;background:#141317;border:1px dashed rgba(255,255,255,.13);padding:20px 22px;display:flex;flex-direction:column;gap:7px">
+      <span style="font-weight:700;font-size:12.5px;color:#F5F3F0">남은 결정</span>
+      <span style="font-weight:500;font-size:11.5px;line-height:1.65;color:rgba(245,243,240,.5);text-wrap:pretty">다이아 티어(#6FC5FF)와 날씨 카테고리 색이 동일합니다. 다이아를 보라 계열로 옮길지 미정.</span>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+</body>
+</html>

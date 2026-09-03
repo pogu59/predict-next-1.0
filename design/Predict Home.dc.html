@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0">
+<style>
+  html,body{margin:0;background:#0A0A0C}
+  body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;display:flex;justify-content:center;padding:24px}
+  a{color:#FF5436}a:hover{color:#D93B6B}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+</style>
+</helmet>
+<div style="width:1440px;height:860px;background:#100F12;color:#F5F3F0;display:flex;flex-direction:column;overflow:hidden">
+  <div style="flex:none;height:66px;display:flex;align-items:center;gap:26px;padding:0 44px;border-bottom:1px solid rgba(255,255,255,.07);background:#141317">
+    <span style="font-weight:800;font-size:22px;letter-spacing:-.045em">predict</span>
+    <div style="display:flex;align-items:center;gap:24px;margin-left:10px">
+      <span style="font-weight:800;font-size:14px;color:#F5F3F0">오늘</span>
+      <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">진행 중</span>
+      <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">결과</span>
+      <span style="font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">랭킹</span>
+      <span style="position:relative;font-weight:700;font-size:14px;color:rgba(245,243,240,.42)">내 기록<span style="position:absolute;top:-2px;right:-8px;width:5px;height:5px;border-radius:50%;background:#FF5436"></span></span>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;gap:8px;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:999px;padding:7px 15px 7px 8px">
+      <span style="display:inline-flex;align-items:center;gap:5px"><svg width="16" height="16" viewBox="0 0 48 48" style="flex:none"><path d="M24 6 39 15v18l-15 9-15-9V15z" fill="#F2C14E"></path><path d="M24 6 9 15v18l15 9z" fill="#FBDA92"></path></svg><span style="font-weight:800;font-size:11px;color:rgba(245,243,240,.6);white-space:nowrap">골드 3</span></span>
+      <span style="font-weight:800;font-size:15px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">1,240</span>
+    </div>
+    <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:rgba(245,243,240,.5)">notifications</span>
+  </div>
+
+  <div style="flex:1;min-height:0;display:flex;gap:30px;padding:30px 44px;justify-content:center">
+
+    <div style="width:216px;flex:none;display:flex;flex-direction:column;gap:5px">
+      <span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.35);padding:0 12px 8px;letter-spacing:.04em">카테고리</span>
+      <div style="display:flex;align-items:center;gap:11px;background:#26242C;padding:9px 12px"><svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><path d="M27 4 12 27h9l-3 17 18-25H26l4-15z" fill="#FF5436"></path><path d="M27 4 12 27h9l2-9z" fill="#FF8A4C"></path></svg><span style="font-weight:800;font-size:13.5px;color:#F5F3F0">전체</span><div style="flex:1"></div><span style="font-weight:800;font-size:11.5px;color:rgba(245,243,240,.4);font-variant-numeric:tabular-nums">28</span></div>
+      <div style="display:flex;align-items:center;gap:11px;padding:9px 12px"><svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><rect x="17" y="6" width="14" height="14" fill="#E4D7FF"></rect><rect x="9" y="24" width="30" height="18" fill="#A97BFF"></rect><rect x="7" y="19" width="34" height="7" fill="#C4A3FF"></rect><rect x="20" y="21" width="8" height="3" fill="#7B52D6"></rect></svg><span style="font-weight:700;font-size:13.5px;color:rgba(245,243,240,.7)">정치</span><div style="flex:1"></div><span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.3);font-variant-numeric:tabular-nums">3</span></div>
+      <div style="display:flex;align-items:center;gap:11px;padding:9px 12px"><svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><path d="M13 7h22v9a11 11 0 0 1-22 0z" fill="#4C8DFF"></path><path d="M12 9H6v4a8 8 0 0 0 6 7.7v-4A4 4 0 0 1 10 13v-1h2zM36 9h6v4a8 8 0 0 1-6 7.7v-4A4 4 0 0 0 38 13v-1h-2z" fill="#7FAEFF"></path><rect x="21" y="27" width="6" height="7" fill="#3A6FCC"></rect><rect x="14" y="34" width="20" height="6" fill="#3A6FCC"></rect></svg><span style="font-weight:700;font-size:13.5px;color:rgba(245,243,240,.7)">스포츠</span><div style="flex:1"></div><span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.3);font-variant-numeric:tabular-nums">8</span></div>
+      <div style="display:flex;align-items:center;gap:11px;padding:9px 12px"><svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><path d="M14 14h20a11 11 0 0 1 0 22H14a11 11 0 0 1 0-22z" fill="#2ED3C0"></path><rect x="15" y="23" width="10" height="4" fill="#12796E"></rect><rect x="18" y="20" width="4" height="10" fill="#12796E"></rect><circle cx="31" cy="22" r="2.6" fill="#12796E"></circle><circle cx="36" cy="28" r="2.6" fill="#12796E"></circle></svg><span style="font-weight:700;font-size:13.5px;color:rgba(245,243,240,.7)">E스포츠</span><div style="flex:1"></div><span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.3);font-variant-numeric:tabular-nums">5</span></div>
+      <div style="display:flex;align-items:center;gap:11px;padding:9px 12px"><svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><rect x="18" y="5" width="12" height="21" rx="6" fill="#FF6FB0"></rect><path d="M12 20h4a8 8 0 0 0 16 0h4a12 12 0 0 1-24 0z" fill="#D94D8C"></path><rect x="22" y="32" width="4" height="7" fill="#D94D8C"></rect><rect x="16" y="39" width="16" height="4" fill="#D94D8C"></rect></svg><span style="font-weight:700;font-size:13.5px;color:rgba(245,243,240,.7)">연예</span><div style="flex:1"></div><span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.3);font-variant-numeric:tabular-nums">6</span></div>
+      <div style="display:flex;align-items:center;gap:11px;padding:9px 12px"><svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><rect x="8" y="27" width="8" height="14" fill="#FFDF9E"></rect><rect x="20" y="21" width="8" height="20" fill="#F2C14E"></rect><rect x="32" y="14" width="8" height="27" fill="#F2C14E"></rect><path d="M9 20l8-7 6 5 12-11" stroke="#C08A1E" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-weight:700;font-size:13.5px;color:rgba(245,243,240,.7)">경제</span><div style="flex:1"></div><span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.3);font-variant-numeric:tabular-nums">2</span></div>
+      <div style="display:flex;align-items:center;gap:11px;padding:9px 12px"><svg width="22" height="22" viewBox="0 0 48 48" style="flex:none"><path d="M14 27a7 7 0 0 1 .6-13.9A9 9 0 0 1 32 14.5a6.2 6.2 0 0 1 .6 12.5z" fill="#6FC5FF"></path><path d="M16 31h4l-2.5 8h-4zM23 31h4l-2.5 8h-4zM30 31h4l-2.5 8h-4z" fill="#3E9BE0"></path></svg><span style="font-weight:700;font-size:13.5px;color:rgba(245,243,240,.7)">날씨</span><div style="flex:1"></div><span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.3);font-variant-numeric:tabular-nums">4</span></div>
+      <div style="height:14px"></div>
+      <div style="background:#1B1A1F;border:1px dashed rgba(255,255,255,.13);border-radius:0;padding:16px;display:flex;flex-direction:column;gap:7px">
+        <span style="font-weight:700;font-size:12.5px">돈은 걸지 않습니다</span>
+        <span style="font-weight:500;font-size:11.5px;line-height:1.6;color:rgba(245,243,240,.45);text-wrap:pretty">현금·코인·아이템 없이 신용도 점수와 티어만 오갑니다.</span>
+      </div>
+    </div>
+
+    <div style="width:620px;flex:none;display:flex;flex-direction:column;gap:13px">
+      <div style="display:flex;align-items:baseline;gap:11px;padding:0 2px 2px">
+        <span style="font-weight:800;font-size:25px;letter-spacing:-.04em">오늘의 예측</span>
+        <span style="font-weight:700;font-size:12.5px;color:rgba(245,243,240,.4)">마감 임박순 · 11개</span>
+        <div style="flex:1"></div>
+        <div style="display:flex;gap:4px;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);padding:4px">
+          <span style="font-weight:800;font-size:12px;color:#100F12;background:#F5F3F0;padding:6px 11px;font-variant-numeric:tabular-nums">전체 16</span>
+          <span style="font-weight:700;font-size:12px;color:rgba(245,243,240,.45);padding:6px 11px;font-variant-numeric:tabular-nums">진행 중 4</span>
+          <span style="font-weight:700;font-size:12px;color:rgba(245,243,240,.45);padding:6px 11px;font-variant-numeric:tabular-nums">확정 12</span>
+        </div>
+      </div>
+      <div style="display:flex;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:0;overflow:hidden">
+        <div style="width:4px;flex:none;background:#6FC5FF"></div>
+        <div style="flex:1;padding:17px 18px;display:flex;flex-direction:column;gap:13px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="17" height="17" viewBox="0 0 48 48" style="flex:none"><path d="M14 27a7 7 0 0 1 .6-13.9A9 9 0 0 1 32 14.5a6.2 6.2 0 0 1 .6 12.5z" fill="#6FC5FF"></path><path d="M16 31h4l-2.5 8h-4zM23 31h4l-2.5 8h-4zM30 31h4l-2.5 8h-4z" fill="#3E9BE0"></path></svg><span style="font-weight:700;font-size:12px;color:#6FC5FF">날씨</span>
+            
+            <div style="flex:1"></div>
+            <span style="font-weight:800;font-size:12.5px;color:#FF5436;font-variant-numeric:tabular-nums">03:12:40 남음</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <div style="flex:1;font-weight:700;font-size:21px;line-height:1.35;letter-spacing:-.03em">내일 서울에 비 올까?</div>
+            <div style="flex:none;display:flex;gap:8px">
+              <button style="width:130px;background:#26242C;color:#F5F3F0;border:1px solid rgba(255,255,255,.09);border-radius:0;padding:14px 0;font-family:inherit;font-weight:700;font-size:14px;letter-spacing:-.02em">올 것 같다</button>
+              <button style="width:130px;background:#26242C;color:#F5F3F0;border:1px solid rgba(255,255,255,.09);border-radius:0;padding:14px 0;font-family:inherit;font-weight:700;font-size:14px;letter-spacing:-.02em">안 올 것 같다</button>
+            </div>
+          </div>
+          <span style="font-weight:600;font-size:11.5px;color:rgba(245,243,240,.36)">기상청 공식 발표 기준 · 비율은 투표 후 공개</span>
+        </div>
+      </div>
+      <div style="display:flex;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:0;overflow:hidden">
+        <div style="width:4px;flex:none;background:#4C8DFF"></div>
+        <div style="flex:1;padding:17px 18px;display:flex;flex-direction:column;gap:13px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="17" height="17" viewBox="0 0 48 48" style="flex:none"><path d="M13 7h22v9a11 11 0 0 1-22 0z" fill="#4C8DFF"></path><path d="M12 9H6v4a8 8 0 0 0 6 7.7v-4A4 4 0 0 1 10 13v-1h2zM36 9h6v4a8 8 0 0 1-6 7.7v-4A4 4 0 0 0 38 13v-1h-2z" fill="#7FAEFF"></path><rect x="21" y="27" width="6" height="7" fill="#3A6FCC"></rect><rect x="14" y="34" width="20" height="6" fill="#3A6FCC"></rect></svg><span style="font-weight:700;font-size:12px;color:#4C8DFF">스포츠</span>
+            
+            <div style="flex:1"></div>
+            <span style="font-weight:700;font-size:12.5px;color:rgba(245,243,240,.45);font-variant-numeric:tabular-nums">01:40:02 남음</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <div style="flex:1;font-weight:700;font-size:21px;line-height:1.35;letter-spacing:-.03em">오늘 경기, A팀이 이길까?</div>
+            <div style="flex:none;display:flex;align-items:center;gap:9px;background:#161519;border-radius:0;padding:12px 14px">
+              <span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#FF5436;font-variation-settings:'FILL' 1">check_circle</span>
+              <span style="font-weight:700;font-size:13.5px">이길 것 같다</span>
+              <span style="font-weight:800;font-size:11.5px;line-height:1;color:#FF5436;background:rgba(255,84,54,.14);border-radius:7px;padding:5px 7px;font-variant-numeric:tabular-nums">17%만 이쪽</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;background:#161519;border:1px solid rgba(255,255,255,.05);border-radius:0;overflow:hidden">
+        <div style="width:4px;flex:none;background:rgba(46,211,192,.45)"></div>
+        <div style="flex:1;padding:17px 18px;display:flex;align-items:center;gap:20px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg width="17" height="17" viewBox="0 0 48 48" style="flex:none"><path d="M14 14h20a11 11 0 0 1 0 22H14a11 11 0 0 1 0-22z" fill="#2ED3C0"></path><rect x="15" y="23" width="10" height="4" fill="#12796E"></rect><rect x="18" y="20" width="4" height="10" fill="#12796E"></rect><circle cx="31" cy="22" r="2.6" fill="#12796E"></circle><circle cx="36" cy="28" r="2.6" fill="#12796E"></circle></svg><span style="font-weight:700;font-size:12px;color:rgba(46,211,192,.6)">E스포츠</span>
+              
+            </div>
+            <div style="font-weight:700;font-size:20px;line-height:1.35;letter-spacing:-.03em;color:rgba(245,243,240,.6)">이번 주 경기, T1이 이길까?</div>
+          </div>
+          <span style="flex:none;display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:12.5px;color:rgba(245,243,240,.45)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">hourglass_top</span>오늘 22:00 판정</span>
+        </div>
+      </div>
+      <div style="display:flex;background:#221518;border:1px solid rgba(255,84,54,.32);border-radius:0;overflow:hidden">
+        <div style="width:4px;flex:none;background:#FF5436"></div>
+        <div style="flex:1;padding:17px 18px;display:flex;align-items:center;gap:20px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg width="17" height="17" viewBox="0 0 48 48" style="flex:none"><rect x="18" y="5" width="12" height="21" rx="6" fill="#FF6FB0"></rect><path d="M12 20h4a8 8 0 0 0 16 0h4a12 12 0 0 1-24 0z" fill="#D94D8C"></path><rect x="22" y="32" width="4" height="7" fill="#D94D8C"></rect><rect x="16" y="39" width="16" height="4" fill="#D94D8C"></rect></svg><span style="font-weight:700;font-size:12px;color:#FF6FB0">연예</span>
+              <span style="font-weight:800;font-size:11.5px;line-height:1;color:#170D0C;background:#FF5436;border-radius:7px;padding:5px 8px">소수 22% 적중</span>
+            </div>
+            <div style="font-weight:700;font-size:20px;line-height:1.35;letter-spacing:-.03em">이번 주 음악방송 1위, A가 차지할까?</div>
+          </div>
+          <span style="flex:none;font-weight:800;font-size:40px;line-height:.9;letter-spacing:-.05em;color:#FF5436;font-variant-numeric:tabular-nums">+33</span>
+        </div>
+      </div>
+      <div style="display:flex;background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:0;overflow:hidden">
+        <div style="width:4px;flex:none;background:#F2C14E"></div>
+        <div style="flex:1;padding:17px 18px;display:flex;align-items:center;gap:20px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg width="17" height="17" viewBox="0 0 48 48" style="flex:none"><rect x="8" y="27" width="8" height="14" fill="#FFDF9E"></rect><rect x="20" y="21" width="8" height="20" fill="#F2C14E"></rect><rect x="32" y="14" width="8" height="27" fill="#F2C14E"></rect><path d="M9 20l8-7 6 5 12-11" stroke="#C08A1E" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-weight:700;font-size:12px;color:#F2C14E">경제</span>
+              
+            </div>
+            <div style="font-weight:700;font-size:20px;line-height:1.35;letter-spacing:-.03em">한국은행 이번 달 기준금리 인상할까?</div>
+          </div>
+          <span style="flex:none;font-weight:700;font-size:12.5px;color:rgba(245,243,240,.45);font-variant-numeric:tabular-nums">2일 04:11 남음</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:266px;flex:none;display:flex;flex-direction:column;gap:13px">
+      <div style="background:#FF5436;border-radius:0;padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+        <span style="font-weight:700;font-size:11.5px;color:rgba(23,13,12,.62)">내 신용도 · 골드 3</span>
+        <span style="font-weight:800;font-size:36px;line-height:1;letter-spacing:-.045em;color:#170D0C;font-variant-numeric:tabular-nums">1,240</span>
+        <div style="height:5px;background:rgba(23,13,12,.22);border-radius:3px;overflow:hidden"><div style="width:62%;height:100%;background:#170D0C;transform-origin:left;animation:grow .9s cubic-bezier(.22,1,.36,1) both"></div></div>
+        <div style="display:flex;align-items:center">
+          <span style="font-weight:700;font-size:11.5px;color:rgba(23,13,12,.65);font-variant-numeric:tabular-nums">플래티넘까지 260점</span>
+          <div style="flex:1"></div>
+          <span style="font-weight:800;font-size:11.5px;color:#170D0C;font-variant-numeric:tabular-nums">7 / 9 적중</span>
+        </div>
+      </div>
+      <div style="background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:0;padding:20px 22px;display:flex;flex-direction:column;gap:13px">
+        <span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.4)">이번 주 소수 적중 랭킹</span>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-weight:800;font-size:12px;color:#FF5436;width:14px;font-variant-numeric:tabular-nums">1</span><span style="font-weight:700;font-size:13px;flex:1">촉이좋은사람</span><span style="font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums">+412</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-weight:800;font-size:12px;color:rgba(245,243,240,.5);width:14px;font-variant-numeric:tabular-nums">2</span><span style="font-weight:700;font-size:13px;flex:1;color:rgba(245,243,240,.8)">역발상러</span><span style="font-weight:800;font-size:12.5px;color:rgba(245,243,240,.8);font-variant-numeric:tabular-nums">+388</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-weight:800;font-size:12px;color:rgba(245,243,240,.5);width:14px;font-variant-numeric:tabular-nums">3</span><span style="font-weight:700;font-size:13px;flex:1;color:rgba(245,243,240,.8)">비올확률99</span><span style="font-weight:800;font-size:12.5px;color:rgba(245,243,240,.8);font-variant-numeric:tabular-nums">+341</span></div>
+        <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-weight:800;font-size:12px;color:rgba(245,243,240,.5);width:14px;font-variant-numeric:tabular-nums">18</span><span style="font-weight:700;font-size:13px;flex:1">나</span><span style="font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums">+126</span></div>
+      </div>
+      <div style="background:#1B1A1F;border:1px solid rgba(255,255,255,.07);border-radius:0;padding:20px 22px;display:flex;flex-direction:column;gap:11px">
+        <span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.4)">곧 결과 확정</span>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <span style="font-weight:700;font-size:13px;line-height:1.4">이번 주 경기, T1이 이길까?</span>
+          <span style="font-weight:700;font-size:11.5px;color:#FF5436;font-variant-numeric:tabular-nums">오늘 22:00 · 2시간 뒤</span>
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <span style="font-weight:700;font-size:13px;line-height:1.4">내일 서울에 비 올까?</span>
+          <span style="font-weight:700;font-size:11.5px;color:rgba(245,243,240,.45);font-variant-numeric:tabular-nums">내일 09:00</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+</script>
+</body>
+</html>

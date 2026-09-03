@@ -9,11 +9,11 @@ type StatTileProps = {
 export function StatTile({ label, value, sub, valueClassName = "" }: StatTileProps) {
   return (
     <div className="border-line bg-card flex flex-1 flex-col gap-1.5 rounded-2xl border px-[17px] py-4">
-      <span className="text-ink-subtle text-[11.5px] font-bold">{label}</span>
-      <span className={`text-2xl leading-none font-extrabold tracking-[-0.04em] tabular-nums ${valueClassName}`}>
+      <span className="text-ink-subtle text-caption">{label}</span>
+      <span className={`text-title2 tabular-nums ${valueClassName}`}>
         {value}
       </span>
-      {sub && <span className="text-ink-faint text-[11px] font-semibold tabular-nums">{sub}</span>}
+      {sub && <span className="text-ink-faint text-caption font-semibold tabular-nums">{sub}</span>}
     </div>
   )
 }

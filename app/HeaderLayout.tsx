@@ -40,15 +40,12 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
 
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <header className="flex items-center gap-10 border-b border-line bg-headerBg px-6 py-4">
-        <button
-          className="text-2xl font-extrabold tracking-[-0.04em] text-ink"
-          onClick={() => router.push("/")}
-        >
+      <header className="flex h-[66px] flex-none items-center gap-[26px] border-b border-line bg-headerBg px-6">
+        <button className="text-h1 text-ink" onClick={() => router.push("/")}>
           Predict
         </button>
 
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-6">
           {(me?.role === "ADMIN"
             ? [...NAV_LIST, ADMIN_NAV_ITEM]
             : NAV_LIST
@@ -61,8 +58,8 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
                 onClick={() => router.push(`/${menu.value}`)}
                 className={
                   active
-                    ? "rounded-md bg-control px-4 py-2 text-sm font-bold text-ink"
-                    : "rounded-md px-4 py-2 text-sm font-bold text-ink-subtle transition-colors hover:text-ink"
+                    ? "text-label text-ink"
+                    : "text-label text-ink-subtle transition-colors hover:text-ink"
                 }
               >
                 {menu.label}
@@ -74,20 +71,18 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
         <div className="flex-auto" />
 
         {me ? (
-          <div className="flex items-center gap-2.5 rounded-full border border-line bg-card py-1.5 pr-4 pl-2">
-            <span className="rounded-md bg-void px-1.5 py-1 text-[10.5px] leading-none font-extrabold text-bg">
+          <div className="flex items-center gap-2 rounded-full border border-line bg-card py-[7px] pr-[15px] pl-2">
+            <span className="rounded-md bg-void px-1.5 py-1 text-caption leading-none text-bg">
               {tierLabel(me.tier)}
             </span>
-            <span className="text-[13px] font-bold text-ink-muted">
-              {me.nickname}
-            </span>
-            <span className="text-[15px] leading-none font-extrabold tracking-[-0.02em] tabular-nums">
+            <span className="text-label text-ink-muted">{me.nickname}</span>
+            <span className="text-title3 tabular-nums">
               {me.credibilityScore.toLocaleString()}
             </span>
             <button
               type="button"
               onClick={handleLogout}
-              className="text-[11.5px] font-bold text-ink-faint hover:text-ink"
+              className="text-caption text-ink-faint hover:text-ink"
             >
               로그아웃
             </button>
@@ -96,7 +91,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
           <button
             type="button"
             onClick={() => router.push("/login")}
-            className="rounded-full border border-line bg-card px-4 py-2 text-[13px] font-bold text-ink-muted hover:text-ink"
+            className="rounded-full border border-line bg-card px-4 py-2 text-label text-ink-muted hover:text-ink"
           >
             로그인
           </button>

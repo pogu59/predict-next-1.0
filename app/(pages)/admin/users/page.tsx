@@ -80,7 +80,7 @@ export default function AdminUsersPage() {
       </div>
 
       {error && (
-        <div className="border-wrong bg-wrong-chip rounded-lg border px-4 py-2.5 text-[13px] font-bold text-[#D6DEEC]">
+        <div className="border-wrong bg-wrong-chip rounded-lg border px-4 py-2.5 text-caption text-[#D6DEEC]">
           {error}
         </div>
       )}

@@ -71,6 +71,10 @@ export function fetchTopics() {
   return apiFetch<Topic[]>("/api/topics")
 }
 
+export function fetchTopic(topicId: number) {
+  return apiFetch<Topic>(`/api/topics/${topicId}`)
+}
+
 export function castVote(topicId: number, userId: number, optionId: number) {
   return apiFetch<VoteResult>(`/api/topics/${topicId}/votes`, {
     method: "POST",

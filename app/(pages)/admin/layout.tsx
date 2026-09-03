@@ -34,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (me === undefined || me === null || me.role !== "ADMIN") {
     return (
       <div className="flex flex-col gap-3 px-6 pt-8 pb-11">
-        <div className="text-ink-subtle text-sm font-bold">확인 중...</div>
+        <div className="text-ink-subtle text-label">확인 중...</div>
       </div>
     )
   }
@@ -42,8 +42,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex flex-col gap-[22px] px-6 pt-8 pb-11">
       <div className="flex items-center gap-2.5">
-        <h1 className="text-2xl font-extrabold tracking-[-0.04em]">관리자 페이지</h1>
-        <span className="text-ink-faint text-[12.5px] font-bold">{me.nickname}</span>
+        <h1 className="text-h1">관리자 페이지</h1>
+        <span className="text-ink-faint text-caption">{me.nickname}</span>
       </div>
 
       <nav className="flex items-center gap-2">
@@ -57,8 +57,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               onClick={() => router.push(item.href)}
               className={
                 active
-                  ? "rounded-full bg-ink px-4 py-2 text-sm font-extrabold text-bg"
-                  : "border-line text-ink-muted hover:text-ink rounded-full border bg-card px-4 py-2 text-sm font-bold transition-colors"
+                  ? "rounded-full bg-ink px-4 py-2 text-label text-bg"
+                  : "border-line text-ink-muted hover:text-ink rounded-full border bg-card px-4 py-2 text-label transition-colors"
               }
             >
               {item.label}

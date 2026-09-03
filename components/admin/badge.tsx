@@ -16,7 +16,7 @@ export function Badge({ children, tone = "neutral" }: BadgeProps) {
         : "border-line text-ink border"
 
   return (
-    <span className={`inline-block rounded-md px-2 py-1 text-[11.5px] font-extrabold ${toneClass}`}>
+    <span className={`inline-block rounded-md px-2 py-1 text-caption font-extrabold ${toneClass}`}>
       {children}
     </span>
   )

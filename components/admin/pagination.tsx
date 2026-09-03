@@ -15,7 +15,7 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
       <Button type="button" variant="outline" size="sm" disabled={page === 0} onClick={() => onChange(Math.max(0, page - 1))}>
         이전
       </Button>
-      <span className="text-ink-subtle text-xs font-bold tabular-nums">
+      <span className="text-ink-subtle text-label tabular-nums">
         {page + 1} / {totalPages}
       </span>
       <Button

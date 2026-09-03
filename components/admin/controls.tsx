@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 
 type Surface = "card" | "bg"
 
-const baseClass = "rounded-md border border-line text-ink text-sm font-bold px-3 py-2 placeholder:text-ink-faint"
+const baseClass = "rounded-md border border-line text-ink text-label px-3 py-2 placeholder:text-ink-faint"
 const surfaceClass: Record<Surface, string> = {
   card: "bg-card",
   bg: "bg-bg",

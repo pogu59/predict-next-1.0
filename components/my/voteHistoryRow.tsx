@@ -1,4 +1,4 @@
-import { formatRemaining } from "@/lib/issues"
+import { formatRemaining, useNow } from "@/lib/issues"
 import { categoryMeta } from "@/lib/categoryMeta"
 import type { MyVote } from "@/lib/api"
 import { Icon } from "@/components/icon"
@@ -18,6 +18,7 @@ type VoteHistoryRowProps = {
 
 /** 마이페이지 "최근 투표 기록" 목록의 한 줄. */
 export function VoteHistoryRow({ vote }: VoteHistoryRowProps) {
+  const now = useNow()
   const meta = categoryMeta(vote.categoryName)
 
   const total = vote.options.reduce((sum, option) => sum + (option.voteCount ?? 0), 0)
@@ -29,22 +30,22 @@ export function VoteHistoryRow({ vote }: VoteHistoryRowProps) {
   let right: React.ReactNode
 
   if (vote.status === "OPEN") {
-    sub = `${formatRemaining(vote.voteDeadlineAt)} 남음`
-    right = <span className="text-ink-subtle text-[12.5px] font-bold">진행 중</span>
+    sub = formatRemaining(vote.voteDeadlineAt, now)
+    right = <span className="text-ink-subtle text-caption">진행 중</span>
   } else if (vote.status === "PENDING_RESULT") {
     sub = minorityPct !== undefined ? `결과 대기 · 소수 ${minorityPct}%` : "결과 대기"
-    right = <span className="text-ink-subtle text-[12.5px] font-bold">진행 중</span>
+    right = <span className="text-ink-subtle text-caption">진행 중</span>
   } else if (vote.result === "CORRECT") {
     sub = `${formatDateTime(vote.confirmedAt!)} 확정${minorityPct !== undefined ? ` · 소수 ${minorityPct}%` : ""}`
     right = (
-      <span className="text-accent w-[78px] flex-none text-right text-[12.5px] font-extrabold tabular-nums">
+      <span className="text-accent w-[78px] flex-none text-right text-caption font-extrabold tabular-nums">
         적중 +{vote.scoreDelta}
       </span>
     )
   } else {
     sub = `${formatDateTime(vote.confirmedAt!)} 확정${minorityPct !== undefined ? ` · 소수 ${minorityPct}%` : ""}`
     right = (
-      <span className="text-ink-subtle w-[78px] flex-none text-right text-[12.5px] font-bold tabular-nums">
+      <span className="text-ink-subtle w-[78px] flex-none text-right text-caption tabular-nums">
         실패 {vote.scoreDelta}
       </span>
     )
@@ -54,10 +55,10 @@ export function VoteHistoryRow({ vote }: VoteHistoryRowProps) {
     <div className="border-line flex items-center gap-3.5 border-t py-[13px] first:border-t-0">
       <Icon name={meta.icon} size={18} style={{ color: meta.color }} className="w-[26px] flex-none" />
       <div className="flex flex-1 flex-col gap-1">
-        <span className="text-sm font-bold tracking-[-0.02em]">{vote.title}</span>
-        <span className="text-ink-faint text-[11.5px] font-semibold tabular-nums">{sub}</span>
+        <span className="text-label">{vote.title}</span>
+        <span className="text-ink-faint text-caption font-semibold tabular-nums">{sub}</span>
       </div>
-      <span className="bg-control text-ink-muted flex-none rounded-lg px-2.5 py-1.5 text-xs font-bold">
+      <span className="bg-control text-ink-muted flex-none rounded-lg px-2.5 py-1.5 text-label">
         {vote.optionText}
       </span>
       {right}

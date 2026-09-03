@@ -96,7 +96,7 @@ export default function MyPage() {
   if (loading) {
     return (
       <div className="flex flex-col gap-3 px-6 pt-8 pb-11">
-        <div className="text-sm font-bold text-ink-subtle">불러오는 중...</div>
+        <div className="text-label text-ink-subtle">불러오는 중...</div>
       </div>
     )
   }
@@ -104,9 +104,9 @@ export default function MyPage() {
   if (!me) {
     return (
       <div className="flex flex-col gap-3 px-6 pt-8 pb-11">
-        <div className="rounded-xl border border-dashed border-line-strong px-5 py-10 text-center text-sm font-bold text-ink-subtle">
+        <div className="rounded-xl border border-dashed border-line-strong px-5 py-10 text-center text-label text-ink-subtle">
           로그인 후 이용할 수 있어요
-          <a href="/login" className="ml-2 font-bold text-accent">
+          <a href="/login" className="ml-2 text-accent">
             로그인하러 가기
           </a>
         </div>
@@ -122,14 +122,14 @@ export default function MyPage() {
       : null
 
   return (
-    <div className="flex flex-col gap-[22px] px-6 pt-8 pb-11">
-      {error && (
-        <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-[13px] font-bold text-[#D6DEEC]">
-          {error}
-        </div>
-      )}
+    <div className="flex flex-col items-center gap-[22px] px-6 pt-8 pb-11">
+      <div className="flex w-full max-w-[760px] flex-col gap-[22px]">
+        {error && (
+          <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
+            {error}
+          </div>
+        )}
 
-      <div>
         <div className="flex flex-col gap-[14px]">
           <div className="flex items-center gap-[22px] rounded-2xl border border-line bg-card p-[22px]">
             <div className="flex h-[76px] w-[76px] flex-none items-center justify-center rounded-[22px] bg-control">
@@ -137,10 +137,8 @@ export default function MyPage() {
             </div>
             <div className="flex flex-1 flex-col gap-2">
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-extrabold tracking-[-0.04em]">
-                  {me.nickname}
-                </span>
-                <span className="rounded-md bg-void px-[7px] py-[5px] text-[10.5px] leading-none font-extrabold text-accent-ink">
+                <h1 className="text-h1">{me.nickname}</h1>
+                <span className="rounded-md bg-void px-[7px] py-[5px] text-caption leading-none text-accent-ink">
                   {tierLabel(me.tier)}
                 </span>
               </div>
@@ -152,10 +150,10 @@ export default function MyPage() {
                   "linear-gradient(105deg, var(--accent), var(--accent-deep))",
               }}
             >
-              <span className="text-[11px] font-bold text-[color:color-mix(in_oklab,var(--accent-ink)_62%,transparent)]">
+              <span className="text-caption text-[color:color-mix(in_oklab,var(--accent-ink)_62%,transparent)]">
                 내 신용도
               </span>
-              <span className="text-[32px] leading-none font-extrabold tracking-[-0.045em] text-accent-ink tabular-nums">
+              <span className="text-title1 text-accent-ink tabular-nums">
                 {score.toLocaleString()}
               </span>
               <div className="h-[5px] overflow-hidden rounded-full bg-[color:color-mix(in_oklab,var(--accent-ink)_22%,transparent)]">
@@ -165,7 +163,7 @@ export default function MyPage() {
                 />
               </div>
               {progress.nextTier && (
-                <span className="text-[11px] font-bold text-[color:color-mix(in_oklab,var(--accent-ink)_65%,transparent)] tabular-nums">
+                <span className="text-caption text-[color:color-mix(in_oklab,var(--accent-ink)_65%,transparent)] tabular-nums">
                   {tierLabel(progress.nextTier)}까지 {progress.nextAt! - score}
                   점
                 </span>
@@ -193,10 +191,8 @@ export default function MyPage() {
 
           <div className="flex flex-col gap-3.5 rounded-2xl border border-line bg-card p-5">
             <div className="flex items-baseline gap-2.5">
-              <span className="text-base font-extrabold tracking-[-0.03em]">
-                최근 투표 기록
-              </span>
-              <span className="text-xs font-bold text-ink-subtle tabular-nums">
+              <h3 className="text-h3">최근 투표 기록</h3>
+              <span className="text-caption text-ink-subtle tabular-nums">
                 {votes.length}개
               </span>
               <div className="flex-auto" />
@@ -208,8 +204,8 @@ export default function MyPage() {
                     onClick={() => setFilter(tab.value)}
                     className={
                       filter === tab.value
-                        ? "rounded-lg bg-ink px-2.5 py-1.5 text-xs font-bold text-bg"
-                        : "rounded-lg px-2.5 py-1.5 text-xs font-bold text-ink-subtle hover:text-ink"
+                        ? "rounded-lg bg-ink px-2.5 py-1.5 text-label text-bg"
+                        : "rounded-lg px-2.5 py-1.5 text-label text-ink-subtle hover:text-ink"
                     }
                   >
                     {tab.label}
@@ -220,7 +216,7 @@ export default function MyPage() {
 
             <div className="flex flex-col">
               {filteredVotes.length === 0 ? (
-                <div className="py-8 text-center text-sm font-bold text-ink-subtle">
+                <div className="py-8 text-center text-label text-ink-subtle">
                   기록이 없어요
                 </div>
               ) : (

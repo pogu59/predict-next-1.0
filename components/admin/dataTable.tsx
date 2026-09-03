@@ -26,9 +26,9 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   return (
     <div className="border-line overflow-x-auto rounded-xl border">
-      <table className="w-full text-left text-sm" style={{ minWidth }}>
+      <table className="w-full text-left text-body" style={{ minWidth }}>
         <thead>
-          <tr className="border-line text-ink-subtle border-b text-xs font-bold">
+          <tr className="border-line text-ink-subtle border-b text-label">
             {columns.map((col) => (
               <th key={col.header} className="px-4 py-3">
                 {col.header}
@@ -39,13 +39,13 @@ export function DataTable<T>({
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={columns.length} className="text-ink-subtle px-4 py-8 text-center font-bold">
+              <td colSpan={columns.length} className="text-ink-subtle px-4 py-8 text-center text-label">
                 불러오는 중...
               </td>
             </tr>
           ) : rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="text-ink-subtle px-4 py-8 text-center font-bold">
+              <td colSpan={columns.length} className="text-ink-subtle px-4 py-8 text-center text-label">
                 {emptyMessage}
               </td>
             </tr>

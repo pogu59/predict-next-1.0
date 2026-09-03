@@ -1,7 +1,7 @@
 "use client"
 
 import { categoryMeta } from "@/lib/categoryMeta"
-import { formatRemaining, isUrgent, type UiIssue } from "@/lib/issues"
+import { formatRemaining, isUrgent, useNow, type UiIssue } from "@/lib/issues"
 import { Icon } from "@/components/icon"
 
 type IssueCardProps = {
@@ -24,6 +24,7 @@ export function IssueCard({
   onVote,
   onOpen,
 }: IssueCardProps) {
+  const now = useNow()
   const cat = categoryMeta(categoryName)
   const settled = issue.status === "settled"
   const pending = issue.status === "pending"
@@ -54,8 +55,8 @@ export function IssueCard({
 
   return (
     <article
-      className={`flex overflow-hidden rounded-xl border ${surface}`}
-      onClick={settled || pending ? () => onOpen?.(issue.id) : undefined}
+      className={`flex cursor-pointer overflow-hidden rounded-xl border ${surface}`}
+      onClick={() => onOpen?.(issue.id)}
     >
       <div
         className="w-1 flex-none"
@@ -78,7 +79,7 @@ export function IssueCard({
             }}
           />
           <span
-            className="text-xs font-bold"
+            className="text-label"
             style={{
               color: pending
                 ? `color-mix(in oklab, ${cat.color} 60%, transparent)`
@@ -94,10 +95,10 @@ export function IssueCard({
             <span
               className={
                 result === "correct"
-                  ? "rounded-md bg-accent px-2 py-1 text-[11.5px] leading-none font-extrabold text-accent-ink"
+                  ? "rounded-md bg-accent px-2 py-1 text-caption leading-none font-extrabold text-accent-ink"
                   : result === "wrong"
-                    ? "rounded-md bg-wrong-chip px-2 py-1 text-[11.5px] leading-none font-extrabold text-[#D6DEEC]"
-                    : "rounded-md border border-line-strong px-2 py-[3px] text-[11.5px] leading-none font-extrabold text-ink-subtle"
+                    ? "rounded-md bg-wrong-chip px-2 py-1 text-caption leading-none font-extrabold text-[#D6DEEC]"
+                    : "rounded-md border border-line-strong px-2 py-[3px] text-caption leading-none font-extrabold text-ink-subtle"
               }
             >
               {result === "correct"
@@ -107,25 +108,23 @@ export function IssueCard({
                   : "결과 확정"}
             </span>
           ) : pending ? (
-            <span className="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-ink-subtle">
+            <span className="inline-flex items-center gap-1.5 text-caption text-ink-subtle">
               <Icon name="hourglass_top" filled={false} size={15} />
               결과 대기
             </span>
           ) : (
             <span
-              className={`text-[12.5px] font-extrabold tabular-nums ${
-                isUrgent(issue.closesAt) ? "text-accent" : "text-ink-subtle"
+              className={`text-caption font-extrabold tabular-nums ${
+                isUrgent(issue.closesAt, now) ? "text-accent" : "text-ink-subtle"
               }`}
             >
-              {formatRemaining(issue.closesAt)}
+              {formatRemaining(issue.closesAt, now)}
             </span>
           )}
         </div>
 
         <h3
-          className={`text-xl leading-[1.35] font-bold tracking-[-0.03em] text-pretty ${
-            pending ? "text-ink-muted" : "text-ink"
-          }`}
+          className={`text-h3 text-pretty ${pending ? "text-ink-muted" : "text-ink"}`}
         >
           {issue.question}
         </h3>
@@ -137,14 +136,17 @@ export function IssueCard({
                 <button
                   key={option.id}
                   type="button"
-                  onClick={() => onVote?.(issue.id, option.id)}
-                  className="flex-1 rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-sm font-bold tracking-[-0.02em] text-ink transition-colors hover:border-accent hover:text-accent"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onVote?.(issue.id, option.id)
+                  }}
+                  className="flex-1 rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-label text-ink transition-colors hover:border-accent hover:text-accent"
                 >
                   {option.text}
                 </button>
               ))}
             </div>
-            <p className="text-[11.5px] font-semibold text-ink-faint">
+            <p className="text-caption font-semibold text-ink-faint">
               {issue.source} · 비율은 투표 후 공개
             </p>
           </>
@@ -159,12 +161,10 @@ export function IssueCard({
                 className="text-accent"
                 style={{ color: "var(--accent)" }}
               />
-              <span className="text-[13.5px] font-bold tracking-[-0.02em]">
-                내 선택 · {myOption.text}
-              </span>
+              <span className="text-label">내 선택 · {myOption.text}</span>
               <div className="flex-auto" />
               {isMinority && (
-                <span className="rounded-md bg-[color:color-mix(in_oklab,var(--accent)_14%,transparent)] px-[7px] py-[5px] text-[11.5px] leading-none font-extrabold text-accent tabular-nums">
+                <span className="rounded-md bg-[color:color-mix(in_oklab,var(--accent)_14%,transparent)] px-[7px] py-[5px] text-caption leading-none font-extrabold text-accent tabular-nums">
                   {minorityPct}%만 이쪽
                 </span>
               )}
@@ -184,7 +184,7 @@ export function IssueCard({
         )}
 
         {pending && (
-          <p className="text-[11.5px] font-semibold text-ink-faint tabular-nums">
+          <p className="text-caption font-semibold text-ink-faint tabular-nums">
             {myOption
               ? `결과 판정 예정 · 내 선택 ${myOption.text}`
               : "결과 판정 예정"}
@@ -194,16 +194,14 @@ export function IssueCard({
         {settled && issue.settlement && (
           <div className="flex items-end gap-4">
             <div className="flex flex-1 flex-col gap-1">
-              <span
-                className={`text-[13px] font-bold tracking-[-0.02em] ${deltaColor}`}
-              >
+              <span className={`text-label ${deltaColor}`}>
                 {result === "correct"
                   ? "맞혔어요"
                   : result === "wrong"
                     ? "아쉽게 틀렸어요"
                     : "결과가 확정됐어요"}
               </span>
-              <span className="text-[11.5px] leading-[1.55] font-semibold text-pretty text-ink-faint">
+              <span className="text-caption leading-[1.55] font-semibold text-pretty text-ink-faint">
                 {correctOption && `정답 · ${correctOption.text}`}
                 {issue.totalVotes !== undefined &&
                   ` · 총 ${issue.totalVotes.toLocaleString()}명 참여`}
