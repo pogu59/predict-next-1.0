@@ -24,6 +24,7 @@ import {
 } from "@/lib/issues"
 import { tierIcon, tierLabel, tierProgress } from "@/lib/tier"
 import { Icon } from "@/components/icon"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 export default function IssueDetailPage() {
   const params = useParams<{ id: string }>()
@@ -37,7 +38,15 @@ export default function IssueDetailPage() {
   const [localVote, setLocalVote] = useState<LocalVote | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [voteError, setVoteError] = useState<string | null>(null)
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const [pendingVote, setPendingVote] = useState<{
+    optionId: number
+    optionText: string
+  } | null>(null)
+  const [voting, setVoting] = useState(false)
+  const [pendingVoteError, setPendingVoteError] = useState<string | null>(
+    null,
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -72,14 +81,21 @@ export default function IssueDetailPage() {
     }
   }, [topicId])
 
-  async function handleVote(optionId: number) {
+  function handleVoteClick(optionId: number, optionText: string) {
     if (!me) {
-      setVoteError("로그인 후 참여할 수 있어요")
+      setShowLoginPrompt(true)
       return
     }
-    setVoteError(null)
+    setPendingVoteError(null)
+    setPendingVote({ optionId, optionText })
+  }
+
+  async function confirmVote() {
+    if (!me || !pendingVote) return
+    setVoting(true)
+    setPendingVoteError(null)
     try {
-      const result = await castVote(topicId, me.userId, optionId)
+      const result = await castVote(topicId, me.userId, pendingVote.optionId)
       const vote: LocalVote = {
         optionId: result.optionId,
         liveCounts: result.liveCounts.map((option) => ({
@@ -89,8 +105,13 @@ export default function IssueDetailPage() {
       }
       saveLocalVote(me.userId, topicId, vote)
       setLocalVote(vote)
+      setPendingVote(null)
     } catch (e) {
-      setVoteError(e instanceof ApiError ? e.message : "투표에 실패했습니다")
+      setPendingVoteError(
+        e instanceof ApiError ? e.message : "투표에 실패했습니다",
+      )
+    } finally {
+      setVoting(false)
     }
   }
 
@@ -172,12 +193,6 @@ export default function IssueDetailPage() {
 
             <h1 className="text-h1 text-pretty">{issue.question}</h1>
 
-            {voteError && (
-              <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
-                {voteError}
-              </div>
-            )}
-
             {issue.status === "open" ? (
               <div className="flex flex-col gap-2.5">
                 <div className="flex flex-col gap-3">
@@ -185,7 +200,7 @@ export default function IssueDetailPage() {
                     <button
                       key={option.id}
                       type="button"
-                      onClick={() => handleVote(option.id)}
+                      onClick={() => handleVoteClick(option.id, option.text)}
                       className="rounded-xl border border-line bg-control py-5 text-h2 text-ink transition-colors hover:border-accent hover:text-accent"
                     >
                       {option.text}
@@ -319,6 +334,27 @@ export default function IssueDetailPage() {
           )}
         </aside>
       </div>
+
+      <ConfirmDialog
+        open={pendingVote !== null}
+        onOpenChange={(open) => !open && setPendingVote(null)}
+        title="이 선택으로 투표할까요?"
+        description={`"${pendingVote?.optionText}" · 투표 후에는 선택을 바꾸거나 취소할 수 없어요.`}
+        confirmLabel="투표하기"
+        loading={voting}
+        error={pendingVoteError}
+        onConfirm={confirmVote}
+      />
+
+      <ConfirmDialog
+        open={showLoginPrompt}
+        onOpenChange={setShowLoginPrompt}
+        title="로그인이 필요해요"
+        description="로그인하면 투표에 참여하고 신용도 점수를 쌓을 수 있어요."
+        confirmLabel="로그인하러 가기"
+        cancelLabel="닫기"
+        onConfirm={() => router.push("/login")}
+      />
     </div>
   )
 }

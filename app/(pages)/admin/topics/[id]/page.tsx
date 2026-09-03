@@ -18,6 +18,7 @@ import { topicStatusLabel } from "@/lib/topicStatus"
 import { Badge } from "@/components/admin/badge"
 import { Select, TextInput } from "@/components/admin/controls"
 import { Button } from "@/components/ui/button"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 function toDateTimeLocal(value: string) {
   return value.length >= 16 ? value.slice(0, 16) : value
@@ -42,6 +43,11 @@ export default function AdminTopicDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [pendingConfirmOption, setPendingConfirmOption] = useState<{
+    id: number
+    text: string
+  } | null>(null)
+  const [showCorrectDialog, setShowCorrectDialog] = useState(false)
 
   const [editForm, setEditForm] = useState({
     categoryId: "",
@@ -188,9 +194,7 @@ export default function AdminTopicDetailPage() {
               key={option.id}
               type="button"
               disabled={busy}
-              onClick={() =>
-                runAction(() => confirmTopicResult(topicId, option.id))
-              }
+              onClick={() => setPendingConfirmOption(option)}
             >
               {option.text} 확정
             </Button>
@@ -205,14 +209,7 @@ export default function AdminTopicDetailPage() {
             type="button"
             variant="destructive"
             disabled={busy}
-            onClick={() => {
-              if (
-                window.confirm(
-                  "이 주제의 확정 결과를 정정할까요? 기존 정산은 무효 처리되고 유저 점수가 재계산됩니다.",
-                )
-              )
-                runAction(() => correctTopicResult(topicId))
-            }}
+            onClick={() => setShowCorrectDialog(true)}
           >
             정정하기
           </Button>
@@ -381,6 +378,34 @@ export default function AdminTopicDetailPage() {
           </Button>
         </form>
       )}
+
+      <ConfirmDialog
+        open={pendingConfirmOption !== null}
+        onOpenChange={(open) => !open && setPendingConfirmOption(null)}
+        title="이 결과로 확정할까요?"
+        description={`정답을 "${pendingConfirmOption?.text}"(으)로 확정하면 정산이 진행되고 되돌릴 수 없습니다.`}
+        confirmLabel="확정하기"
+        variant="destructive"
+        onConfirm={() => {
+          if (!pendingConfirmOption) return
+          const optionId = pendingConfirmOption.id
+          setPendingConfirmOption(null)
+          runAction(() => confirmTopicResult(topicId, optionId))
+        }}
+      />
+
+      <ConfirmDialog
+        open={showCorrectDialog}
+        onOpenChange={setShowCorrectDialog}
+        title="확정 결과를 정정할까요?"
+        description="기존 정산은 무효 처리되고 유저 점수가 재계산됩니다. 이 작업은 되돌릴 수 없습니다."
+        confirmLabel="정정하기"
+        variant="destructive"
+        onConfirm={() => {
+          setShowCorrectDialog(false)
+          runAction(() => correctTopicResult(topicId))
+        }}
+      />
     </div>
   )
 }

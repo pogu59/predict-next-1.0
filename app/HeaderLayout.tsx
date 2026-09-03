@@ -10,6 +10,7 @@ import {
   type Me,
 } from "@/lib/auth"
 import { tierLabel } from "@/lib/tier"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 type HeaderLayoutProps = {
   children: React.ReactNode
@@ -26,6 +27,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const [me, setMe] = useState<Me | null>(null)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   useEffect(() => {
     if (!getSessionToken()) return
@@ -35,6 +37,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
   function handleLogout() {
     clearSessionToken()
     setMe(null)
+    setShowLogoutConfirm(false)
     router.push("/login")
   }
 
@@ -81,7 +84,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
             </span>
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={() => setShowLogoutConfirm(true)}
               className="text-caption text-ink-faint hover:text-ink"
             >
               로그아웃
@@ -99,6 +102,16 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
       </header>
 
       <div className="mx-auto max-w-7xl">{children}</div>
+
+      <ConfirmDialog
+        open={showLogoutConfirm}
+        onOpenChange={setShowLogoutConfirm}
+        title="로그아웃 하시겠어요?"
+        description="다시 로그인해야 투표 기록과 신용도 점수를 확인할 수 있어요."
+        confirmLabel="로그아웃"
+        variant="destructive"
+        onConfirm={handleLogout}
+      />
     </div>
   )
 }
