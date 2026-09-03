@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 
 import {
-  ApiError,
-  castVote,
   fetchCategories,
   fetchTopics,
   type Category,
@@ -17,7 +15,6 @@ import { formatRemaining, issueStatus, usePolling, useNow } from "@/lib/issues"
 import { tierIcon, tierLabel, tierProgress } from "@/lib/tier"
 import { Icon } from "@/components/icon"
 import { IssueCard } from "@/components/issueCard"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 type StatusFilter = "all" | "open" | "settled"
 
@@ -37,15 +34,6 @@ export default function IssuePage() {
   const [me, setMe] = useState<Me | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
-  const [pendingVote, setPendingVote] = useState<{
-    id: number
-    optionId: number
-    optionText: string
-  } | null>(null)
-  const [voting, setVoting] = useState(false)
-  const [pendingVoteError, setPendingVoteError] = useState<string | null>(null)
-
   useEffect(() => {
     let cancelled = false
 
@@ -160,37 +148,6 @@ export default function IssuePage() {
     (t) => issueStatus(t) === "voted",
   ).length
 
-  function handleVoteClick(id: number, optionId: number) {
-    if (!me) {
-      setShowLoginPrompt(true)
-      return
-    }
-    const optionText =
-      topics.find((t) => t.id === id)?.options.find((o) => o.id === optionId)
-        ?.text ?? ""
-    setPendingVoteError(null)
-    setPendingVote({ id, optionId, optionText })
-  }
-
-  async function confirmVote() {
-    if (!me || !pendingVote) return
-    const { id, optionId } = pendingVote
-    setVoting(true)
-    setPendingVoteError(null)
-    try {
-      await castVote(id, me.userId, optionId)
-      const tops = await fetchTopics(me.userId)
-      setTopics(tops)
-      setPendingVote(null)
-    } catch (e) {
-      setPendingVoteError(
-        e instanceof ApiError ? e.message : "투표에 실패했습니다",
-      )
-    } finally {
-      setVoting(false)
-    }
-  }
-
   const score = me?.credibilityScore ?? 0
   const progress = tierProgress(score)
 
@@ -291,7 +248,6 @@ export default function IssuePage() {
                 key={topic.id}
                 topic={topic}
                 categoryName={categoryNameById[topic.categoryId] ?? ""}
-                onVote={handleVoteClick}
                 onOpen={(id) => router.push(`/issue/${id}`)}
               />
             ))}
@@ -361,27 +317,6 @@ export default function IssuePage() {
           )}
         </aside>
       </div>
-
-      <ConfirmDialog
-        open={pendingVote !== null}
-        onOpenChange={(open) => !open && setPendingVote(null)}
-        title="이 선택으로 투표할까요?"
-        description={`"${pendingVote?.optionText}" · 투표 후에는 선택을 바꾸거나 취소할 수 없어요.`}
-        confirmLabel="투표하기"
-        loading={voting}
-        error={pendingVoteError}
-        onConfirm={confirmVote}
-      />
-
-      <ConfirmDialog
-        open={showLoginPrompt}
-        onOpenChange={setShowLoginPrompt}
-        title="로그인이 필요해요"
-        description="로그인하면 투표에 참여하고 신용도 점수를 쌓을 수 있어요."
-        confirmLabel="로그인하러 가기"
-        cancelLabel="닫기"
-        onConfirm={() => router.push("/login")}
-      />
     </div>
   )
 }

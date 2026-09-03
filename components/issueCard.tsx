@@ -16,13 +16,13 @@ import { Icon } from "@/components/icon"
 type IssueCardProps = {
   topic: Topic
   categoryName: string
-  onVote?: (id: number, optionId: number) => void
   onOpen?: (id: number) => void
 }
 
 /**
  * 카드 상태 4종을 한 컴포넌트에서 분기합니다.
- * open    → 인라인 투표 버튼, 비율 비공개
+ * open    → 선택지 개수만 안내, 실제 투표는 카드를 열어 상세에서만 (카드엔 일부 선택지만
+ *           들어가서 그대로 버튼을 두면 나머지 선택지를 못 보고 투표하게 됨)
  * voted   → 내 선택 + 소수 배지 (본인에게만)
  * pending → sunken 표면, 저채도
  * settled → hot 표면 + 결과 배지 (적중 점수는 백엔드에 별도 조회 API가 없어 표시하지 않음)
@@ -30,7 +30,6 @@ type IssueCardProps = {
 export function IssueCard({
   topic,
   categoryName,
-  onVote,
   onOpen,
 }: IssueCardProps) {
   const now = useNow()
@@ -66,7 +65,6 @@ export function IssueCard({
         : "text-void"
 
   // 카드는 공간이 좁아 선택지를 최대 2개까지만 보여준다. 나머지는 상세 페이지에서 볼 수 있다.
-  const openOptions = topic.options.slice(0, 2)
   const votedOptions = (() => {
     if (!ratio) return topic.options.slice(0, 2)
     const byRatioDesc = (a: { id: number }, b: { id: number }) =>
@@ -158,23 +156,9 @@ export function IssueCard({
         </h3>
 
         {status === "open" && (
-          <>
-            <div className="flex flex-col gap-2">
-              {openOptions.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onVote?.(topic.id, option.id)
-                  }}
-                  className="rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-label text-ink transition-colors hover:border-accent hover:text-accent"
-                >
-                  {option.text}
-                </button>
-              ))}
-            </div>
-          </>
+          <p className="text-caption font-semibold text-ink-faint tabular-nums">
+            선택지 {topic.options.length}개 · 눌러서 투표하기 →
+          </p>
         )}
 
         {status === "voted" && myOption && ratio && (
@@ -194,18 +178,32 @@ export function IssueCard({
                 </span>
               )}
             </div>
-            <div className="flex h-1.5 gap-1">
-              {votedOptions.map((option) => (
-                <div
-                  key={option.id}
-                  className={
-                    option.id === myOption.id
-                      ? "rounded-full bg-accent"
-                      : "rounded-full bg-track"
-                  }
-                  style={{ width: `${ratio[option.id] ?? 0}%` }}
-                />
-              ))}
+            <div className="flex flex-col gap-1.5">
+              {votedOptions.map((option) => {
+                const pct = ratio[option.id] ?? 0
+                const isMine = option.id === myOption.id
+                return (
+                  <div key={option.id} className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-caption ${isMine ? "font-extrabold text-ink" : "text-ink-subtle"}`}
+                      >
+                        {option.text}
+                      </span>
+                      <div className="flex-auto" />
+                      <span className="text-caption tabular-nums text-ink-subtle">
+                        {pct}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-track">
+                      <div
+                        className={`h-full rounded-full ${isMine ? "bg-accent" : "bg-track"}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
             </div>
             {hiddenOptionCount > 0 && (
               <span className="text-caption text-ink-faint">
