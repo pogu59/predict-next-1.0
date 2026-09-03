@@ -5,7 +5,6 @@ export const TOPIC_STATUS_LABELS: Record<BackendTopicStatus, string> = {
   OPEN: "진행중",
   PENDING_RESULT: "결과대기",
   CONFIRMED: "확정",
-  VOID: "무효",
 }
 
 export function topicStatusLabel(status: BackendTopicStatus) {

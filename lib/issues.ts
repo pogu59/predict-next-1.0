@@ -1,16 +1,15 @@
-import type { BackendChoice, TopicDto } from "@/lib/api"
+import type { Topic, TopicOption } from "@/lib/api"
 
 /**
  * 이슈 목록(GET /api/topics)은 "이 유저가 투표했는지/무엇을 골랐는지"를 함께 내려주지 않는다.
  * 개인별 투표 이력은 /api/users/{id}/votes(마이페이지 전용)로 따로 조회해야 하는데,
  * 이슈 목록 화면에서 매번 이 호출을 추가로 하는 대신 이 브라우저에서 실제로 투표에
  * 성공했을 때의 결과만 로컬에 남겨 화면에 반영한다 — 서버 데이터를 대신 지어내는 게
- * 아니라, 서버가 응답으로 내려준 값(liveYesCount/liveNoCount)을 그대로 보관한다.
+ * 아니라, 서버가 응답으로 내려준 값(liveCounts)을 그대로 보관한다.
  */
 export type LocalVote = {
-  choice: "yes" | "no"
-  liveYesCount: number
-  liveNoCount: number
+  optionId: number
+  liveCounts: { id: number; voteCount: number }[]
 }
 
 function storageKey(userId: number) {
@@ -38,105 +37,98 @@ export function saveLocalVote(
   window.localStorage.setItem(storageKey(userId), JSON.stringify(votes))
 }
 
-export function toLocalChoice(choice: BackendChoice): "yes" | "no" {
-  return choice === "YES" ? "yes" : "no"
-}
-
-export function toBackendChoice(choice: "yes" | "no"): BackendChoice {
-  return choice === "yes" ? "YES" : "NO"
-}
-
 export type UiIssueStatus = "open" | "voted" | "pending" | "settled"
+
+export type UiIssueOption = {
+  id: number
+  text: string
+  voteCount: number | null
+}
 
 export type UiIssue = {
   id: number
   categoryId: number
   question: string
   source: string
-  labels: { yes: string; no: string }
+  options: UiIssueOption[]
   closesAt: string
   status: UiIssueStatus
-  myChoice?: "yes" | "no"
-  /** 투표(또는 마감) 후에만 존재하는 비율. 각 값은 0~100 정수. */
-  ratio?: { yes: number; no: number }
+  myOptionId?: number
+  /** 투표(또는 마감) 후에만 존재하는 비율. optionId -> 0~100 정수. */
+  ratio?: Record<number, number>
   totalVotes?: number
   settlement?: {
     /** 내 선택을 모를 때(다른 브라우저에서 투표 등)는 unknown */
-    result: "correct" | "wrong" | "void" | "unknown"
-    answer?: "yes" | "no"
+    result: "correct" | "wrong" | "unknown"
+    correctOptionId?: number
   }
 }
 
-const DEFAULT_LABELS = { yes: "그렇다", no: "아니다" }
-
-function ratioFromCounts(yes: number, no: number) {
-  const total = yes + no
-  if (total === 0) return { yes: 0, no: 0 }
-  return {
-    yes: Math.round((yes / total) * 100),
-    no: Math.round((no / total) * 100),
+function ratioFromOptions(options: { id: number; voteCount: number | null }[]) {
+  const total = options.reduce((sum, option) => sum + (option.voteCount ?? 0), 0)
+  const ratio: Record<number, number> = {}
+  for (const option of options) {
+    ratio[option.id] = total === 0 ? 0 : Math.round(((option.voteCount ?? 0) / total) * 100)
   }
+  return ratio
 }
 
-export function toUiIssue(topic: TopicDto, localVote?: LocalVote): UiIssue {
+function toUiOptions(options: TopicOption[]): UiIssueOption[] {
+  return options.map((option) => ({ id: option.id, text: option.text, voteCount: option.voteCount }))
+}
+
+export function toUiIssue(topic: Topic, localVote?: LocalVote): UiIssue {
   const base = {
     id: topic.id,
     categoryId: topic.categoryId,
     question: topic.title,
     source: topic.description || "관리자 판정 기준",
-    labels: DEFAULT_LABELS,
+    options: toUiOptions(topic.options),
     closesAt: topic.voteDeadlineAt,
   }
 
   if (topic.status === "OPEN") {
     if (localVote) {
+      const totalVotes = localVote.liveCounts.reduce((sum, option) => sum + option.voteCount, 0)
       return {
         ...base,
         status: "voted",
-        myChoice: localVote.choice,
-        ratio: ratioFromCounts(localVote.liveYesCount, localVote.liveNoCount),
-        totalVotes: localVote.liveYesCount + localVote.liveNoCount,
+        myOptionId: localVote.optionId,
+        ratio: ratioFromOptions(localVote.liveCounts),
+        totalVotes,
       }
     }
     return { ...base, status: "open" }
   }
 
-  // PENDING_RESULT / CONFIRMED / VOID: 서버가 최종 집계를 공개한다
-  const yes = topic.yesCount ?? 0
-  const no = topic.noCount ?? 0
-  const ratio = ratioFromCounts(yes, no)
-  const totalVotes = yes + no
+  // PENDING_RESULT / CONFIRMED: 서버가 최종 집계를 공개한다
+  const ratio = ratioFromOptions(topic.options)
+  const totalVotes = topic.options.reduce((sum, option) => sum + (option.voteCount ?? 0), 0)
 
   if (topic.status === "PENDING_RESULT") {
     return {
       ...base,
       status: "pending",
-      myChoice: localVote?.choice,
+      myOptionId: localVote?.optionId,
       ratio,
       totalVotes,
     }
   }
 
-  // CONFIRMED / VOID
-  const answer = topic.correctAnswer
-    ? toLocalChoice(topic.correctAnswer)
-    : undefined
-  const result: "correct" | "wrong" | "void" | "unknown" =
-    topic.status === "VOID"
-      ? "void"
-      : !localVote
-        ? "unknown"
-        : localVote.choice === answer
-          ? "correct"
-          : "wrong"
+  // CONFIRMED
+  const result: "correct" | "wrong" | "unknown" = !localVote
+    ? "unknown"
+    : localVote.optionId === topic.correctOptionId
+      ? "correct"
+      : "wrong"
 
   return {
     ...base,
     status: "settled",
-    myChoice: localVote?.choice,
+    myOptionId: localVote?.optionId,
     ratio,
     totalVotes,
-    settlement: { result, answer },
+    settlement: { result, correctOptionId: topic.correctOptionId ?? undefined },
   }
 }
 

@@ -1,9 +1,12 @@
-import { Button } from "@/components/ui/button"
+"use client"
+
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 export default function Home() {
-  return (
-    <div>
-      <Button>Home</Button>
-    </div>
-  )
+  const router = useRouter()
+  useEffect(() => {
+    router.replace("/issue")
+  })
+  return <div></div>
 }

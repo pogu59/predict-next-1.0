@@ -1,14 +1,20 @@
 import { getApiBaseUrl, getSessionToken } from "@/lib/auth"
 
-export type BackendChoice = "YES" | "NO"
-export type BackendTopicStatus = "OPEN" | "PENDING_RESULT" | "CONFIRMED" | "VOID"
+export type BackendTopicStatus = "OPEN" | "PENDING_RESULT" | "CONFIRMED"
 
-export type CategoryDto = {
+export type TopicOption = {
+  id: number
+  text: string
+  /** status === "OPEN" 이면 서버가 null로 감춘다 */
+  voteCount: number | null
+}
+
+export type Category = {
   id: number
   name: string
 }
 
-export type TopicDto = {
+export type Topic = {
   id: number
   categoryId: number
   title: string
@@ -17,20 +23,17 @@ export type TopicDto = {
   voteStartAt: string
   voteDeadlineAt: string
   confirmedAt: string | null
-  correctAnswer: BackendChoice | null
-  /** status === "OPEN" 이면 서버가 null로 감춘다 */
-  yesCount: number | null
-  noCount: number | null
+  correctOptionId: number | null
+  options: TopicOption[]
   createdAt: string
 }
 
-export type VoteResultDto = {
+export type VoteResult = {
   id: number
   topicId: number
-  choice: BackendChoice
+  optionId: number
   votedAt: string
-  liveYesCount: number
-  liveNoCount: number
+  liveCounts: TopicOption[]
 }
 
 export class ApiError extends Error {
@@ -61,54 +64,54 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function fetchCategories() {
-  return apiFetch<CategoryDto[]>("/api/categories")
+  return apiFetch<Category[]>("/api/categories")
 }
 
 export function fetchTopics() {
-  return apiFetch<TopicDto[]>("/api/topics")
+  return apiFetch<Topic[]>("/api/topics")
 }
 
-export function castVote(topicId: number, userId: number, choice: BackendChoice) {
-  return apiFetch<VoteResultDto>(`/api/topics/${topicId}/votes`, {
+export function castVote(topicId: number, userId: number, optionId: number) {
+  return apiFetch<VoteResult>(`/api/topics/${topicId}/votes`, {
     method: "POST",
-    body: JSON.stringify({ userId, choice }),
+    body: JSON.stringify({ userId, optionId }),
   })
 }
 
 // ---- 마이페이지 ----
 
-export type MyStatsDto = {
+export type MyStats = {
   totalVotes: number
   correctCount: number
   gradedCount: number
 }
 
-export type SettlementResultDto = "CORRECT" | "INCORRECT" | "VOID"
+export type SettlementResult = "CORRECT" | "INCORRECT"
 
-export type MyVoteDto = {
+export type MyVote = {
   voteId: number
   topicId: number
   categoryId: number
   categoryName: string
   title: string
   status: BackendTopicStatus
-  choice: BackendChoice
+  optionId: number
+  optionText: string
   votedAt: string
   voteDeadlineAt: string
   confirmedAt: string | null
-  correctAnswer: BackendChoice | null
-  yesCount: number | null
-  noCount: number | null
-  result: SettlementResultDto | null
+  correctOptionId: number | null
+  options: TopicOption[]
+  result: SettlementResult | null
   scoreDelta: number | null
 }
 
 export function fetchMyStats(userId: number) {
-  return apiFetch<MyStatsDto>(`/api/users/${userId}/stats`)
+  return apiFetch<MyStats>(`/api/users/${userId}/stats`)
 }
 
 export function fetchMyVotes(userId: number) {
-  return apiFetch<MyVoteDto[]>(`/api/users/${userId}/votes`)
+  return apiFetch<MyVote[]>(`/api/users/${userId}/votes`)
 }
 
 // ---- 관리자 페이지 ----
@@ -121,7 +124,7 @@ export type PageResponse<T> = {
   totalPages: number
 }
 
-export type AdminTopicListItemDto = {
+export type AdminTopicListItem = {
   id: number
   categoryId: number
   categoryName: string
@@ -129,12 +132,11 @@ export type AdminTopicListItemDto = {
   status: BackendTopicStatus
   voteStartAt: string
   voteDeadlineAt: string
-  yesCount: number
-  noCount: number
+  options: TopicOption[]
   totalVotes: number
 }
 
-export type AdminTopicDetailDto = {
+export type AdminTopicDetail = {
   id: number
   categoryId: number
   categoryName: string
@@ -146,9 +148,8 @@ export type AdminTopicDetailDto = {
   confirmedAt: string | null
   confirmedByUserId: number | null
   confirmedByNickname: string | null
-  correctAnswer: BackendChoice | null
-  yesCount: number
-  noCount: number
+  correctOptionId: number | null
+  options: TopicOption[]
   totalVotes: number
   canFullEdit: boolean
   canExtendDeadline: boolean
@@ -161,11 +162,13 @@ export type TopicUpsertPayload = {
   description: string | null
   voteStartAt: string
   voteDeadlineAt: string
+  /** 선택지 텍스트 목록. 최소 2개. */
+  options: string[]
 }
 
 export type BackendRole = "USER" | "ADMIN"
 
-export type AdminUserListItemDto = {
+export type AdminUserListItem = {
   id: number
   nickname: string
   tier: string
@@ -174,7 +177,7 @@ export type AdminUserListItemDto = {
   createdAt: string
 }
 
-export type AdminUserDetailDto = AdminUserListItemDto & {
+export type AdminUserDetail = AdminUserListItem & {
   activitySuppressed: boolean
   totalVotes: number
   correctCount: number
@@ -197,44 +200,43 @@ export function fetchAdminTopics(params: {
   page?: number
   size?: number
 }) {
-  return apiFetch<PageResponse<AdminTopicListItemDto>>(`/api/admin/topics${buildQuery(params)}`)
+  return apiFetch<PageResponse<AdminTopicListItem>>(`/api/admin/topics${buildQuery(params)}`)
 }
 
 export function fetchAdminTopicDetail(topicId: number) {
-  return apiFetch<AdminTopicDetailDto>(`/api/admin/topics/${topicId}`)
+  return apiFetch<AdminTopicDetail>(`/api/admin/topics/${topicId}`)
 }
 
 export function createTopic(payload: TopicUpsertPayload) {
-  return apiFetch<AdminTopicDetailDto>("/api/admin/topics", {
+  return apiFetch<AdminTopicDetail>("/api/admin/topics", {
     method: "POST",
     body: JSON.stringify(payload),
   })
 }
 
 export function updateTopic(topicId: number, payload: TopicUpsertPayload) {
-  return apiFetch<AdminTopicDetailDto>(`/api/admin/topics/${topicId}`, {
+  return apiFetch<AdminTopicDetail>(`/api/admin/topics/${topicId}`, {
     method: "PUT",
     body: JSON.stringify(payload),
   })
 }
 
 export function extendTopicDeadline(topicId: number, newDeadline: string) {
-  return apiFetch<AdminTopicDetailDto>(`/api/admin/topics/${topicId}/extend-deadline`, {
+  return apiFetch<AdminTopicDetail>(`/api/admin/topics/${topicId}/extend-deadline`, {
     method: "POST",
     body: JSON.stringify({ newDeadline }),
   })
 }
 
-/** correctAnswer가 null이면 무효 처리로 취급된다. */
-export function confirmTopicResult(topicId: number, correctAnswer: BackendChoice | null) {
-  return apiFetch<AdminTopicDetailDto>(`/api/admin/topics/${topicId}/confirm`, {
+export function confirmTopicResult(topicId: number, correctOptionId: number) {
+  return apiFetch<AdminTopicDetail>(`/api/admin/topics/${topicId}/confirm`, {
     method: "POST",
-    body: JSON.stringify({ correctAnswer }),
+    body: JSON.stringify({ correctOptionId }),
   })
 }
 
 export function correctTopicResult(topicId: number) {
-  return apiFetch<AdminTopicDetailDto>(`/api/admin/topics/${topicId}/correct`, {
+  return apiFetch<AdminTopicDetail>(`/api/admin/topics/${topicId}/correct`, {
     method: "POST",
   })
 }
@@ -246,9 +248,9 @@ export function fetchAdminUsers(params: {
   page?: number
   size?: number
 }) {
-  return apiFetch<PageResponse<AdminUserListItemDto>>(`/api/admin/users${buildQuery(params)}`)
+  return apiFetch<PageResponse<AdminUserListItem>>(`/api/admin/users${buildQuery(params)}`)
 }
 
 export function fetchAdminUserDetail(userId: number) {
-  return apiFetch<AdminUserDetailDto>(`/api/admin/users/${userId}`)
+  return apiFetch<AdminUserDetail>(`/api/admin/users/${userId}`)
 }

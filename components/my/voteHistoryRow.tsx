@@ -1,9 +1,7 @@
-import { formatRemaining, toLocalChoice } from "@/lib/issues"
-import { categoryMeta } from "@/lib/category-meta"
-import type { MyVoteDto } from "@/lib/api"
+import { formatRemaining } from "@/lib/issues"
+import { categoryMeta } from "@/lib/categoryMeta"
+import type { MyVote } from "@/lib/api"
 import { Icon } from "@/components/icon"
-
-const CHOICE_LABEL = { yes: "그렇다", no: "아니다" } as const
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("ko-KR", {
@@ -15,17 +13,17 @@ function formatDateTime(iso: string) {
 }
 
 type VoteHistoryRowProps = {
-  vote: MyVoteDto
+  vote: MyVote
 }
 
 /** 마이페이지 "최근 투표 기록" 목록의 한 줄. */
 export function VoteHistoryRow({ vote }: VoteHistoryRowProps) {
   const meta = categoryMeta(vote.categoryName)
-  const myChoice = toLocalChoice(vote.choice)
 
-  const total = (vote.yesCount ?? 0) + (vote.noCount ?? 0)
-  const myCount = myChoice === "yes" ? (vote.yesCount ?? 0) : (vote.noCount ?? 0)
-  const minorityPct = total > 0 ? Math.round((myCount / total) * 100) : undefined
+  const total = vote.options.reduce((sum, option) => sum + (option.voteCount ?? 0), 0)
+  const myOption = vote.options.find((option) => option.id === vote.optionId)
+  const minorityPct =
+    total > 0 && myOption ? Math.round(((myOption.voteCount ?? 0) / total) * 100) : undefined
 
   let sub: string
   let right: React.ReactNode
@@ -36,9 +34,6 @@ export function VoteHistoryRow({ vote }: VoteHistoryRowProps) {
   } else if (vote.status === "PENDING_RESULT") {
     sub = minorityPct !== undefined ? `결과 대기 · 소수 ${minorityPct}%` : "결과 대기"
     right = <span className="text-ink-subtle text-[12.5px] font-bold">진행 중</span>
-  } else if (vote.result === "VOID") {
-    sub = `${formatDateTime(vote.confirmedAt!)} 무효 처리`
-    right = <span className="text-ink-faint text-[12.5px] font-bold">무효</span>
   } else if (vote.result === "CORRECT") {
     sub = `${formatDateTime(vote.confirmedAt!)} 확정${minorityPct !== undefined ? ` · 소수 ${minorityPct}%` : ""}`
     right = (
@@ -63,7 +58,7 @@ export function VoteHistoryRow({ vote }: VoteHistoryRowProps) {
         <span className="text-ink-faint text-[11.5px] font-semibold tabular-nums">{sub}</span>
       </div>
       <span className="bg-control text-ink-muted flex-none rounded-lg px-2.5 py-1.5 text-xs font-bold">
-        {CHOICE_LABEL[myChoice]}
+        {vote.optionText}
       </span>
       {right}
     </div>

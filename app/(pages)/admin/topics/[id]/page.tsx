@@ -11,10 +11,10 @@ import {
   fetchAdminTopicDetail,
   fetchCategories,
   updateTopic,
-  type AdminTopicDetailDto,
-  type CategoryDto,
+  type AdminTopicDetail,
+  type Category,
 } from "@/lib/api"
-import { topicStatusLabel } from "@/lib/topic-status"
+import { topicStatusLabel } from "@/lib/topicStatus"
 import { Badge } from "@/components/admin/badge"
 import { Select, TextInput } from "@/components/admin/controls"
 import { Button } from "@/components/ui/button"
@@ -28,8 +28,8 @@ export default function AdminTopicDetailPage() {
   const router = useRouter()
   const topicId = Number(params.id)
 
-  const [topic, setTopic] = useState<AdminTopicDetailDto | null>(null)
-  const [categories, setCategories] = useState<CategoryDto[]>([])
+  const [topic, setTopic] = useState<AdminTopicDetail | null>(null)
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -41,6 +41,7 @@ export default function AdminTopicDetailPage() {
     description: "",
     voteStartAt: "",
     voteDeadlineAt: "",
+    options: ["", ""],
   })
   const [extendDeadline, setExtendDeadlineValue] = useState("")
 
@@ -53,6 +54,7 @@ export default function AdminTopicDetailPage() {
       description: result.description ?? "",
       voteStartAt: toDateTimeLocal(result.voteStartAt),
       voteDeadlineAt: toDateTimeLocal(result.voteDeadlineAt),
+      options: result.options.map((o) => o.text),
     })
     setExtendDeadlineValue(toDateTimeLocal(result.voteDeadlineAt))
   }
@@ -107,6 +109,8 @@ export default function AdminTopicDetailPage() {
     )
   }
 
+  const correctOption = topic.options.find((o) => o.id === topic.correctOptionId)
+
   return (
     <div className="flex flex-col gap-5">
       <button
@@ -126,12 +130,11 @@ export default function AdminTopicDetailPage() {
         {topic.description && <p className="text-ink-muted text-sm">{topic.description}</p>}
 
         <div className="text-ink-subtle grid grid-cols-2 gap-2 text-[12.5px] font-bold sm:grid-cols-4">
-          <div>
-            Yes <span className="text-ink tabular-nums">{topic.yesCount}</span>
-          </div>
-          <div>
-            No <span className="text-ink tabular-nums">{topic.noCount}</span>
-          </div>
+          {topic.options.map((option) => (
+            <div key={option.id}>
+              {option.text} <span className="text-ink tabular-nums">{option.voteCount ?? "-"}</span>
+            </div>
+          ))}
           <div>
             참여자 <span className="text-ink tabular-nums">{topic.totalVotes}</span>
           </div>
@@ -143,7 +146,7 @@ export default function AdminTopicDetailPage() {
         {topic.confirmedByNickname && (
           <div className="text-ink-faint text-[11.5px] font-semibold">
             {new Date(topic.confirmedAt!).toLocaleString("ko-KR")} · {topic.confirmedByNickname}님이 확정
-            {topic.correctAnswer && ` · 정답 ${topic.correctAnswer}`}
+            {correctOption && ` · 정답 ${correctOption.text}`}
           </div>
         )}
       </div>
@@ -153,32 +156,20 @@ export default function AdminTopicDetailPage() {
       {topic.status === "PENDING_RESULT" && (
         <div className="border-line-strong flex flex-wrap items-center gap-2 rounded-xl border border-dashed p-4">
           <span className="text-ink-subtle text-xs font-bold">결과 확정</span>
-          <Button
-            type="button"
-            disabled={busy}
-            onClick={() => runAction(() => confirmTopicResult(topicId, "YES"))}
-          >
-            Yes 확정
-          </Button>
-          <Button
-            type="button"
-            disabled={busy}
-            onClick={() => runAction(() => confirmTopicResult(topicId, "NO"))}
-          >
-            No 확정
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={busy}
-            onClick={() => runAction(() => confirmTopicResult(topicId, null))}
-          >
-            무효 처리
-          </Button>
+          {topic.options.map((option) => (
+            <Button
+              key={option.id}
+              type="button"
+              disabled={busy}
+              onClick={() => runAction(() => confirmTopicResult(topicId, option.id))}
+            >
+              {option.text} 확정
+            </Button>
+          ))}
         </div>
       )}
 
-      {(topic.status === "CONFIRMED" || topic.status === "VOID") && (
+      {topic.status === "CONFIRMED" && (
         <div className="border-line-strong flex items-center gap-2 rounded-xl border border-dashed p-4">
           <span className="text-ink-subtle text-xs font-bold">오확정 정정</span>
           <Button
@@ -199,6 +190,11 @@ export default function AdminTopicDetailPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault()
+            const options = editForm.options.map((o) => o.trim()).filter(Boolean)
+            if (options.length < 2) {
+              setActionError("선택지는 2개 이상이어야 합니다")
+              return
+            }
             runAction(() =>
               updateTopic(topicId, {
                 categoryId: Number(editForm.categoryId),
@@ -206,6 +202,7 @@ export default function AdminTopicDetailPage() {
                 description: editForm.description || null,
                 voteStartAt: editForm.voteStartAt,
                 voteDeadlineAt: editForm.voteDeadlineAt,
+                options,
               }),
             )
           }}
@@ -237,6 +234,44 @@ export default function AdminTopicDetailPage() {
             onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
             placeholder="설명"
           />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-ink-subtle">선택지(2개 이상)</label>
+            {editForm.options.map((option, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <TextInput
+                  surface="bg"
+                  value={option}
+                  onChange={(e) =>
+                    setEditForm((f) => ({
+                      ...f,
+                      options: f.options.map((o, oi) => (oi === i ? e.target.value : o)),
+                    }))
+                  }
+                  placeholder={`선택지 ${i + 1}`}
+                  className="min-w-60 flex-1"
+                />
+                {editForm.options.length > 2 && (
+                  <Button
+                    type="button"
+                    onClick={() =>
+                      setEditForm((f) => ({
+                        ...f,
+                        options: f.options.filter((_, oi) => oi !== i),
+                      }))
+                    }
+                  >
+                    삭제
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button
+              type="button"
+              onClick={() => setEditForm((f) => ({ ...f, options: [...f.options, ""] }))}
+            >
+              선택지 추가
+            </Button>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             <TextInput
               surface="bg"

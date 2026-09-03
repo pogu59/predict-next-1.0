@@ -1,25 +1,29 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 import {
   ApiError,
   createTopic,
   fetchAdminTopics,
   fetchCategories,
-  type AdminTopicListItemDto,
+  type AdminTopicListItem,
   type BackendTopicStatus,
-  type CategoryDto,
+  type Category,
 } from "@/lib/api"
-import { topicStatusLabel } from "@/lib/topic-status"
+import { topicStatusLabel } from "@/lib/topicStatus"
 import { Badge } from "@/components/admin/badge"
 import { Select, TextInput } from "@/components/admin/controls"
-import { DataTable } from "@/components/admin/data-table"
+import { DataTable } from "@/components/admin/dataTable"
 import { Pagination } from "@/components/admin/pagination"
 import { Button } from "@/components/ui/button"
 
-const STATUS_OPTIONS: BackendTopicStatus[] = ["OPEN", "PENDING_RESULT", "CONFIRMED", "VOID"]
+const STATUS_OPTIONS: BackendTopicStatus[] = [
+  "OPEN",
+  "PENDING_RESULT",
+  "CONFIRMED",
+]
 
 function toDateTimeLocal(value: string) {
   return value.length >= 16 ? value.slice(0, 16) : value
@@ -27,8 +31,8 @@ function toDateTimeLocal(value: string) {
 
 export default function AdminTopicsPage() {
   const router = useRouter()
-  const [categories, setCategories] = useState<CategoryDto[]>([])
-  const [items, setItems] = useState<AdminTopicListItemDto[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [items, setItems] = useState<AdminTopicListItem[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(0)
   const [categoryId, setCategoryId] = useState<string>("")
@@ -46,6 +50,7 @@ export default function AdminTopicsPage() {
     description: "",
     voteStartAt: "",
     voteDeadlineAt: "",
+    options: ["", ""],
   })
 
   useEffect(() => {
@@ -70,7 +75,10 @@ export default function AdminTopicsPage() {
         setItems(result.items)
         setTotalPages(result.totalPages)
       } catch (e) {
-        if (!cancelled) setError(e instanceof ApiError ? e.message : "목록을 불러오지 못했습니다")
+        if (!cancelled)
+          setError(
+            e instanceof ApiError ? e.message : "목록을 불러오지 못했습니다",
+          )
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -85,8 +93,17 @@ export default function AdminTopicsPage() {
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setCreateError(null)
-    if (!form.categoryId || !form.title || !form.voteStartAt || !form.voteDeadlineAt) {
-      setCreateError("카테고리/제목/시작·마감 시각은 필수입니다")
+    const options = form.options.map((o) => o.trim()).filter(Boolean)
+    if (
+      !form.categoryId ||
+      !form.title ||
+      !form.voteStartAt ||
+      !form.voteDeadlineAt ||
+      options.length < 2
+    ) {
+      setCreateError(
+        "카테고리/제목/시작·마감 시각/선택지(2개 이상)는 필수입니다",
+      )
       return
     }
     setCreating(true)
@@ -97,15 +114,25 @@ export default function AdminTopicsPage() {
         description: form.description || null,
         voteStartAt: form.voteStartAt,
         voteDeadlineAt: form.voteDeadlineAt,
+        options,
       })
-      setForm({ categoryId: "", title: "", description: "", voteStartAt: "", voteDeadlineAt: "" })
+      setForm({
+        categoryId: "",
+        title: "",
+        description: "",
+        voteStartAt: "",
+        voteDeadlineAt: "",
+        options: ["", ""],
+      })
       setShowCreateForm(false)
       setPage(0)
       const result = await fetchAdminTopics({ page: 0, size: 20 })
       setItems(result.items)
       setTotalPages(result.totalPages)
     } catch (e) {
-      setCreateError(e instanceof ApiError ? e.message : "주제 생성에 실패했습니다")
+      setCreateError(
+        e instanceof ApiError ? e.message : "주제 생성에 실패했습니다",
+      )
     } finally {
       setCreating(false)
     }
@@ -121,7 +148,7 @@ export default function AdminTopicsPage() {
             setCategoryId(e.target.value)
           }}
         >
-          <option value="">전체 카테고리</option>
+          <option>전체 카테고리</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -163,12 +190,14 @@ export default function AdminTopicsPage() {
       {showCreateForm && (
         <form
           onSubmit={handleCreate}
-          className="border-line-strong flex flex-col gap-3 rounded-xl border border-dashed p-4"
+          className="flex flex-col gap-3 rounded-xl border border-dashed border-line-strong p-4"
         >
           <div className="flex flex-wrap gap-2">
             <Select
               value={form.categoryId}
-              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, categoryId: e.target.value }))
+              }
             >
               <option value="">카테고리 선택</option>
               {categories.map((c) => (
@@ -179,31 +208,86 @@ export default function AdminTopicsPage() {
             </Select>
             <TextInput
               value={form.title}
-              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, title: e.target.value }))
+              }
               placeholder="제목"
               className="min-w-60 flex-1"
             />
           </div>
           <TextInput
             value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, description: e.target.value }))
+            }
             placeholder="설명(선택)"
           />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-ink-subtle">
+              선택지(2개 이상)
+            </label>
+            {form.options.map((option, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <TextInput
+                  value={option}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      options: f.options.map((o, oi) =>
+                        oi === i ? e.target.value : o,
+                      ),
+                    }))
+                  }
+                  placeholder={`선택지 ${i + 1}`}
+                  className="min-w-60 flex-1"
+                />
+                {form.options.length > 2 && (
+                  <Button
+                    type="button"
+                    onClick={() =>
+                      setForm((f) => ({
+                        ...f,
+                        options: f.options.filter((_, oi) => oi !== i),
+                      }))
+                    }
+                  >
+                    삭제
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button
+              type="button"
+              onClick={() =>
+                setForm((f) => ({ ...f, options: [...f.options, ""] }))
+              }
+            >
+              선택지 추가
+            </Button>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
-            <label className="text-ink-subtle text-xs font-bold">투표 시작</label>
+            <label className="text-xs font-bold text-ink-subtle">
+              투표 시작
+            </label>
             <TextInput
               type="datetime-local"
               value={toDateTimeLocal(form.voteStartAt)}
-              onChange={(e) => setForm((f) => ({ ...f, voteStartAt: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, voteStartAt: e.target.value }))
+              }
             />
-            <label className="text-ink-subtle text-xs font-bold">마감</label>
+            <label className="text-xs font-bold text-ink-subtle">마감</label>
             <TextInput
               type="datetime-local"
               value={toDateTimeLocal(form.voteDeadlineAt)}
-              onChange={(e) => setForm((f) => ({ ...f, voteDeadlineAt: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, voteDeadlineAt: e.target.value }))
+              }
             />
           </div>
-          {createError && <div className="text-wrong text-sm font-bold">{createError}</div>}
+          {createError && (
+            <div className="text-sm font-bold text-wrong">{createError}</div>
+          )}
           <Button type="submit" disabled={creating}>
             {creating ? "등록 중..." : "등록"}
           </Button>
@@ -211,7 +295,7 @@ export default function AdminTopicsPage() {
       )}
 
       {error && (
-        <div className="border-wrong bg-wrong-chip rounded-lg border px-4 py-2.5 text-[13px] font-bold text-[#D6DEEC]">
+        <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-[13px] font-bold text-[#D6DEEC]">
           {error}
         </div>
       )}
@@ -224,12 +308,29 @@ export default function AdminTopicsPage() {
         emptyMessage="조건에 맞는 주제가 없어요"
         minWidth="720px"
         columns={[
-          { header: "제목", render: (t) => <span className="text-ink font-bold">{t.title}</span> },
-          { header: "카테고리", render: (t) => <span className="text-ink-muted">{t.categoryName}</span> },
-          { header: "상태", render: (t) => <Badge>{topicStatusLabel(t.status)}</Badge> },
+          {
+            header: "제목",
+            render: (t) => (
+              <span className="font-bold text-ink">{t.title}</span>
+            ),
+          },
+          {
+            header: "카테고리",
+            render: (t) => (
+              <span className="text-ink-muted">{t.categoryName}</span>
+            ),
+          },
+          {
+            header: "상태",
+            render: (t) => <Badge>{topicStatusLabel(t.status)}</Badge>,
+          },
           {
             header: "참여자",
-            render: (t) => <span className="text-ink-muted tabular-nums">{t.totalVotes}</span>,
+            render: (t) => (
+              <span className="text-ink-muted tabular-nums">
+                {t.totalVotes}
+              </span>
+            ),
           },
           {
             header: "마감시각",

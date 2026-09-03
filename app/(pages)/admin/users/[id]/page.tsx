@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 
-import { ApiError, fetchAdminUserDetail, type AdminUserDetailDto } from "@/lib/api"
+import { ApiError, fetchAdminUserDetail, type AdminUserDetail } from "@/lib/api"
 import { tierLabel } from "@/lib/tier"
 import { Badge } from "@/components/admin/badge"
 
@@ -12,7 +12,7 @@ export default function AdminUserDetailPage() {
   const router = useRouter()
   const userId = Number(params.id)
 
-  const [user, setUser] = useState<AdminUserDetailDto | null>(null)
+  const [user, setUser] = useState<AdminUserDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 

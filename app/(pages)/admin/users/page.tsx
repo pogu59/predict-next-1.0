@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
-import { ApiError, fetchAdminUsers, type AdminUserListItemDto, type BackendRole } from "@/lib/api"
+import { ApiError, fetchAdminUsers, type AdminUserListItem, type BackendRole } from "@/lib/api"
 import { tierLabel } from "@/lib/tier"
 import { Badge } from "@/components/admin/badge"
 import { Select, TextInput } from "@/components/admin/controls"
-import { DataTable } from "@/components/admin/data-table"
+import { DataTable } from "@/components/admin/dataTable"
 import { Pagination } from "@/components/admin/pagination"
 
 const ROLE_OPTIONS: BackendRole[] = ["USER", "ADMIN"]
@@ -15,7 +15,7 @@ const ROLE_LABELS: Record<BackendRole, string> = { USER: "일반", ADMIN: "관�
 
 export default function AdminUsersPage() {
   const router = useRouter()
-  const [items, setItems] = useState<AdminUserListItemDto[]>([])
+  const [items, setItems] = useState<AdminUserListItem[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(0)
   const [keyword, setKeyword] = useState("")

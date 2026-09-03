@@ -1,13 +1,13 @@
 "use client"
 
-import { categoryMeta } from "@/lib/category-meta"
+import { categoryMeta } from "@/lib/categoryMeta"
 import { formatRemaining, isUrgent, type UiIssue } from "@/lib/issues"
 import { Icon } from "@/components/icon"
 
 type IssueCardProps = {
   issue: UiIssue
   categoryName: string
-  onVote?: (id: number, choice: "yes" | "no") => void
+  onVote?: (id: number, optionId: number) => void
   onOpen?: (id: number) => void
 }
 
@@ -36,8 +36,14 @@ export function IssueCard({
       : "bg-card border-line"
 
   const minorityPct =
-    issue.ratio && issue.myChoice ? issue.ratio[issue.myChoice] : undefined
+    issue.ratio && issue.myOptionId !== undefined
+      ? issue.ratio[issue.myOptionId]
+      : undefined
   const isMinority = minorityPct !== undefined && minorityPct < 50
+  const myOption = issue.options.find((o) => o.id === issue.myOptionId)
+  const correctOption = issue.options.find(
+    (o) => o.id === issue.settlement?.correctOptionId,
+  )
 
   const deltaColor =
     result === "correct"
@@ -91,18 +97,14 @@ export function IssueCard({
                   ? "rounded-md bg-accent px-2 py-1 text-[11.5px] leading-none font-extrabold text-accent-ink"
                   : result === "wrong"
                     ? "rounded-md bg-wrong-chip px-2 py-1 text-[11.5px] leading-none font-extrabold text-[#D6DEEC]"
-                    : result === "void"
-                      ? "rounded-md border border-[color:color-mix(in_oklab,var(--void)_45%,transparent)] px-2 py-[3px] text-[11.5px] leading-none font-extrabold text-void"
-                      : "rounded-md border border-line-strong px-2 py-[3px] text-[11.5px] leading-none font-extrabold text-ink-subtle"
+                    : "rounded-md border border-line-strong px-2 py-[3px] text-[11.5px] leading-none font-extrabold text-ink-subtle"
               }
             >
               {result === "correct"
                 ? `${minorityPct}% 적중`
                 : result === "wrong"
                   ? "오답"
-                  : result === "void"
-                    ? "무효"
-                    : "결과 확정"}
+                  : "결과 확정"}
             </span>
           ) : pending ? (
             <span className="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-ink-subtle">
@@ -131,20 +133,16 @@ export function IssueCard({
         {issue.status === "open" && (
           <>
             <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => onVote?.(issue.id, "yes")}
-                className="flex-1 rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-sm font-bold tracking-[-0.02em] text-ink transition-colors hover:border-accent hover:text-accent"
-              >
-                {issue.labels.yes}
-              </button>
-              <button
-                type="button"
-                onClick={() => onVote?.(issue.id, "no")}
-                className="flex-1 rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-sm font-bold tracking-[-0.02em] text-ink transition-colors hover:border-accent hover:text-accent"
-              >
-                {issue.labels.no}
-              </button>
+              {issue.options.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => onVote?.(issue.id, option.id)}
+                  className="flex-1 rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-sm font-bold tracking-[-0.02em] text-ink transition-colors hover:border-accent hover:text-accent"
+                >
+                  {option.text}
+                </button>
+              ))}
             </div>
             <p className="text-[11.5px] font-semibold text-ink-faint">
               {issue.source} · 비율은 투표 후 공개
@@ -152,7 +150,7 @@ export function IssueCard({
           </>
         )}
 
-        {issue.status === "voted" && issue.myChoice && issue.ratio && (
+        {issue.status === "voted" && myOption && issue.ratio && (
           <>
             <div className="flex items-center gap-2.5 rounded-lg bg-sunken px-[13px] py-3">
               <Icon
@@ -162,7 +160,7 @@ export function IssueCard({
                 style={{ color: "var(--accent)" }}
               />
               <span className="text-[13.5px] font-bold tracking-[-0.02em]">
-                내 선택 · {issue.labels[issue.myChoice]}
+                내 선택 · {myOption.text}
               </span>
               <div className="flex-auto" />
               {isMinority && (
@@ -172,19 +170,23 @@ export function IssueCard({
               )}
             </div>
             <div className="flex h-1.5 gap-1">
-              <div
-                className="rounded-full bg-accent"
-                style={{ width: `${minorityPct}%` }}
-              />
-              <div className="flex-1 rounded-full bg-track" />
+              {issue.options.map((option) => (
+                <div
+                  key={option.id}
+                  className={
+                    option.id === myOption.id ? "rounded-full bg-accent" : "rounded-full bg-track"
+                  }
+                  style={{ width: `${issue.ratio?.[option.id] ?? 0}%` }}
+                />
+              ))}
             </div>
           </>
         )}
 
         {pending && (
           <p className="text-[11.5px] font-semibold text-ink-faint tabular-nums">
-            {issue.myChoice
-              ? `결과 판정 예정 · 내 선택 ${issue.labels[issue.myChoice]}`
+            {myOption
+              ? `결과 판정 예정 · 내 선택 ${myOption.text}`
               : "결과 판정 예정"}
           </p>
         )}
@@ -199,13 +201,10 @@ export function IssueCard({
                   ? "맞혔어요"
                   : result === "wrong"
                     ? "아쉽게 틀렸어요"
-                    : result === "void"
-                      ? "무효 처리"
-                      : "결과가 확정됐어요"}
+                    : "결과가 확정됐어요"}
               </span>
               <span className="text-[11.5px] leading-[1.55] font-semibold text-pretty text-ink-faint">
-                {issue.settlement.answer &&
-                  `정답 · ${issue.labels[issue.settlement.answer]}`}
+                {correctOption && `정답 · ${correctOption.text}`}
                 {issue.totalVotes !== undefined &&
                   ` · 총 ${issue.totalVotes.toLocaleString()}명 참여`}
               </span>

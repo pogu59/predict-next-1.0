@@ -7,27 +7,25 @@ import {
   castVote,
   fetchCategories,
   fetchTopics,
-  type CategoryDto,
-  type TopicDto,
+  type Category,
+  type Topic,
 } from "@/lib/api"
 import { fetchMe, type Me } from "@/lib/auth"
-import { ALL_CATEGORY_META, categoryMeta } from "@/lib/category-meta"
+import { ALL_CATEGORY_META, categoryMeta } from "@/lib/categoryMeta"
 import {
   loadLocalVotes,
   saveLocalVote,
-  toBackendChoice,
-  toLocalChoice,
   toUiIssue,
   type LocalVote,
 } from "@/lib/issues"
 import { tierIcon, tierLabel, tierProgress } from "@/lib/tier"
 import { Icon } from "@/components/icon"
-import { IssueCard } from "@/components/issue-card"
+import { IssueCard } from "@/components/issueCard"
 
 export default function IssuePage() {
   const [category, setCategory] = useState<number | "all">("all")
-  const [categories, setCategories] = useState<CategoryDto[]>([])
-  const [topics, setTopics] = useState<TopicDto[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [topics, setTopics] = useState<Topic[]>([])
   const [me, setMe] = useState<Me | null>(null)
   const [localVotes, setLocalVotes] = useState<Record<number, LocalVote>>({})
   const [loading, setLoading] = useState(true)
@@ -87,18 +85,20 @@ export default function IssuePage() {
 
   const votedCount = issues.filter((i) => i.status === "voted").length
 
-  async function handleVote(id: number, choice: "yes" | "no") {
+  async function handleVote(id: number, optionId: number) {
     if (!me) {
       setVoteError("로그인 후 참여할 수 있어요")
       return
     }
     setVoteError(null)
     try {
-      const result = await castVote(id, me.userId, toBackendChoice(choice))
+      const result = await castVote(id, me.userId, optionId)
       const vote: LocalVote = {
-        choice: toLocalChoice(result.choice),
-        liveYesCount: result.liveYesCount,
-        liveNoCount: result.liveNoCount,
+        optionId: result.optionId,
+        liveCounts: result.liveCounts.map((option) => ({
+          id: option.id,
+          voteCount: option.voteCount ?? 0,
+        })),
       }
       saveLocalVote(me.userId, id, vote)
       setLocalVotes((prev) => ({ ...prev, [id]: vote }))
@@ -131,7 +131,7 @@ export default function IssuePage() {
   return (
     <div className="flex flex-col gap-[22px] px-6 pt-8 pb-11">
       <div className="grid grid-cols-[200px_1fr_266px] gap-[30px]">
-        <section className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
           <div className="text-xs font-bold tracking-[0.05em] text-ink-subtle">
             카테고리
           </div>
@@ -174,7 +174,7 @@ export default function IssuePage() {
               )
             })}
           </nav>
-        </section>
+        </div>
 
         <section className="flex flex-col gap-[13px]">
           <div className="flex items-baseline gap-2.5">
