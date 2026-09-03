@@ -53,6 +53,21 @@ export function IssueCard({
         ? "text-wrong"
         : "text-void"
 
+  // 카드는 공간이 좁아 선택지를 최대 2개까지만 보여준다. 나머지는 상세 페이지에서 볼 수 있다.
+  const openOptions = issue.options.slice(0, 2)
+  const votedOptions = (() => {
+    if (!issue.ratio) return issue.options.slice(0, 2)
+    const ratio = issue.ratio
+    const byRatioDesc = (a: { id: number }, b: { id: number }) =>
+      (ratio[b.id] ?? 0) - (ratio[a.id] ?? 0)
+    const top2 = [...issue.options].sort(byRatioDesc).slice(0, 2)
+    if (myOption && !top2.some((o) => o.id === myOption.id)) {
+      top2[top2.length - 1] = myOption
+    }
+    return top2.sort(byRatioDesc)
+  })()
+  const hiddenOptionCount = issue.options.length - 2
+
   return (
     <article
       className={`flex cursor-pointer overflow-hidden rounded-xl border ${surface}`}
@@ -132,7 +147,7 @@ export function IssueCard({
         {issue.status === "open" && (
           <>
             <div className="flex flex-col gap-2">
-              {issue.options.map((option) => (
+              {openOptions.map((option) => (
                 <button
                   key={option.id}
                   type="button"
@@ -148,6 +163,7 @@ export function IssueCard({
             </div>
             <p className="text-caption font-semibold text-ink-faint">
               {issue.source} · 비율은 투표 후 공개
+              {hiddenOptionCount > 0 && ` · 선택지 ${hiddenOptionCount}개 더 (상세에서 확인)`}
             </p>
           </>
         )}
@@ -170,7 +186,7 @@ export function IssueCard({
               )}
             </div>
             <div className="flex h-1.5 gap-1">
-              {issue.options.map((option) => (
+              {votedOptions.map((option) => (
                 <div
                   key={option.id}
                   className={
@@ -180,6 +196,11 @@ export function IssueCard({
                 />
               ))}
             </div>
+            {hiddenOptionCount > 0 && (
+              <span className="text-caption text-ink-faint">
+                외 선택지 {hiddenOptionCount}개 더 · 상세에서 확인
+              </span>
+            )}
           </>
         )}
 

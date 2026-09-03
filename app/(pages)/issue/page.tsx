@@ -140,7 +140,8 @@ export default function IssuePage() {
         .filter((i) => i.status === "open" || i.status === "voted")
         .slice()
         .sort(
-          (a, b) => new Date(a.closesAt).getTime() - new Date(b.closesAt).getTime(),
+          (a, b) =>
+            new Date(a.closesAt).getTime() - new Date(b.closesAt).getTime(),
         )
         .slice(0, 3),
     [visibleIssues],
@@ -237,13 +238,6 @@ export default function IssuePage() {
               )
             })}
           </nav>
-
-          <div className="flex flex-col gap-1.5 rounded-xl border border-dashed border-line-strong p-4">
-            <span className="text-label">돈은 걸지 않습니다</span>
-            <span className="text-caption text-ink-subtle">
-              현금·코인·아이템 없이 신용도 점수와 티어만 오갑니다.
-            </span>
-          </div>
         </div>
 
         <div className="flex flex-col gap-[13px]">
