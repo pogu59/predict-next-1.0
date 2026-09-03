@@ -15,16 +15,13 @@ import { fetchMe, type Me } from "@/lib/auth"
 import { categoryMeta } from "@/lib/categoryMeta"
 import {
   formatRemaining,
-  isUrgent,
   issueStatus,
-  loadLocalVotes,
-  saveLocalVote,
+  isUrgent,
   settlementResult,
   totalVoteCount,
   useNow,
-  voteCountOptions,
+  usePolling,
   voteRatio,
-  type LocalVote,
 } from "@/lib/issues"
 import { tierIcon, tierLabel, tierProgress } from "@/lib/tier"
 import { Icon } from "@/components/icon"
@@ -39,7 +36,6 @@ export default function IssueDetailPage() {
   const [topic, setTopic] = useState<Topic | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
   const [me, setMe] = useState<Me | null>(null)
-  const [localVote, setLocalVote] = useState<LocalVote | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
@@ -48,9 +44,7 @@ export default function IssueDetailPage() {
     optionText: string
   } | null>(null)
   const [voting, setVoting] = useState(false)
-  const [pendingVoteError, setPendingVoteError] = useState<string | null>(
-    null,
-  )
+  const [pendingVoteError, setPendingVoteError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -59,16 +53,15 @@ export default function IssueDetailPage() {
       setLoading(true)
       setError(null)
       try {
-        const [topicResult, categoriesResult, meResult] = await Promise.all([
-          fetchTopic(topicId),
+        const meResult = await fetchMe()
+        const [topicResult, categoriesResult] = await Promise.all([
+          fetchTopic(topicId, meResult?.userId),
           fetchCategories(),
-          fetchMe(),
         ])
         if (cancelled) return
         setTopic(topicResult)
         setCategories(categoriesResult)
         setMe(meResult)
-        if (meResult) setLocalVote(loadLocalVotes(meResult.userId)[topicId])
       } catch (e) {
         if (!cancelled)
           setError(
@@ -85,6 +78,19 @@ export default function IssueDetailPage() {
     }
   }, [topicId])
 
+  /** 다른 사람의 투표를 화면에 반영하기 위해 이 이슈를 주기적으로 다시 조회한다. */
+  usePolling(
+    async () => {
+      try {
+        setTopic(await fetchTopic(topicId, me?.userId))
+      } catch {
+        // 폴링 실패는 조용히 무시하고 다음 주기에 다시 시도한다.
+      }
+    },
+    5000,
+    !loading && !!topic && topic.status !== "CONFIRMED",
+  )
+
   function handleVoteClick(optionId: number, optionText: string) {
     if (!me) {
       setShowLoginPrompt(true)
@@ -99,16 +105,8 @@ export default function IssueDetailPage() {
     setVoting(true)
     setPendingVoteError(null)
     try {
-      const result = await castVote(topicId, me.userId, pendingVote.optionId)
-      const vote: LocalVote = {
-        optionId: result.optionId,
-        liveCounts: result.liveCounts.map((option) => ({
-          id: option.id,
-          voteCount: option.voteCount ?? 0,
-        })),
-      }
-      saveLocalVote(me.userId, topicId, vote)
-      setLocalVote(vote)
+      await castVote(topicId, me.userId, pendingVote.optionId)
+      setTopic(await fetchTopic(topicId, me.userId))
       setPendingVote(null)
     } catch (e) {
       setPendingVoteError(
@@ -137,25 +135,22 @@ export default function IssueDetailPage() {
     )
   }
 
-  const status = issueStatus(topic, localVote)
+  const status = issueStatus(topic)
   const categoryName =
     categories.find((c) => c.id === topic.categoryId)?.name ?? ""
   const cat = categoryMeta(categoryName)
-  const myOptionId = localVote?.optionId
+  const myOptionId = topic.myOptionId ?? undefined
   const myOption = topic.options.find((o) => o.id === myOptionId)
   const correctOption = topic.options.find(
     (o) => o.id === topic.correctOptionId,
   )
   const settled = status === "settled"
-  const ratio =
-    status === "open" ? undefined : voteRatio(voteCountOptions(topic, localVote))
+  const ratio = status === "open" ? undefined : voteRatio(topic.options)
   const totalVotes =
-    status === "open"
-      ? undefined
-      : totalVoteCount(voteCountOptions(topic, localVote))
+    status === "open" ? undefined : totalVoteCount(topic.options)
   const minorityPct =
     ratio && myOptionId !== undefined ? ratio[myOptionId] : undefined
-  const result = settled ? settlementResult(topic, localVote) : undefined
+  const result = settled ? settlementResult(topic) : undefined
 
   const score = me?.credibilityScore ?? 0
   const progress = tierProgress(score)

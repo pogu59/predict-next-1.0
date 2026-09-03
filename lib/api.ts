@@ -26,6 +26,8 @@ export type Topic = {
   correctOptionId: number | null
   options: TopicOption[]
   createdAt: string
+  /** userId를 실어 조회했고 이 유저가 투표했다면 그 선택지 id. 아니면 null. */
+  myOptionId: number | null
 }
 
 export type VoteResult = {
@@ -67,12 +69,16 @@ export function fetchCategories() {
   return apiFetch<Category[]>("/api/categories")
 }
 
-export function fetchTopics() {
-  return apiFetch<Topic[]>("/api/topics")
+/**
+ * userId를 넘기면 이 유저가 투표한 주제는 status가 OPEN이어도 서버가 실시간 득표수와
+ * myOptionId를 함께 내려준다("투표 완료 직후 본인 노출" 정책, docs/predict.md 2-6절).
+ */
+export function fetchTopics(userId?: number) {
+  return apiFetch<Topic[]>(`/api/topics${buildQuery({ userId })}`)
 }
 
-export function fetchTopic(topicId: number) {
-  return apiFetch<Topic>(`/api/topics/${topicId}`)
+export function fetchTopic(topicId: number, userId?: number) {
+  return apiFetch<Topic>(`/api/topics/${topicId}${buildQuery({ userId })}`)
 }
 
 export function castVote(topicId: number, userId: number, optionId: number) {

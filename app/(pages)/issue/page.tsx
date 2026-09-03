@@ -13,14 +13,7 @@ import {
 } from "@/lib/api"
 import { fetchMe, type Me } from "@/lib/auth"
 import { ALL_CATEGORY_META, categoryMeta } from "@/lib/categoryMeta"
-import {
-  formatRemaining,
-  issueStatus,
-  loadLocalVotes,
-  saveLocalVote,
-  useNow,
-  type LocalVote,
-} from "@/lib/issues"
+import { formatRemaining, issueStatus, usePolling, useNow } from "@/lib/issues"
 import { tierIcon, tierLabel, tierProgress } from "@/lib/tier"
 import { Icon } from "@/components/icon"
 import { IssueCard } from "@/components/issueCard"
@@ -42,7 +35,6 @@ export default function IssuePage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [topics, setTopics] = useState<Topic[]>([])
   const [me, setMe] = useState<Me | null>(null)
-  const [localVotes, setLocalVotes] = useState<Record<number, LocalVote>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
@@ -61,16 +53,15 @@ export default function IssuePage() {
       setLoading(true)
       setError(null)
       try {
-        const [cats, tops, meResult] = await Promise.all([
+        const meResult = await fetchMe()
+        const [cats, tops] = await Promise.all([
           fetchCategories(),
-          fetchTopics(),
-          fetchMe(),
+          fetchTopics(meResult?.userId),
         ])
         if (cancelled) return
         setCategories(cats)
         setTopics(tops)
         setMe(meResult)
-        if (meResult) setLocalVotes(loadLocalVotes(meResult.userId))
       } catch (e) {
         if (!cancelled)
           setError(
@@ -87,6 +78,20 @@ export default function IssuePage() {
     }
   }, [])
 
+  /** 다른 사람의 투표를 화면에 반영하기 위해 이슈 목록을 주기적으로 다시 조회한다. */
+  usePolling(
+    async () => {
+      try {
+        const tops = await fetchTopics(me?.userId)
+        setTopics(tops)
+      } catch {
+        // 폴링 실패는 조용히 무시하고 다음 주기에 다시 시도한다.
+      }
+    },
+    5000,
+    !loading,
+  )
+
   const categoryNameById = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
     [categories],
@@ -96,12 +101,10 @@ export default function IssuePage() {
   const visibleIssues = useMemo(
     () =>
       topics.filter((t) => {
-        const status = issueStatus(t, localVotes[t.id])
-        return (
-          status === "open" || status === "voted" || localVotes[t.id] !== undefined
-        )
+        const status = issueStatus(t)
+        return status === "open" || status === "voted" || t.myOptionId != null
       }),
-    [topics, localVotes],
+    [topics],
   )
 
   const categoryFiltered = useMemo(
@@ -117,30 +120,30 @@ export default function IssuePage() {
       statusFilter === "all"
         ? categoryFiltered
         : categoryFiltered.filter((t) => {
-            const status = issueStatus(t, localVotes[t.id])
+            const status = issueStatus(t)
             return statusFilter === "open"
               ? status === "open" || status === "voted"
               : status === "pending" || status === "settled"
           }),
-    [categoryFiltered, statusFilter, localVotes],
+    [categoryFiltered, statusFilter],
   )
 
   const statusCounts = useMemo(() => {
     let open = 0
     let settled = 0
     for (const t of categoryFiltered) {
-      const status = issueStatus(t, localVotes[t.id])
+      const status = issueStatus(t)
       if (status === "open" || status === "voted") open++
       else settled++
     }
     return { all: categoryFiltered.length, open, settled }
-  }, [categoryFiltered, localVotes])
+  }, [categoryFiltered])
 
   const upcomingCloses = useMemo(
     () =>
       visibleIssues
         .filter((t) => {
-          const status = issueStatus(t, localVotes[t.id])
+          const status = issueStatus(t)
           return status === "open" || status === "voted"
         })
         .slice()
@@ -150,11 +153,11 @@ export default function IssuePage() {
             new Date(b.voteDeadlineAt).getTime(),
         )
         .slice(0, 3),
-    [visibleIssues, localVotes],
+    [visibleIssues],
   )
 
   const votedCount = visibleIssues.filter(
-    (t) => issueStatus(t, localVotes[t.id]) === "voted",
+    (t) => issueStatus(t) === "voted",
   ).length
 
   function handleVoteClick(id: number, optionId: number) {
@@ -175,16 +178,9 @@ export default function IssuePage() {
     setVoting(true)
     setPendingVoteError(null)
     try {
-      const result = await castVote(id, me.userId, optionId)
-      const vote: LocalVote = {
-        optionId: result.optionId,
-        liveCounts: result.liveCounts.map((option) => ({
-          id: option.id,
-          voteCount: option.voteCount ?? 0,
-        })),
-      }
-      saveLocalVote(me.userId, id, vote)
-      setLocalVotes((prev) => ({ ...prev, [id]: vote }))
+      await castVote(id, me.userId, optionId)
+      const tops = await fetchTopics(me.userId)
+      setTopics(tops)
       setPendingVote(null)
     } catch (e) {
       setPendingVoteError(
@@ -294,7 +290,6 @@ export default function IssuePage() {
               <IssueCard
                 key={topic.id}
                 topic={topic}
-                localVote={localVotes[topic.id]}
                 categoryName={categoryNameById[topic.categoryId] ?? ""}
                 onVote={handleVoteClick}
                 onOpen={(id) => router.push(`/issue/${id}`)}

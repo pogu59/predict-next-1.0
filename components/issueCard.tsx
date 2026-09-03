@@ -4,21 +4,18 @@ import type { Topic } from "@/lib/api"
 import { categoryMeta } from "@/lib/categoryMeta"
 import {
   formatRemaining,
-  isUrgent,
   issueStatus,
+  isUrgent,
   settlementResult,
   totalVoteCount,
   useNow,
-  voteCountOptions,
   voteRatio,
-  type LocalVote,
 } from "@/lib/issues"
 import { Icon } from "@/components/icon"
 
 type IssueCardProps = {
   topic: Topic
   categoryName: string
-  localVote?: LocalVote
   onVote?: (id: number, optionId: number) => void
   onOpen?: (id: number) => void
 }
@@ -33,16 +30,15 @@ type IssueCardProps = {
 export function IssueCard({
   topic,
   categoryName,
-  localVote,
   onVote,
   onOpen,
 }: IssueCardProps) {
   const now = useNow()
   const cat = categoryMeta(categoryName)
-  const status = issueStatus(topic, localVote)
+  const status = issueStatus(topic)
   const settled = status === "settled"
   const pending = status === "pending"
-  const result = settled ? settlementResult(topic, localVote) : undefined
+  const result = settled ? settlementResult(topic) : undefined
 
   const surface = settled
     ? "bg-card-hot border-[color:color-mix(in_oklab,var(--accent)_32%,transparent)]"
@@ -50,13 +46,10 @@ export function IssueCard({
       ? "bg-sunken border-[rgb(255_255_255/0.05)]"
       : "bg-card border-line"
 
-  const myOptionId = localVote?.optionId
-  const ratio =
-    status === "open" ? undefined : voteRatio(voteCountOptions(topic, localVote))
+  const myOptionId = topic.myOptionId ?? undefined
+  const ratio = status === "open" ? undefined : voteRatio(topic.options)
   const totalVotes =
-    status === "open"
-      ? undefined
-      : totalVoteCount(voteCountOptions(topic, localVote))
+    status === "open" ? undefined : totalVoteCount(topic.options)
   const minorityPct =
     ratio && myOptionId !== undefined ? ratio[myOptionId] : undefined
   const isMinority = minorityPct !== undefined && minorityPct < 50
@@ -181,11 +174,6 @@ export function IssueCard({
                 </button>
               ))}
             </div>
-            <p className="text-caption font-semibold text-ink-faint">
-              {topic.description || "관리자 판정 기준"} · 비율은 투표 후 공개
-              {hiddenOptionCount > 0 &&
-                ` · 선택지 ${hiddenOptionCount}개 더 (상세에서 확인)`}
-            </p>
           </>
         )}
 
@@ -238,18 +226,18 @@ export function IssueCard({
         {settled && (
           <div className="flex items-end gap-4">
             <div className="flex flex-1 flex-col gap-1">
-              <span className={`text-label ${deltaColor}`}>
+              <div className={`text-label ${deltaColor}`}>
                 {result === "correct"
                   ? "맞혔어요"
                   : result === "wrong"
                     ? "아쉽게 틀렸어요"
                     : "결과가 확정됐어요"}
-              </span>
-              <span className="text-caption leading-[1.55] font-semibold text-pretty text-ink-faint">
+              </div>
+              <div className="text-caption leading-[1.55] font-semibold text-pretty text-ink-faint">
                 {correctOption && `정답 · ${correctOption.text}`}
                 {totalVotes !== undefined &&
                   ` · 총 ${totalVotes.toLocaleString()}명 참여`}
-              </span>
+              </div>
             </div>
           </div>
         )}
