@@ -180,13 +180,13 @@ export default function IssueDetailPage() {
 
             {issue.status === "open" ? (
               <div className="flex flex-col gap-2.5">
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3">
                   {issue.options.map((option) => (
                     <button
                       key={option.id}
                       type="button"
                       onClick={() => handleVote(option.id)}
-                      className="flex-1 rounded-xl border border-line bg-control py-5 text-h2 text-ink transition-colors hover:border-accent hover:text-accent"
+                      className="rounded-xl border border-line bg-control py-5 text-h2 text-ink transition-colors hover:border-accent hover:text-accent"
                     >
                       {option.text}
                     </button>

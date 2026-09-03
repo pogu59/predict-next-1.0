@@ -131,7 +131,7 @@ export function IssueCard({
 
         {issue.status === "open" && (
           <>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
               {issue.options.map((option) => (
                 <button
                   key={option.id}
@@ -140,7 +140,7 @@ export function IssueCard({
                     e.stopPropagation()
                     onVote?.(issue.id, option.id)
                   }}
-                  className="flex-1 rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-label text-ink transition-colors hover:border-accent hover:text-accent"
+                  className="rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-label text-ink transition-colors hover:border-accent hover:text-accent"
                 >
                   {option.text}
                 </button>

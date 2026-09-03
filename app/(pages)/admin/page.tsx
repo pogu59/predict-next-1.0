@@ -29,6 +29,14 @@ function toDateTimeLocal(value: string) {
   return value.length >= 16 ? value.slice(0, 16) : value
 }
 
+/** <input type="datetime-local">의 min 속성/검증 기준값 — 로컬(브라우저) 시각 기준. */
+function nowDateTimeLocal() {
+  const d = new Date()
+  d.setSeconds(0, 0)
+  const pad = (n: number) => String(n).padStart(2, "0")
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 export default function AdminTopicsPage() {
   const router = useRouter()
   const [categories, setCategories] = useState<Category[]>([])
@@ -104,6 +112,17 @@ export default function AdminTopicsPage() {
       setCreateError(
         "카테고리/제목/시작·마감 시각/선택지(2개 이상)는 필수입니다",
       )
+      return
+    }
+    const now = new Date()
+    const start = new Date(form.voteStartAt)
+    const deadline = new Date(form.voteDeadlineAt)
+    if (start < now || deadline < now) {
+      setCreateError("시작·마감 시각은 현재 시각 이후로 설정해야 합니다")
+      return
+    }
+    if (deadline <= start) {
+      setCreateError("마감 시각은 시작 시각보다 늦어야 합니다")
       return
     }
     setCreating(true)
@@ -269,6 +288,7 @@ export default function AdminTopicsPage() {
             <label className="text-label text-ink-subtle">투표 시작</label>
             <TextInput
               type="datetime-local"
+              min={nowDateTimeLocal()}
               value={toDateTimeLocal(form.voteStartAt)}
               onChange={(e) =>
                 setForm((f) => ({ ...f, voteStartAt: e.target.value }))
@@ -277,6 +297,7 @@ export default function AdminTopicsPage() {
             <label className="text-label text-ink-subtle">마감</label>
             <TextInput
               type="datetime-local"
+              min={form.voteStartAt || nowDateTimeLocal()}
               value={toDateTimeLocal(form.voteDeadlineAt)}
               onChange={(e) =>
                 setForm((f) => ({ ...f, voteDeadlineAt: e.target.value }))

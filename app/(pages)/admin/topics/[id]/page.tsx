@@ -23,6 +23,14 @@ function toDateTimeLocal(value: string) {
   return value.length >= 16 ? value.slice(0, 16) : value
 }
 
+/** <input type="datetime-local">의 min 속성/검증 기준값 — 로컬(브라우저) 시각 기준. */
+function nowDateTimeLocal() {
+  const d = new Date()
+  d.setSeconds(0, 0)
+  const pad = (n: number) => String(n).padStart(2, "0")
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 export default function AdminTopicDetailPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
@@ -222,6 +230,17 @@ export default function AdminTopicDetailPage() {
               setActionError("선택지는 2개 이상이어야 합니다")
               return
             }
+            const now = new Date()
+            const start = new Date(editForm.voteStartAt)
+            const deadline = new Date(editForm.voteDeadlineAt)
+            if (start < now || deadline < now) {
+              setActionError("시작·마감 시각은 현재 시각 이후로 설정해야 합니다")
+              return
+            }
+            if (deadline <= start) {
+              setActionError("마감 시각은 시작 시각보다 늦어야 합니다")
+              return
+            }
             runAction(() =>
               updateTopic(topicId, {
                 categoryId: Number(editForm.categoryId),
@@ -317,6 +336,7 @@ export default function AdminTopicDetailPage() {
             <TextInput
               surface="bg"
               type="datetime-local"
+              min={nowDateTimeLocal()}
               value={editForm.voteStartAt}
               onChange={(e) =>
                 setEditForm((f) => ({ ...f, voteStartAt: e.target.value }))
@@ -325,6 +345,7 @@ export default function AdminTopicDetailPage() {
             <TextInput
               surface="bg"
               type="datetime-local"
+              min={editForm.voteStartAt || nowDateTimeLocal()}
               value={editForm.voteDeadlineAt}
               onChange={(e) =>
                 setEditForm((f) => ({ ...f, voteDeadlineAt: e.target.value }))
@@ -351,6 +372,7 @@ export default function AdminTopicDetailPage() {
           <TextInput
             surface="bg"
             type="datetime-local"
+            min={toDateTimeLocal(topic.voteDeadlineAt)}
             value={extendDeadline}
             onChange={(e) => setExtendDeadlineValue(e.target.value)}
           />
