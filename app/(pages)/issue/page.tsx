@@ -15,9 +15,9 @@ import { fetchMe, type Me } from "@/lib/auth"
 import { ALL_CATEGORY_META, categoryMeta } from "@/lib/categoryMeta"
 import {
   formatRemaining,
+  issueStatus,
   loadLocalVotes,
   saveLocalVote,
-  toUiIssue,
   useNow,
   type LocalVote,
 } from "@/lib/issues"
@@ -52,9 +52,7 @@ export default function IssuePage() {
     optionText: string
   } | null>(null)
   const [voting, setVoting] = useState(false)
-  const [pendingVoteError, setPendingVoteError] = useState<string | null>(
-    null,
-  )
+  const [pendingVoteError, setPendingVoteError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -94,28 +92,23 @@ export default function IssuePage() {
     [categories],
   )
 
-  const issues = useMemo(
-    () => topics.map((t) => toUiIssue(t, localVotes[t.id])),
-    [topics, localVotes],
-  )
-
   /** 진행 중인 이슈는 전부, 마감/확정 이슈는 본인이 참여한 것만 남긴다. */
   const visibleIssues = useMemo(
     () =>
-      issues.filter(
-        (i) =>
-          i.status === "open" ||
-          i.status === "voted" ||
-          i.myOptionId !== undefined,
-      ),
-    [issues],
+      topics.filter((t) => {
+        const status = issueStatus(t, localVotes[t.id])
+        return (
+          status === "open" || status === "voted" || localVotes[t.id] !== undefined
+        )
+      }),
+    [topics, localVotes],
   )
 
   const categoryFiltered = useMemo(
     () =>
       category === "all"
         ? visibleIssues
-        : visibleIssues.filter((i) => i.categoryId === category),
+        : visibleIssues.filter((t) => t.categoryId === category),
     [category, visibleIssues],
   )
 
@@ -123,41 +116,46 @@ export default function IssuePage() {
     () =>
       statusFilter === "all"
         ? categoryFiltered
-        : categoryFiltered.filter((i) =>
-            statusFilter === "open"
-              ? i.status === "open" || i.status === "voted"
-              : i.status === "pending" || i.status === "settled",
-          ),
-    [categoryFiltered, statusFilter],
+        : categoryFiltered.filter((t) => {
+            const status = issueStatus(t, localVotes[t.id])
+            return statusFilter === "open"
+              ? status === "open" || status === "voted"
+              : status === "pending" || status === "settled"
+          }),
+    [categoryFiltered, statusFilter, localVotes],
   )
 
-  const statusCounts = useMemo(
-    () => ({
-      all: categoryFiltered.length,
-      open: categoryFiltered.filter(
-        (i) => i.status === "open" || i.status === "voted",
-      ).length,
-      settled: categoryFiltered.filter(
-        (i) => i.status === "pending" || i.status === "settled",
-      ).length,
-    }),
-    [categoryFiltered],
-  )
+  const statusCounts = useMemo(() => {
+    let open = 0
+    let settled = 0
+    for (const t of categoryFiltered) {
+      const status = issueStatus(t, localVotes[t.id])
+      if (status === "open" || status === "voted") open++
+      else settled++
+    }
+    return { all: categoryFiltered.length, open, settled }
+  }, [categoryFiltered, localVotes])
 
   const upcomingCloses = useMemo(
     () =>
       visibleIssues
-        .filter((i) => i.status === "open" || i.status === "voted")
+        .filter((t) => {
+          const status = issueStatus(t, localVotes[t.id])
+          return status === "open" || status === "voted"
+        })
         .slice()
         .sort(
           (a, b) =>
-            new Date(a.closesAt).getTime() - new Date(b.closesAt).getTime(),
+            new Date(a.voteDeadlineAt).getTime() -
+            new Date(b.voteDeadlineAt).getTime(),
         )
         .slice(0, 3),
-    [visibleIssues],
+    [visibleIssues, localVotes],
   )
 
-  const votedCount = visibleIssues.filter((i) => i.status === "voted").length
+  const votedCount = visibleIssues.filter(
+    (t) => issueStatus(t, localVotes[t.id]) === "voted",
+  ).length
 
   function handleVoteClick(id: number, optionId: number) {
     if (!me) {
@@ -165,7 +163,7 @@ export default function IssuePage() {
       return
     }
     const optionText =
-      issues.find((i) => i.id === id)?.options.find((o) => o.id === optionId)
+      topics.find((t) => t.id === id)?.options.find((o) => o.id === optionId)
         ?.text ?? ""
     setPendingVoteError(null)
     setPendingVote({ id, optionId, optionText })
@@ -202,7 +200,7 @@ export default function IssuePage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-[22px] px-6 pt-8 pb-11">
+      <div className="flex flex-col gap-5 px-6 pt-8 pb-11">
         <div className="text-label text-ink-subtle">불러오는 중...</div>
       </div>
     )
@@ -210,7 +208,7 @@ export default function IssuePage() {
 
   if (error) {
     return (
-      <div className="flex flex-col gap-[22px] px-6 pt-8 pb-11">
+      <div className="flex flex-col gap-5 px-6 pt-8 pb-11">
         <div className="rounded-xl border border-dashed border-line-strong px-5 py-10 text-center text-label text-ink-subtle">
           {error}
         </div>
@@ -219,13 +217,13 @@ export default function IssuePage() {
   }
 
   return (
-    <div className="flex flex-col gap-[22px] px-6 pt-8 pb-11">
-      <div className="grid grid-cols-[200px_1fr_266px] gap-[30px]">
+    <div className="flex flex-col gap-5 px-4 pt-8 pb-11 sm:px-6">
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[200px_1fr_266px] lg:gap-8">
         <div className="flex flex-col gap-3">
-          <div className="text-label tracking-[0.05em] text-ink-subtle">
+          <div className="text-label tracking-wider text-ink-subtle">
             카테고리
           </div>
-          <nav className="flex flex-col gap-1.5">
+          <nav className="flex gap-1.5 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
             {[{ id: "all" as const, name: "전체" }, ...categories].map((c) => {
               const active = c.id === category
               const meta =
@@ -241,8 +239,8 @@ export default function IssuePage() {
                   onClick={() => setCategory(c.id)}
                   className={
                     active
-                      ? "flex items-center gap-[7px] rounded-xl bg-ink px-[15px] py-2.5 text-label leading-none text-bg"
-                      : "flex items-center gap-[7px] rounded-xl border border-line bg-card px-[15px] py-2.5 text-label leading-none text-ink-muted transition-colors hover:text-ink"
+                      ? "flex flex-none items-center gap-2 rounded-xl bg-ink px-4 py-2.5 text-label leading-none whitespace-nowrap text-bg"
+                      : "flex flex-none items-center gap-2 rounded-xl border border-line bg-card px-4 py-2.5 text-label leading-none whitespace-nowrap text-ink-muted transition-colors hover:text-ink"
                   }
                 >
                   <Icon
@@ -254,7 +252,7 @@ export default function IssuePage() {
                   <span
                     className={`text-caption tabular-nums ${
                       active
-                        ? "text-[color:color-mix(in_oklab,var(--bg)_50%,transparent)]"
+                        ? "text-[color-mix(in_oklab,var(--bg)_50%,transparent)]"
                         : "text-ink-faint"
                     }`}
                   >
@@ -266,8 +264,8 @@ export default function IssuePage() {
           </nav>
         </div>
 
-        <div className="flex flex-col gap-[13px]">
-          <div className="flex items-baseline gap-2.5">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-2">
             <h1 className="text-h1">진행 중인 이슈</h1>
             <span className="text-caption text-ink-subtle tabular-nums">
               {list.length}건 · 참여 완료 {votedCount}건
@@ -292,11 +290,12 @@ export default function IssuePage() {
           </div>
 
           <div className="flex flex-col gap-[13px]">
-            {list.map((issue) => (
+            {list.map((topic) => (
               <IssueCard
-                key={issue.id}
-                issue={issue}
-                categoryName={categoryNameById[issue.categoryId] ?? ""}
+                key={topic.id}
+                topic={topic}
+                localVote={localVotes[topic.id]}
+                categoryName={categoryNameById[topic.categoryId] ?? ""}
                 onVote={handleVoteClick}
                 onOpen={(id) => router.push(`/issue/${id}`)}
               />
@@ -352,13 +351,13 @@ export default function IssuePage() {
               <span className="text-label text-ink-subtle">
                 곧 마감되는 이슈
               </span>
-              {upcomingCloses.map((issue, i) => (
-                <div key={issue.id} className="flex flex-col gap-3">
+              {upcomingCloses.map((topic, i) => (
+                <div key={topic.id} className="flex flex-col gap-3">
                   {i > 0 && <div className="h-px bg-line" />}
                   <div className="flex flex-col gap-1">
-                    <span className="text-label">{issue.question}</span>
+                    <span className="text-label">{topic.title}</span>
                     <span className="text-caption text-accent tabular-nums">
-                      {formatRemaining(issue.closesAt, now)}
+                      {formatRemaining(topic.voteDeadlineAt, now)}
                     </span>
                   </div>
                 </div>

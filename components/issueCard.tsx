@@ -1,12 +1,24 @@
 "use client"
 
+import type { Topic } from "@/lib/api"
 import { categoryMeta } from "@/lib/categoryMeta"
-import { formatRemaining, isUrgent, useNow, type UiIssue } from "@/lib/issues"
+import {
+  formatRemaining,
+  isUrgent,
+  issueStatus,
+  settlementResult,
+  totalVoteCount,
+  useNow,
+  voteCountOptions,
+  voteRatio,
+  type LocalVote,
+} from "@/lib/issues"
 import { Icon } from "@/components/icon"
 
 type IssueCardProps = {
-  issue: UiIssue
+  topic: Topic
   categoryName: string
+  localVote?: LocalVote
   onVote?: (id: number, optionId: number) => void
   onOpen?: (id: number) => void
 }
@@ -19,16 +31,18 @@ type IssueCardProps = {
  * settled → hot 표면 + 결과 배지 (적중 점수는 백엔드에 별도 조회 API가 없어 표시하지 않음)
  */
 export function IssueCard({
-  issue,
+  topic,
   categoryName,
+  localVote,
   onVote,
   onOpen,
 }: IssueCardProps) {
   const now = useNow()
   const cat = categoryMeta(categoryName)
-  const settled = issue.status === "settled"
-  const pending = issue.status === "pending"
-  const result = issue.settlement?.result
+  const status = issueStatus(topic, localVote)
+  const settled = status === "settled"
+  const pending = status === "pending"
+  const result = settled ? settlementResult(topic, localVote) : undefined
 
   const surface = settled
     ? "bg-card-hot border-[color:color-mix(in_oklab,var(--accent)_32%,transparent)]"
@@ -36,14 +50,19 @@ export function IssueCard({
       ? "bg-sunken border-[rgb(255_255_255/0.05)]"
       : "bg-card border-line"
 
+  const myOptionId = localVote?.optionId
+  const ratio =
+    status === "open" ? undefined : voteRatio(voteCountOptions(topic, localVote))
+  const totalVotes =
+    status === "open"
+      ? undefined
+      : totalVoteCount(voteCountOptions(topic, localVote))
   const minorityPct =
-    issue.ratio && issue.myOptionId !== undefined
-      ? issue.ratio[issue.myOptionId]
-      : undefined
+    ratio && myOptionId !== undefined ? ratio[myOptionId] : undefined
   const isMinority = minorityPct !== undefined && minorityPct < 50
-  const myOption = issue.options.find((o) => o.id === issue.myOptionId)
-  const correctOption = issue.options.find(
-    (o) => o.id === issue.settlement?.correctOptionId,
+  const myOption = topic.options.find((o) => o.id === myOptionId)
+  const correctOption = topic.options.find(
+    (o) => o.id === topic.correctOptionId,
   )
 
   const deltaColor =
@@ -54,24 +73,23 @@ export function IssueCard({
         : "text-void"
 
   // 카드는 공간이 좁아 선택지를 최대 2개까지만 보여준다. 나머지는 상세 페이지에서 볼 수 있다.
-  const openOptions = issue.options.slice(0, 2)
+  const openOptions = topic.options.slice(0, 2)
   const votedOptions = (() => {
-    if (!issue.ratio) return issue.options.slice(0, 2)
-    const ratio = issue.ratio
+    if (!ratio) return topic.options.slice(0, 2)
     const byRatioDesc = (a: { id: number }, b: { id: number }) =>
       (ratio[b.id] ?? 0) - (ratio[a.id] ?? 0)
-    const top2 = [...issue.options].sort(byRatioDesc).slice(0, 2)
+    const top2 = [...topic.options].sort(byRatioDesc).slice(0, 2)
     if (myOption && !top2.some((o) => o.id === myOption.id)) {
       top2[top2.length - 1] = myOption
     }
     return top2.sort(byRatioDesc)
   })()
-  const hiddenOptionCount = issue.options.length - 2
+  const hiddenOptionCount = topic.options.length - 2
 
   return (
     <article
       className={`flex cursor-pointer overflow-hidden rounded-xl border ${surface}`}
-      onClick={() => onOpen?.(issue.id)}
+      onClick={() => onOpen?.(topic.id)}
     >
       <div
         className="w-1 flex-none"
@@ -130,10 +148,12 @@ export function IssueCard({
           ) : (
             <span
               className={`text-caption font-extrabold tabular-nums ${
-                isUrgent(issue.closesAt, now) ? "text-accent" : "text-ink-subtle"
+                isUrgent(topic.voteDeadlineAt, now)
+                  ? "text-accent"
+                  : "text-ink-subtle"
               }`}
             >
-              {formatRemaining(issue.closesAt, now)}
+              {formatRemaining(topic.voteDeadlineAt, now)}
             </span>
           )}
         </div>
@@ -141,10 +161,10 @@ export function IssueCard({
         <h3
           className={`text-h3 text-pretty ${pending ? "text-ink-muted" : "text-ink"}`}
         >
-          {issue.question}
+          {topic.title}
         </h3>
 
-        {issue.status === "open" && (
+        {status === "open" && (
           <>
             <div className="flex flex-col gap-2">
               {openOptions.map((option) => (
@@ -153,7 +173,7 @@ export function IssueCard({
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation()
-                    onVote?.(issue.id, option.id)
+                    onVote?.(topic.id, option.id)
                   }}
                   className="rounded-lg border border-[rgb(255_255_255/0.09)] bg-control py-[13px] text-label text-ink transition-colors hover:border-accent hover:text-accent"
                 >
@@ -162,13 +182,14 @@ export function IssueCard({
               ))}
             </div>
             <p className="text-caption font-semibold text-ink-faint">
-              {issue.source} · 비율은 투표 후 공개
-              {hiddenOptionCount > 0 && ` · 선택지 ${hiddenOptionCount}개 더 (상세에서 확인)`}
+              {topic.description || "관리자 판정 기준"} · 비율은 투표 후 공개
+              {hiddenOptionCount > 0 &&
+                ` · 선택지 ${hiddenOptionCount}개 더 (상세에서 확인)`}
             </p>
           </>
         )}
 
-        {issue.status === "voted" && myOption && issue.ratio && (
+        {status === "voted" && myOption && ratio && (
           <>
             <div className="flex items-center gap-2.5 rounded-lg bg-sunken px-[13px] py-3">
               <Icon
@@ -190,9 +211,11 @@ export function IssueCard({
                 <div
                   key={option.id}
                   className={
-                    option.id === myOption.id ? "rounded-full bg-accent" : "rounded-full bg-track"
+                    option.id === myOption.id
+                      ? "rounded-full bg-accent"
+                      : "rounded-full bg-track"
                   }
-                  style={{ width: `${issue.ratio?.[option.id] ?? 0}%` }}
+                  style={{ width: `${ratio[option.id] ?? 0}%` }}
                 />
               ))}
             </div>
@@ -212,7 +235,7 @@ export function IssueCard({
           </p>
         )}
 
-        {settled && issue.settlement && (
+        {settled && (
           <div className="flex items-end gap-4">
             <div className="flex flex-1 flex-col gap-1">
               <span className={`text-label ${deltaColor}`}>
@@ -224,8 +247,8 @@ export function IssueCard({
               </span>
               <span className="text-caption leading-[1.55] font-semibold text-pretty text-ink-faint">
                 {correctOption && `정답 · ${correctOption.text}`}
-                {issue.totalVotes !== undefined &&
-                  ` · 총 ${issue.totalVotes.toLocaleString()}명 참여`}
+                {totalVotes !== undefined &&
+                  ` · 총 ${totalVotes.toLocaleString()}명 참여`}
               </span>
             </div>
           </div>

@@ -16,10 +16,14 @@ import { categoryMeta } from "@/lib/categoryMeta"
 import {
   formatRemaining,
   isUrgent,
+  issueStatus,
   loadLocalVotes,
   saveLocalVote,
-  toUiIssue,
+  settlementResult,
+  totalVoteCount,
   useNow,
+  voteCountOptions,
+  voteRatio,
   type LocalVote,
 } from "@/lib/issues"
 import { tierIcon, tierLabel, tierProgress } from "@/lib/tier"
@@ -133,29 +137,34 @@ export default function IssueDetailPage() {
     )
   }
 
-  const issue = toUiIssue(topic, localVote)
+  const status = issueStatus(topic, localVote)
   const categoryName =
     categories.find((c) => c.id === topic.categoryId)?.name ?? ""
   const cat = categoryMeta(categoryName)
-  const myOption = issue.options.find((o) => o.id === issue.myOptionId)
-  const correctOption = issue.options.find(
-    (o) => o.id === issue.settlement?.correctOptionId,
+  const myOptionId = localVote?.optionId
+  const myOption = topic.options.find((o) => o.id === myOptionId)
+  const correctOption = topic.options.find(
+    (o) => o.id === topic.correctOptionId,
   )
+  const settled = status === "settled"
+  const ratio =
+    status === "open" ? undefined : voteRatio(voteCountOptions(topic, localVote))
+  const totalVotes =
+    status === "open"
+      ? undefined
+      : totalVoteCount(voteCountOptions(topic, localVote))
   const minorityPct =
-    issue.ratio && issue.myOptionId !== undefined
-      ? issue.ratio[issue.myOptionId]
-      : undefined
-  const settled = issue.status === "settled"
-  const result = issue.settlement?.result
+    ratio && myOptionId !== undefined ? ratio[myOptionId] : undefined
+  const result = settled ? settlementResult(topic, localVote) : undefined
 
   const score = me?.credibilityScore ?? 0
   const progress = tierProgress(score)
 
   return (
-    <div className="flex flex-col gap-[22px] px-6 pt-8 pb-11">
-      <div className="mx-auto flex w-full max-w-[1050px] gap-[30px]">
-        <div className="flex w-full max-w-[760px] flex-col gap-[14px]">
-          <div className="flex items-center gap-3.5">
+    <div className="flex flex-col gap-[22px] px-4 pt-8 pb-11 sm:px-6">
+      <div className="mx-auto flex w-full max-w-[1050px] flex-col gap-6 lg:flex-row lg:gap-[30px]">
+        <div className="flex w-full flex-col gap-[14px] lg:max-w-[760px]">
+          <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
             <button
               type="button"
               onClick={() => router.push("/issue")}
@@ -165,20 +174,20 @@ export default function IssueDetailPage() {
               오늘의 예측
             </button>
             <div className="flex-auto" />
-            {issue.totalVotes !== undefined && (
+            {totalVotes !== undefined && (
               <span className="text-caption text-ink-subtle tabular-nums">
-                {issue.totalVotes.toLocaleString()}명 참여
+                {totalVotes.toLocaleString()}명 참여
               </span>
             )}
-            {(issue.status === "open" || issue.status === "voted") && (
+            {(status === "open" || status === "voted") && (
               <span
                 className={`rounded-md px-2.5 py-1.5 text-caption font-extrabold tabular-nums ${
-                  isUrgent(issue.closesAt, now)
+                  isUrgent(topic.voteDeadlineAt, now)
                     ? "bg-[color:color-mix(in_oklab,var(--accent)_14%,transparent)] text-accent"
                     : "bg-control text-ink-subtle"
                 }`}
               >
-                {formatRemaining(issue.closesAt, now)}
+                {formatRemaining(topic.voteDeadlineAt, now)}
               </span>
             )}
           </div>
@@ -191,12 +200,12 @@ export default function IssueDetailPage() {
               </span>
             </div>
 
-            <h1 className="text-h1 text-pretty">{issue.question}</h1>
+            <h1 className="text-h1 text-pretty">{topic.title}</h1>
 
-            {issue.status === "open" ? (
+            {status === "open" ? (
               <div className="flex flex-col gap-2.5">
                 <div className="flex flex-col gap-3">
-                  {issue.options.map((option) => (
+                  {topic.options.map((option) => (
                     <button
                       key={option.id}
                       type="button"
@@ -213,11 +222,11 @@ export default function IssueDetailPage() {
               </div>
             ) : (
               <div className="flex flex-col gap-2.5">
-                {issue.options.map((option) => {
-                  const pct = issue.ratio?.[option.id] ?? 0
-                  const isMine = option.id === issue.myOptionId
+                {topic.options.map((option) => {
+                  const pct = ratio?.[option.id] ?? 0
+                  const isMine = option.id === myOptionId
                   const isCorrect =
-                    settled && option.id === issue.settlement?.correctOptionId
+                    settled && option.id === topic.correctOptionId
                   const barColor = isCorrect
                     ? "bg-accent"
                     : isMine
@@ -257,7 +266,7 @@ export default function IssueDetailPage() {
                   )
                 })}
 
-                {issue.status === "voted" &&
+                {status === "voted" &&
                   minorityPct !== undefined &&
                   minorityPct < 50 && (
                     <span className="text-caption text-accent tabular-nums">
@@ -265,7 +274,7 @@ export default function IssueDetailPage() {
                     </span>
                   )}
 
-                {issue.status === "pending" && (
+                {status === "pending" && (
                   <span className="text-caption text-ink-subtle">
                     {myOption
                       ? `결과 판정 예정 · 내 선택 ${myOption.text}`
@@ -296,7 +305,7 @@ export default function IssueDetailPage() {
           </div>
         </div>
 
-        <aside className="flex w-[290px] flex-none flex-col gap-[13px]">
+        <aside className="flex w-full flex-col gap-[13px] lg:w-[290px] lg:flex-none">
           {me ? (
             <div
               className="flex flex-col gap-3 rounded-2xl p-[17px]"

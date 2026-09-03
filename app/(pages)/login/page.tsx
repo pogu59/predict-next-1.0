@@ -8,7 +8,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6">
+    <div className="flex min-h-screen items-center justify-center px-4 sm:px-6">
       <div className="flex w-full max-w-[440px] flex-col gap-[18px] rounded-2xl border border-line bg-card p-5">
         <div className="flex flex-col gap-2.5">
           <span className="text-h1">predict</span>

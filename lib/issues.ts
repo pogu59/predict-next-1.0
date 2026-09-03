@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import type { Topic, TopicOption } from "@/lib/api"
+import type { Topic } from "@/lib/api"
 
 /**
  * 이슈 목록(GET /api/topics)은 "이 유저가 투표했는지/무엇을 골랐는지"를 함께 내려주지 않는다.
@@ -39,99 +39,49 @@ export function saveLocalVote(
   window.localStorage.setItem(storageKey(userId), JSON.stringify(votes))
 }
 
-export type UiIssueStatus = "open" | "voted" | "pending" | "settled"
+export type IssueStatus = "open" | "voted" | "pending" | "settled"
 
-export type UiIssueOption = {
-  id: number
-  text: string
-  voteCount: number | null
+/** 백엔드 상태(topic.status) + 로컬 투표 여부를 화면에 필요한 4단계 상태로 정리한다. */
+export function issueStatus(topic: Topic, localVote?: LocalVote): IssueStatus {
+  if (topic.status === "OPEN") return localVote ? "voted" : "open"
+  if (topic.status === "PENDING_RESULT") return "pending"
+  return "settled"
 }
 
-export type UiIssue = {
-  id: number
-  categoryId: number
-  question: string
-  source: string
-  options: UiIssueOption[]
-  closesAt: string
-  status: UiIssueStatus
-  myOptionId?: number
-  /** 투표(또는 마감) 후에만 존재하는 비율. optionId -> 0~100 정수. */
-  ratio?: Record<number, number>
-  totalVotes?: number
-  settlement?: {
-    /** 내 선택을 모를 때(다른 브라우저에서 투표 등)는 unknown */
-    result: "correct" | "wrong" | "unknown"
-    correctOptionId?: number
-  }
+/**
+ * 비율 계산에 쓸 득표수 소스. OPEN 상태에서는 서버가 voteCount를 null로 감추므로,
+ * 방금 투표해서 로컬에 응답이 있으면 그걸 쓰고, 그 외(집계가 공개된 상태)에는
+ * topic.options를 그대로 쓴다.
+ */
+export function voteCountOptions(
+  topic: Topic,
+  localVote?: LocalVote,
+): { id: number; voteCount: number | null }[] {
+  if (topic.status === "OPEN" && localVote) return localVote.liveCounts
+  return topic.options
 }
 
-function ratioFromOptions(options: { id: number; voteCount: number | null }[]) {
-  const total = options.reduce((sum, option) => sum + (option.voteCount ?? 0), 0)
+/** optionId -> 0~100 정수 비율 */
+export function voteRatio(options: { id: number; voteCount: number | null }[]) {
+  const total = options.reduce((sum, o) => sum + (o.voteCount ?? 0), 0)
   const ratio: Record<number, number> = {}
-  for (const option of options) {
-    ratio[option.id] = total === 0 ? 0 : Math.round(((option.voteCount ?? 0) / total) * 100)
+  for (const o of options) {
+    ratio[o.id] = total === 0 ? 0 : Math.round(((o.voteCount ?? 0) / total) * 100)
   }
   return ratio
 }
 
-function toUiOptions(options: TopicOption[]): UiIssueOption[] {
-  return options.map((option) => ({ id: option.id, text: option.text, voteCount: option.voteCount }))
+export function totalVoteCount(options: { voteCount: number | null }[]) {
+  return options.reduce((sum, o) => sum + (o.voteCount ?? 0), 0)
 }
 
-export function toUiIssue(topic: Topic, localVote?: LocalVote): UiIssue {
-  const base = {
-    id: topic.id,
-    categoryId: topic.categoryId,
-    question: topic.title,
-    source: topic.description || "관리자 판정 기준",
-    options: toUiOptions(topic.options),
-    closesAt: topic.voteDeadlineAt,
-  }
-
-  if (topic.status === "OPEN") {
-    if (localVote) {
-      const totalVotes = localVote.liveCounts.reduce((sum, option) => sum + option.voteCount, 0)
-      return {
-        ...base,
-        status: "voted",
-        myOptionId: localVote.optionId,
-        ratio: ratioFromOptions(localVote.liveCounts),
-        totalVotes,
-      }
-    }
-    return { ...base, status: "open" }
-  }
-
-  // PENDING_RESULT / CONFIRMED: 서버가 최종 집계를 공개한다
-  const ratio = ratioFromOptions(topic.options)
-  const totalVotes = topic.options.reduce((sum, option) => sum + (option.voteCount ?? 0), 0)
-
-  if (topic.status === "PENDING_RESULT") {
-    return {
-      ...base,
-      status: "pending",
-      myOptionId: localVote?.optionId,
-      ratio,
-      totalVotes,
-    }
-  }
-
-  // CONFIRMED
-  const result: "correct" | "wrong" | "unknown" = !localVote
-    ? "unknown"
-    : localVote.optionId === topic.correctOptionId
-      ? "correct"
-      : "wrong"
-
-  return {
-    ...base,
-    status: "settled",
-    myOptionId: localVote?.optionId,
-    ratio,
-    totalVotes,
-    settlement: { result, correctOptionId: topic.correctOptionId ?? undefined },
-  }
+/** 확정(CONFIRMED)된 주제에서 내 선택이 정답이었는지. 내 선택을 모르면(다른 브라우저 등) unknown. */
+export function settlementResult(
+  topic: Topic,
+  localVote?: LocalVote,
+): "correct" | "wrong" | "unknown" {
+  if (!localVote) return "unknown"
+  return localVote.optionId === topic.correctOptionId ? "correct" : "wrong"
 }
 
 export function formatRemaining(iso: string, now = new Date()) {

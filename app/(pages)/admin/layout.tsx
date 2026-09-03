@@ -40,8 +40,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex flex-col gap-[22px] px-6 pt-8 pb-11">
-      <div className="flex items-center gap-2.5">
+    <div className="flex flex-col gap-[22px] px-4 pt-8 pb-11 sm:px-6">
+      <div className="flex flex-wrap items-center gap-2.5">
         <h1 className="text-h1">관리자 페이지</h1>
         <span className="text-ink-faint text-caption">{me.nickname}</span>
       </div>

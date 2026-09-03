@@ -122,7 +122,7 @@ export default function MyPage() {
       : null
 
   return (
-    <div className="flex flex-col items-center gap-[22px] px-6 pt-8 pb-11">
+    <div className="flex flex-col items-center gap-[22px] px-4 pt-8 pb-11 sm:px-6">
       <div className="flex w-full max-w-[760px] flex-col gap-[22px]">
         {error && (
           <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
@@ -131,11 +131,11 @@ export default function MyPage() {
         )}
 
         <div className="flex flex-col gap-[14px]">
-          <div className="flex items-center gap-[22px] rounded-2xl border border-line bg-card p-[22px]">
+          <div className="flex flex-col items-center gap-[22px] rounded-2xl border border-line bg-card p-[22px] sm:flex-row">
             <div className="flex h-[76px] w-[76px] flex-none items-center justify-center rounded-[22px] bg-control">
               <span className="text-3xl text-ink-faint">👤</span>
             </div>
-            <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col items-center gap-2 sm:items-start">
               <div className="flex items-center gap-2">
                 <h1 className="text-h1">{me.nickname}</h1>
                 <span className="rounded-md bg-void px-[7px] py-[5px] text-caption leading-none text-accent-ink">
@@ -144,7 +144,7 @@ export default function MyPage() {
               </div>
             </div>
             <div
-              className="flex w-[250px] flex-none flex-col gap-2.5 rounded-2xl p-4"
+              className="flex w-full flex-col gap-2.5 rounded-2xl p-4 sm:w-[250px] sm:flex-none"
               style={{
                 background:
                   "linear-gradient(105deg, var(--accent), var(--accent-deep))",
@@ -190,7 +190,7 @@ export default function MyPage() {
           </div>
 
           <div className="flex flex-col gap-3.5 rounded-2xl border border-line bg-card p-5">
-            <div className="flex items-baseline gap-2.5">
+            <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-2">
               <h3 className="text-h3">최근 투표 기록</h3>
               <span className="text-caption text-ink-subtle tabular-nums">
                 {votes.length}개

@@ -43,12 +43,12 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
 
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <header className="flex h-[66px] flex-none items-center gap-[26px] border-b border-line bg-headerBg px-6">
+      <header className="flex min-h-[66px] flex-none flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-headerBg px-4 py-2.5 md:h-[66px] md:flex-nowrap md:gap-x-[26px] md:px-6 md:py-0">
         <button className="text-h1 text-ink" onClick={() => router.push("/")}>
           Predict
         </button>
 
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-4 md:gap-6">
           {(me?.role === "ADMIN"
             ? [...NAV_LIST, ADMIN_NAV_ITEM]
             : NAV_LIST
@@ -78,7 +78,9 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
             <span className="rounded-md bg-void px-1.5 py-1 text-caption leading-none text-bg">
               {tierLabel(me.tier)}
             </span>
-            <span className="text-label text-ink-muted">{me.nickname}</span>
+            <span className="hidden text-label text-ink-muted sm:inline">
+              {me.nickname}
+            </span>
             <span className="text-title3 tabular-nums">
               {me.credibilityScore.toLocaleString()}
             </span>
