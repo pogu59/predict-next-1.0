@@ -70,7 +70,7 @@ export default function BoardPage() {
 
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative w-full">
-            <Search className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-ink-faint" />
+            <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-ink-faint" />
             <input
               value={keywordInput}
               onChange={(e) => setKeywordInput(e.target.value)}
@@ -82,7 +82,7 @@ export default function BoardPage() {
             type="submit"
             className="rounded-lg border border-line bg-card px-4 py-2.5 text-label text-ink-muted transition-colors hover:text-ink"
           >
-            검색
+            <Search className="size-4" />
           </button>
         </form>
 
