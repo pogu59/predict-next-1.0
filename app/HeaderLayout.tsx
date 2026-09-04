@@ -1,14 +1,12 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 
-import {
-  clearSessionToken,
-  fetchMe,
-  getSessionToken,
-  type Me,
-} from "@/lib/auth"
+import { clearSessionToken } from "@/lib/auth"
+import { useMe } from "@/lib/queries/auth"
+import { queryKeys } from "@/lib/queries/keys"
 import { tierLabel } from "@/lib/tier"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
@@ -18,6 +16,7 @@ type HeaderLayoutProps = {
 
 const NAV_LIST = [
   { label: "이슈", value: "issue" },
+  { label: "커뮤니티", value: "board" },
   { label: "마이페이지", value: "my" },
 ]
 
@@ -26,17 +25,13 @@ const ADMIN_NAV_ITEM = { label: "관리자", value: "admin" }
 export function HeaderLayout({ children }: HeaderLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const [me, setMe] = useState<Me | null>(null)
+  const queryClient = useQueryClient()
+  const { data: me } = useMe()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-
-  useEffect(() => {
-    if (!getSessionToken()) return
-    fetchMe().then(setMe)
-  }, [pathname])
 
   function handleLogout() {
     clearSessionToken()
-    setMe(null)
+    queryClient.setQueryData(queryKeys.me, undefined)
     setShowLogoutConfirm(false)
     router.push("/login")
   }

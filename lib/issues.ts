@@ -1,20 +1,20 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
-import type { Topic } from "@/lib/api"
+import type { Issue } from "@/lib/api"
 
 export type IssueStatus = "open" | "voted" | "pending" | "settled"
 
 /**
- * 백엔드 상태(topic.status) + 내 투표 여부(topic.myOptionId, 서버가 userId로 조회했을 때만 채워짐)를
+ * 백엔드 상태(issue.status) + 내 투표 여부(issue.myOptionId, 서버가 userId로 조회했을 때만 채워짐)를
  * 화면에 필요한 4단계 상태로 정리한다.
  */
-export function issueStatus(topic: Topic): IssueStatus {
-  if (topic.status === "OPEN") return topic.myOptionId != null ? "voted" : "open"
-  if (topic.status === "PENDING_RESULT") return "pending"
+export function issueStatus(issue: Issue): IssueStatus {
+  if (issue.status === "OPEN") return issue.myOptionId != null ? "voted" : "open"
+  if (issue.status === "PENDING_RESULT") return "pending"
   return "settled"
 }
 
-/** optionId -> 0~100 정수 비율. topic.options의 voteCount(서버가 감췄다면 null)를 그대로 쓴다. */
+/** optionId -> 0~100 정수 비율. issue.options의 voteCount(서버가 감췄다면 null)를 그대로 쓴다. */
 export function voteRatio(options: { id: number; voteCount: number | null }[]) {
   const total = options.reduce((sum, o) => sum + (o.voteCount ?? 0), 0)
   const ratio: Record<number, number> = {}
@@ -29,30 +29,9 @@ export function totalVoteCount(options: { voteCount: number | null }[]) {
 }
 
 /** 확정(CONFIRMED)된 주제에서 내 선택이 정답이었는지. 내 선택을 모르면(비로그인 등) unknown. */
-export function settlementResult(topic: Topic): "correct" | "wrong" | "unknown" {
-  if (topic.myOptionId == null) return "unknown"
-  return topic.myOptionId === topic.correctOptionId ? "correct" : "wrong"
-}
-
-/**
- * intervalMs마다 callback을 반복 호출한다. enabled가 false면 멈춘다.
- * 다른 사람의 투표를 실시간에 가깝게 반영하기 위해 서버를 주기적으로 다시 조회하는 용도.
- */
-export function usePolling(
-  callback: () => void,
-  intervalMs: number,
-  enabled: boolean,
-) {
-  const callbackRef = useRef(callback)
-  useEffect(() => {
-    callbackRef.current = callback
-  })
-
-  useEffect(() => {
-    if (!enabled) return
-    const id = setInterval(() => callbackRef.current(), intervalMs)
-    return () => clearInterval(id)
-  }, [intervalMs, enabled])
+export function settlementResult(issue: Issue): "correct" | "wrong" | "unknown" {
+  if (issue.myOptionId == null) return "unknown"
+  return issue.myOptionId === issue.correctOptionId ? "correct" : "wrong"
 }
 
 export function formatRemaining(iso: string, now = new Date()) {

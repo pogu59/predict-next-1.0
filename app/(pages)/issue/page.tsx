@@ -1,17 +1,13 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
-import {
-  fetchCategories,
-  fetchTopics,
-  type Category,
-  type Topic,
-} from "@/lib/api"
-import { fetchMe, type Me } from "@/lib/auth"
 import { ALL_CATEGORY_META, categoryMeta } from "@/lib/categoryMeta"
-import { formatRemaining, issueStatus, usePolling, useNow } from "@/lib/issues"
+import { formatRemaining, issueStatus, useNow } from "@/lib/issues"
+import { useMe } from "@/lib/queries/auth"
+import { useCategories } from "@/lib/queries/category"
+import { useIssues } from "@/lib/queries/issue"
 import { tierIcon, tierLabel, tierProgress } from "@/lib/tier"
 import { Icon } from "@/components/icon"
 import { IssueCard } from "@/components/issueCard"
@@ -29,56 +25,13 @@ export default function IssuePage() {
   const now = useNow()
   const [category, setCategory] = useState<number | "all">("all")
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
-  const [categories, setCategories] = useState<Category[]>([])
-  const [topics, setTopics] = useState<Topic[]>([])
-  const [me, setMe] = useState<Me | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  useEffect(() => {
-    let cancelled = false
 
-    async function load() {
-      setLoading(true)
-      setError(null)
-      try {
-        const meResult = await fetchMe()
-        const [cats, tops] = await Promise.all([
-          fetchCategories(),
-          fetchTopics(meResult?.userId),
-        ])
-        if (cancelled) return
-        setCategories(cats)
-        setTopics(tops)
-        setMe(meResult)
-      } catch (e) {
-        if (!cancelled)
-          setError(
-            e instanceof Error ? e.message : "이슈를 불러오지 못했습니다",
-          )
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
+  const { data: me } = useMe()
+  const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories()
+  const { data: issues = [], isLoading: issuesLoading, error: issuesError } = useIssues(me?.userId)
 
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  /** 다른 사람의 투표를 화면에 반영하기 위해 이슈 목록을 주기적으로 다시 조회한다. */
-  usePolling(
-    async () => {
-      try {
-        const tops = await fetchTopics(me?.userId)
-        setTopics(tops)
-      } catch {
-        // 폴링 실패는 조용히 무시하고 다음 주기에 다시 시도한다.
-      }
-    },
-    5000,
-    !loading,
-  )
+  const loading = categoriesLoading || issuesLoading
+  const error = categoriesError || issuesError
 
   const categoryNameById = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
@@ -88,11 +41,11 @@ export default function IssuePage() {
   /** 진행 중인 이슈는 전부, 마감/확정 이슈는 본인이 참여한 것만 남긴다. */
   const visibleIssues = useMemo(
     () =>
-      topics.filter((t) => {
+      issues.filter((t) => {
         const status = issueStatus(t)
         return status === "open" || status === "voted" || t.myOptionId != null
       }),
-    [topics],
+    [issues],
   )
 
   const categoryFiltered = useMemo(
@@ -163,7 +116,7 @@ export default function IssuePage() {
     return (
       <div className="flex flex-col gap-5 px-6 pt-8 pb-11">
         <div className="rounded-xl border border-dashed border-line-strong px-5 py-10 text-center text-label text-ink-subtle">
-          {error}
+          {error.message}
         </div>
       </div>
     )
@@ -243,11 +196,11 @@ export default function IssuePage() {
           </div>
 
           <div className="flex flex-col gap-[13px]">
-            {list.map((topic) => (
+            {list.map((issue) => (
               <IssueCard
-                key={topic.id}
-                topic={topic}
-                categoryName={categoryNameById[topic.categoryId] ?? ""}
+                key={issue.id}
+                issue={issue}
+                categoryName={categoryNameById[issue.categoryId] ?? ""}
                 onOpen={(id) => router.push(`/issue/${id}`)}
               />
             ))}
@@ -302,13 +255,13 @@ export default function IssuePage() {
               <span className="text-label text-ink-subtle">
                 곧 마감되는 이슈
               </span>
-              {upcomingCloses.map((topic, i) => (
-                <div key={topic.id} className="flex flex-col gap-3">
+              {upcomingCloses.map((issue, i) => (
+                <div key={issue.id} className="flex flex-col gap-3">
                   {i > 0 && <div className="h-px bg-line" />}
                   <div className="flex flex-col gap-1">
-                    <span className="text-label">{topic.title}</span>
+                    <span className="text-label">{issue.title}</span>
                     <span className="text-caption text-accent tabular-nums">
-                      {formatRemaining(topic.voteDeadlineAt, now)}
+                      {formatRemaining(issue.voteDeadlineAt, now)}
                     </span>
                   </div>
                 </div>

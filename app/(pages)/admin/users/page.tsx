@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 
-import { ApiError, fetchAdminUsers, type AdminUserListItem, type BackendRole } from "@/lib/api"
+import { type BackendRole } from "@/lib/api"
+import { useAdminUsers } from "@/lib/queries/admin"
 import { tierLabel } from "@/lib/tier"
 import { Badge } from "@/components/admin/badge"
 import { Select, TextInput } from "@/components/admin/controls"
@@ -15,42 +16,22 @@ const ROLE_LABELS: Record<BackendRole, string> = { USER: "일반", ADMIN: "관�
 
 export default function AdminUsersPage() {
   const router = useRouter()
-  const [items, setItems] = useState<AdminUserListItem[]>([])
-  const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(0)
   const [keyword, setKeyword] = useState("")
   const [role, setRole] = useState("")
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      setLoading(true)
-      setError(null)
-      try {
-        const result = await fetchAdminUsers({
-          keyword: keyword || undefined,
-          role: (role as BackendRole) || undefined,
-          page,
-          size: 20,
-        })
-        if (cancelled) return
-        setItems(result.items)
-        setTotalPages(result.totalPages)
-      } catch (e) {
-        if (!cancelled) setError(e instanceof ApiError ? e.message : "유저 목록을 불러오지 못했습니다")
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [keyword, role, page])
+  const {
+    data: listResult,
+    isLoading: loading,
+    error,
+  } = useAdminUsers({
+    keyword: keyword || undefined,
+    role: (role as BackendRole) || undefined,
+    page,
+    size: 20,
+  })
+  const items = listResult?.items ?? []
+  const totalPages = listResult?.totalPages ?? 0
 
   return (
     <div className="flex flex-col gap-4">
@@ -81,7 +62,7 @@ export default function AdminUsersPage() {
 
       {error && (
         <div className="border-wrong bg-wrong-chip rounded-lg border px-4 py-2.5 text-caption text-[#D6DEEC]">
-          {error}
+          {error.message}
         </div>
       )}
 

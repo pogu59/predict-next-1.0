@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 
-import { fetchMe, type Me } from "@/lib/auth"
+import { useMe } from "@/lib/queries/auth"
 
 const SUB_NAV = [
   { label: "주제 관리", href: "/admin" },
@@ -13,25 +13,15 @@ const SUB_NAV = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [me, setMe] = useState<Me | null | undefined>(undefined)
+  const { data: me, isLoading } = useMe()
 
   useEffect(() => {
-    let cancelled = false
-    fetchMe().then((result) => {
-      if (cancelled) return
-      setMe(result)
-      if (!result) {
-        router.replace("/login")
-      } else if (result.role !== "ADMIN") {
-        router.replace("/issue")
-      }
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [router])
+    if (isLoading) return
+    if (!me) router.replace("/login")
+    else if (me.role !== "ADMIN") router.replace("/issue")
+  }, [isLoading, me, router])
 
-  if (me === undefined || me === null || me.role !== "ADMIN") {
+  if (isLoading || !me || me.role !== "ADMIN") {
     return (
       <div className="flex flex-col gap-3 px-6 pt-8 pb-11">
         <div className="text-ink-subtle text-label">확인 중...</div>

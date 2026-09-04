@@ -19,22 +19,3 @@ export function getSessionToken() {
 export function clearSessionToken() {
   localStorage.removeItem(SESSION_TOKEN_KEY)
 }
-
-export type Me = {
-  userId: number
-  nickname: string
-  credibilityScore: number
-  tier: string
-  role: "USER" | "ADMIN"
-}
-
-export async function fetchMe(): Promise<Me | null> {
-  const token = getSessionToken()
-  if (!token) return null
-
-  const res = await fetch(`${getApiBaseUrl()}/api/auth/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!res.ok) return null
-  return res.json()
-}

@@ -1,15 +1,10 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
-import {
-  ApiError,
-  fetchMyStats,
-  fetchMyVotes,
-  type MyStats,
-  type MyVote,
-} from "@/lib/api"
-import { fetchMe, type Me } from "@/lib/auth"
+import { type MyVote } from "@/lib/api"
+import { useMe } from "@/lib/queries/auth"
+import { useMyStats, useMyVotes } from "@/lib/queries/user"
 import { tierLabel, tierProgress } from "@/lib/tier"
 import { StatTile } from "@/components/my/statTile"
 import { VoteHistoryRow } from "@/components/my/voteHistoryRow"
@@ -39,49 +34,14 @@ function startOfWeek(now = new Date()) {
 }
 
 export default function MyPage() {
-  const [me, setMe] = useState<Me | null | undefined>(undefined)
-  const [stats, setStats] = useState<MyStats | null>(null)
-  const [votes, setVotes] = useState<MyVote[]>([])
   const [filter, setFilter] = useState<FilterTab>("all")
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    let cancelled = false
+  const { data: me, isLoading: meLoading } = useMe()
+  const { data: stats, error: statsError } = useMyStats(me?.userId)
+  const { data: votes = [], error: votesError } = useMyVotes(me?.userId)
 
-    async function load() {
-      setLoading(true)
-      setError(null)
-      try {
-        const meResult = await fetchMe()
-        if (cancelled) return
-        setMe(meResult)
-        if (!meResult) return
-
-        const [statsResult, votesResult] = await Promise.all([
-          fetchMyStats(meResult.userId),
-          fetchMyVotes(meResult.userId),
-        ])
-        if (cancelled) return
-        setStats(statsResult)
-        setVotes(votesResult)
-      } catch (e) {
-        if (!cancelled)
-          setError(
-            e instanceof ApiError
-              ? e.message
-              : "마이페이지를 불러오지 못했습니다",
-          )
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const loading = meLoading
+  const error = statsError ?? votesError
 
   const weeklyCount = useMemo(() => {
     const weekStart = startOfWeek()
@@ -126,7 +86,7 @@ export default function MyPage() {
       <div className="flex w-full max-w-[760px] flex-col gap-[22px]">
         {error && (
           <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
-            {error}
+            {error.message}
           </div>
         )}
 

@@ -1,6 +1,6 @@
 "use client"
 
-import type { Topic } from "@/lib/api"
+import type { Issue } from "@/lib/api"
 import { categoryMeta } from "@/lib/categoryMeta"
 import {
   formatRemaining,
@@ -14,7 +14,7 @@ import {
 import { Icon } from "@/components/icon"
 
 type IssueCardProps = {
-  topic: Topic
+  issue: Issue
   categoryName: string
   onOpen?: (id: number) => void
 }
@@ -28,16 +28,16 @@ type IssueCardProps = {
  * settled → hot 표면 + 결과 배지 (적중 점수는 백엔드에 별도 조회 API가 없어 표시하지 않음)
  */
 export function IssueCard({
-  topic,
+  issue,
   categoryName,
   onOpen,
 }: IssueCardProps) {
   const now = useNow()
   const cat = categoryMeta(categoryName)
-  const status = issueStatus(topic)
+  const status = issueStatus(issue)
   const settled = status === "settled"
   const pending = status === "pending"
-  const result = settled ? settlementResult(topic) : undefined
+  const result = settled ? settlementResult(issue) : undefined
 
   const surface = settled
     ? "bg-card-hot border-[color:color-mix(in_oklab,var(--accent)_32%,transparent)]"
@@ -45,16 +45,16 @@ export function IssueCard({
       ? "bg-sunken border-[rgb(255_255_255/0.05)]"
       : "bg-card border-line"
 
-  const myOptionId = topic.myOptionId ?? undefined
-  const ratio = status === "open" ? undefined : voteRatio(topic.options)
+  const myOptionId = issue.myOptionId ?? undefined
+  const ratio = status === "open" ? undefined : voteRatio(issue.options)
   const totalVotes =
-    status === "open" ? undefined : totalVoteCount(topic.options)
+    status === "open" ? undefined : totalVoteCount(issue.options)
   const minorityPct =
     ratio && myOptionId !== undefined ? ratio[myOptionId] : undefined
   const isMinority = minorityPct !== undefined && minorityPct < 50
-  const myOption = topic.options.find((o) => o.id === myOptionId)
-  const correctOption = topic.options.find(
-    (o) => o.id === topic.correctOptionId,
+  const myOption = issue.options.find((o) => o.id === myOptionId)
+  const correctOption = issue.options.find(
+    (o) => o.id === issue.correctOptionId,
   )
 
   const deltaColor =
@@ -66,21 +66,21 @@ export function IssueCard({
 
   // 카드는 공간이 좁아 선택지를 최대 2개까지만 보여준다. 나머지는 상세 페이지에서 볼 수 있다.
   const votedOptions = (() => {
-    if (!ratio) return topic.options.slice(0, 2)
+    if (!ratio) return issue.options.slice(0, 2)
     const byRatioDesc = (a: { id: number }, b: { id: number }) =>
       (ratio[b.id] ?? 0) - (ratio[a.id] ?? 0)
-    const top2 = [...topic.options].sort(byRatioDesc).slice(0, 2)
+    const top2 = [...issue.options].sort(byRatioDesc).slice(0, 2)
     if (myOption && !top2.some((o) => o.id === myOption.id)) {
       top2[top2.length - 1] = myOption
     }
     return top2.sort(byRatioDesc)
   })()
-  const hiddenOptionCount = topic.options.length - 2
+  const hiddenOptionCount = issue.options.length - 2
 
   return (
     <article
       className={`flex cursor-pointer overflow-hidden rounded-xl border ${surface}`}
-      onClick={() => onOpen?.(topic.id)}
+      onClick={() => onOpen?.(issue.id)}
     >
       <div
         className="w-1 flex-none"
@@ -139,12 +139,12 @@ export function IssueCard({
           ) : (
             <span
               className={`text-caption font-extrabold tabular-nums ${
-                isUrgent(topic.voteDeadlineAt, now)
+                isUrgent(issue.voteDeadlineAt, now)
                   ? "text-accent"
                   : "text-ink-subtle"
               }`}
             >
-              {formatRemaining(topic.voteDeadlineAt, now)}
+              {formatRemaining(issue.voteDeadlineAt, now)}
             </span>
           )}
         </div>
@@ -152,12 +152,12 @@ export function IssueCard({
         <h3
           className={`text-h3 text-pretty ${pending ? "text-ink-muted" : "text-ink"}`}
         >
-          {topic.title}
+          {issue.title}
         </h3>
 
         {status === "open" && (
           <p className="text-caption font-semibold text-ink-faint tabular-nums">
-            선택지 {topic.options.length}개 · 눌러서 투표하기 →
+            선택지 {issue.options.length}개 · 눌러서 투표하기 →
           </p>
         )}
 

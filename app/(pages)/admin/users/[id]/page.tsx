@@ -1,9 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 
-import { ApiError, fetchAdminUserDetail, type AdminUserDetail } from "@/lib/api"
+import { useAdminUser } from "@/lib/queries/admin"
 import { tierLabel } from "@/lib/tier"
 import { Badge } from "@/components/admin/badge"
 
@@ -12,20 +11,7 @@ export default function AdminUserDetailPage() {
   const router = useRouter()
   const userId = Number(params.id)
 
-  const [user, setUser] = useState<AdminUserDetail | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    fetchAdminUserDetail(userId)
-      .then((result) => !cancelled && setUser(result))
-      .catch((e) => !cancelled && setError(e instanceof ApiError ? e.message : "유저를 불러오지 못했습니다"))
-      .finally(() => !cancelled && setLoading(false))
-    return () => {
-      cancelled = true
-    }
-  }, [userId])
+  const { data: user, isLoading: loading, error } = useAdminUser(userId)
 
   if (loading) {
     return <div className="text-ink-subtle text-label">불러오는 중...</div>
@@ -33,7 +19,7 @@ export default function AdminUserDetailPage() {
   if (error || !user) {
     return (
       <div className="border-line-strong text-ink-subtle rounded-xl border border-dashed px-5 py-10 text-center text-label">
-        {error ?? "존재하지 않는 유저입니다"}
+        {error?.message ?? "존재하지 않는 유저입니다"}
       </div>
     )
   }

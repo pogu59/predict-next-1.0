@@ -6,11 +6,12 @@ import { cn } from "@/lib/utils"
 import "./globals.css"
 
 import { HeaderLayout } from "./HeaderLayout"
+import { QueryProvider } from "./QueryProvider"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
-  title: "My App",
+  title: "Predict",
 }
 
 export default function RootLayout({
@@ -29,7 +30,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
-        <HeaderLayout>{children}</HeaderLayout>
+        <QueryProvider>
+          <HeaderLayout>{children}</HeaderLayout>
+        </QueryProvider>
       </body>
     </html>
   )

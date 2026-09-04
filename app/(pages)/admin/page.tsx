@@ -1,25 +1,19 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
-import {
-  ApiError,
-  createTopic,
-  fetchAdminTopics,
-  fetchCategories,
-  type AdminTopicListItem,
-  type BackendTopicStatus,
-  type Category,
-} from "@/lib/api"
-import { topicStatusLabel } from "@/lib/topicStatus"
+import { type ApiError, type BackendIssueStatus } from "@/lib/api"
+import { issueStatusLabel } from "@/lib/issueStatus"
+import { useCategories } from "@/lib/queries/category"
+import { useAdminIssues, useCreateAdminIssue } from "@/lib/queries/admin"
 import { Badge } from "@/components/admin/badge"
 import { Select, TextInput } from "@/components/admin/controls"
 import { DataTable } from "@/components/admin/dataTable"
 import { Pagination } from "@/components/admin/pagination"
 import { Button } from "@/components/ui/button"
 
-const STATUS_OPTIONS: BackendTopicStatus[] = [
+const STATUS_OPTIONS: BackendIssueStatus[] = [
   "OPEN",
   "PENDING_RESULT",
   "CONFIRMED",
@@ -37,20 +31,14 @@ function nowDateTimeLocal() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-export default function AdminTopicsPage() {
+export default function AdminIssuesPage() {
   const router = useRouter()
-  const [categories, setCategories] = useState<Category[]>([])
-  const [items, setItems] = useState<AdminTopicListItem[]>([])
-  const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(0)
   const [categoryId, setCategoryId] = useState<string>("")
   const [status, setStatus] = useState<string>("")
   const [keyword, setKeyword] = useState("")
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   const [showCreateForm, setShowCreateForm] = useState(false)
-  const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
   const [form, setForm] = useState({
     categoryId: "",
@@ -61,42 +49,22 @@ export default function AdminTopicsPage() {
     options: ["", ""],
   })
 
-  useEffect(() => {
-    fetchCategories().then(setCategories)
-  }, [])
+  const { data: categories = [] } = useCategories()
+  const {
+    data: listResult,
+    isLoading: loading,
+    error,
+  } = useAdminIssues({
+    categoryId: categoryId ? Number(categoryId) : undefined,
+    status: (status as BackendIssueStatus) || undefined,
+    keyword: keyword || undefined,
+    page,
+    size: 20,
+  })
+  const items = listResult?.items ?? []
+  const totalPages = listResult?.totalPages ?? 0
 
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      setLoading(true)
-      setError(null)
-      try {
-        const result = await fetchAdminTopics({
-          categoryId: categoryId ? Number(categoryId) : undefined,
-          status: (status as BackendTopicStatus) || undefined,
-          keyword: keyword || undefined,
-          page,
-          size: 20,
-        })
-        if (cancelled) return
-        setItems(result.items)
-        setTotalPages(result.totalPages)
-      } catch (e) {
-        if (!cancelled)
-          setError(
-            e instanceof ApiError ? e.message : "목록을 불러오지 못했습니다",
-          )
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [categoryId, status, keyword, page])
+  const createIssue = useCreateAdminIssue()
 
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -125,9 +93,9 @@ export default function AdminTopicsPage() {
       setCreateError("마감 시각은 시작 시각보다 늦어야 합니다")
       return
     }
-    setCreating(true)
+    setCreateError(null)
     try {
-      await createTopic({
+      await createIssue.mutateAsync({
         categoryId: Number(form.categoryId),
         title: form.title,
         description: form.description || null,
@@ -145,15 +113,8 @@ export default function AdminTopicsPage() {
       })
       setShowCreateForm(false)
       setPage(0)
-      const result = await fetchAdminTopics({ page: 0, size: 20 })
-      setItems(result.items)
-      setTotalPages(result.totalPages)
     } catch (e) {
-      setCreateError(
-        e instanceof ApiError ? e.message : "주제 생성에 실패했습니다",
-      )
-    } finally {
-      setCreating(false)
+      setCreateError((e as ApiError).message ?? "주제 생성에 실패했습니다")
     }
   }
 
@@ -185,7 +146,7 @@ export default function AdminTopicsPage() {
           <option value="">전체 상태</option>
           {STATUS_OPTIONS.map((s) => (
             <option key={s} value={s}>
-              {topicStatusLabel(s)}
+              {issueStatusLabel(s)}
             </option>
           ))}
         </Select>
@@ -307,22 +268,22 @@ export default function AdminTopicsPage() {
           {createError && (
             <div className="text-label text-wrong">{createError}</div>
           )}
-          <Button type="submit" disabled={creating}>
-            {creating ? "등록 중..." : "등록"}
+          <Button type="submit" disabled={createIssue.isPending}>
+            {createIssue.isPending ? "등록 중..." : "등록"}
           </Button>
         </form>
       )}
 
       {error && (
         <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
-          {error}
+          {error.message}
         </div>
       )}
 
       <DataTable
         rows={items}
-        rowKey={(topic) => topic.id}
-        onRowClick={(topic) => router.push(`/admin/topics/${topic.id}`)}
+        rowKey={(issue) => issue.id}
+        onRowClick={(issue) => router.push(`/admin/issues/${issue.id}`)}
         loading={loading}
         emptyMessage="조건에 맞는 주제가 없어요"
         minWidth="720px"
@@ -341,7 +302,7 @@ export default function AdminTopicsPage() {
           },
           {
             header: "상태",
-            render: (t) => <Badge>{topicStatusLabel(t.status)}</Badge>,
+            render: (t) => <Badge>{issueStatusLabel(t.status)}</Badge>,
           },
           {
             header: "참여자",

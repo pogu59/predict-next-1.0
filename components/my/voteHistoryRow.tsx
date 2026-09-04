@@ -29,21 +29,23 @@ export function VoteHistoryRow({ vote }: VoteHistoryRowProps) {
   let sub: string
   let right: React.ReactNode
 
+  const staked = `${vote.stake.toLocaleString()}점 베팅`
+
   if (vote.status === "OPEN") {
-    sub = formatRemaining(vote.voteDeadlineAt, now)
+    sub = `${staked} · ${formatRemaining(vote.voteDeadlineAt, now)}`
     right = <span className="text-ink-subtle text-caption">진행 중</span>
   } else if (vote.status === "PENDING_RESULT") {
-    sub = minorityPct !== undefined ? `결과 대기 · 소수 ${minorityPct}%` : "결과 대기"
+    sub = `${staked}${minorityPct !== undefined ? ` · 소수 ${minorityPct}%` : ""} · 결과 대기`
     right = <span className="text-ink-subtle text-caption">진행 중</span>
   } else if (vote.result === "CORRECT") {
-    sub = `${formatDateTime(vote.confirmedAt!)} 확정${minorityPct !== undefined ? ` · 소수 ${minorityPct}%` : ""}`
+    sub = `${staked} · ${formatDateTime(vote.confirmedAt!)} 확정${minorityPct !== undefined ? ` · 소수 ${minorityPct}%` : ""}`
     right = (
       <span className="text-accent w-[78px] flex-none text-right text-caption font-extrabold tabular-nums">
         적중 +{vote.scoreDelta}
       </span>
     )
   } else {
-    sub = `${formatDateTime(vote.confirmedAt!)} 확정${minorityPct !== undefined ? ` · 소수 ${minorityPct}%` : ""}`
+    sub = `${staked} · ${formatDateTime(vote.confirmedAt!)} 확정${minorityPct !== undefined ? ` · 소수 ${minorityPct}%` : ""}`
     right = (
       <span className="text-ink-subtle w-[78px] flex-none text-right text-caption tabular-nums">
         실패 {vote.scoreDelta}
