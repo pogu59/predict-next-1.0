@@ -4,12 +4,9 @@ import type { Issue } from "@/lib/api"
 import { categoryMeta } from "@/lib/categoryMeta"
 import {
   formatRemaining,
-  hasVotingStarted,
   issueStatus,
   isUrgent,
   settlementResult,
-  stageBadgeClass,
-  stageLabel,
   totalVoteCount,
   useNow,
   voteRatio,
@@ -23,20 +20,30 @@ type IssueCardProps = {
 }
 
 /**
- * 카드 상태 4종을 한 컴포넌트에서 분기합니다. 우측 상단 배지는 진행(open/voted)·
- * 마감(pending)·완료(settled) 3단어로만 표기한다.
- * 선택지는 상태와 무관하게 항상 상위 2개(득표율 기준, 데이터가 없으면 앞 2개)를 보여주고,
- * 실제 투표는 카드를 열어 상세에서만 한다(나머지 선택지도 상세에서 확인). 내 선택은 별도
- * 박스 없이 체크 아이콘 하나로만 가볍게 표시하고, 정산 결과 문구도 박스 없이 한 줄로 둬서
- * 카드 공간을 아낀다.
+ * 카드 상태 4종을 한 컴포넌트에서 분기합니다.
+ * open    → 선택지 개수만 안내, 실제 투표는 카드를 열어 상세에서만 (카드엔 일부 선택지만
+ *           들어가서 그대로 버튼을 두면 나머지 선택지를 못 보고 투표하게 됨)
+ * voted   → 내 선택 + 소수 배지 (본인에게만)
+ * pending → sunken 표면, 저채도
+ * settled → hot 표면 + 결과 배지 (적중 점수는 백엔드에 별도 조회 API가 없어 표시하지 않음)
  */
-export function IssueCard({ issue, categoryName, onOpen }: IssueCardProps) {
+export function IssueCard({
+  issue,
+  categoryName,
+  onOpen,
+}: IssueCardProps) {
   const now = useNow()
   const cat = categoryMeta(categoryName)
   const status = issueStatus(issue)
   const settled = status === "settled"
   const pending = status === "pending"
   const result = settled ? settlementResult(issue) : undefined
+
+  const surface = settled
+    ? "bg-card-hot border-[color:color-mix(in_oklab,var(--accent)_32%,transparent)]"
+    : pending
+      ? "bg-sunken border-[rgb(255_255_255/0.05)]"
+      : "bg-card border-line"
 
   const myOptionId = issue.myOptionId ?? undefined
   const ratio = status === "open" ? undefined : voteRatio(issue.options)
@@ -50,13 +57,15 @@ export function IssueCard({ issue, categoryName, onOpen }: IssueCardProps) {
     (o) => o.id === issue.correctOptionId,
   )
 
-  const notStarted = status === "open" && !hasVotingStarted(issue, now)
-  const label = stageLabel(status, notStarted)
-  const badgeClass = stageBadgeClass(status, notStarted)
+  const deltaColor =
+    result === "correct"
+      ? "text-accent"
+      : result === "wrong"
+        ? "text-wrong"
+        : "text-void"
 
-  // 카드는 공간이 좁아 선택지를 투표율(득표수) 상위 2개까지만 보여준다. 내 선택이 2위 밖이면
-  // 밀어내서라도 넣는다. 나머지는 상세 페이지에서 볼 수 있다.
-  const topOptions = (() => {
+  // 카드는 공간이 좁아 선택지를 최대 2개까지만 보여준다. 나머지는 상세 페이지에서 볼 수 있다.
+  const votedOptions = (() => {
     if (!ratio) return issue.options.slice(0, 2)
     const byRatioDesc = (a: { id: number }, b: { id: number }) =>
       (ratio[b.id] ?? 0) - (ratio[a.id] ?? 0)
@@ -70,115 +79,166 @@ export function IssueCard({ issue, categoryName, onOpen }: IssueCardProps) {
 
   return (
     <article
-      className="flex cursor-pointer flex-col overflow-hidden rounded-[14px] border border-line bg-card shadow-[0_1px_2px_rgba(0,0,0,.04)] transition-colors hover:border-line-strong"
+      className={`flex cursor-pointer overflow-hidden rounded-xl border ${surface}`}
       onClick={() => onOpen?.(issue.id)}
     >
-      <div className="flex flex-1 flex-col gap-[13px] px-[18px] py-4">
-        <div className="flex items-center gap-[7px]">
-          <Icon name={cat.icon} size={16} style={{ color: cat.color }} />
-          <span className="text-[12px] font-bold" style={{ color: cat.color }}>
+      <div
+        className="w-1 flex-none"
+        style={{
+          background: pending
+            ? `color-mix(in oklab, ${cat.color} 45%, transparent)`
+            : cat.color,
+        }}
+      />
+
+      <div className="flex flex-1 flex-col gap-3 px-[18px] py-[17px]">
+        <div className="flex items-center gap-2">
+          <Icon
+            name={cat.icon}
+            size={16}
+            style={{
+              color: pending
+                ? `color-mix(in oklab, ${cat.color} 60%, transparent)`
+                : cat.color,
+            }}
+          />
+          <span
+            className="text-label"
+            style={{
+              color: pending
+                ? `color-mix(in oklab, ${cat.color} 60%, transparent)`
+                : cat.color,
+            }}
+          >
             {categoryName}
           </span>
 
           <div className="flex-auto" />
 
-          {!settled && !pending && (
+          {settled ? (
             <span
-              className={`text-[12px] font-extrabold tabular-nums ${
-                !notStarted && isUrgent(issue.voteDeadlineAt, now) ? "text-accent" : "text-ink-subtle"
+              className={
+                result === "correct"
+                  ? "rounded-md bg-accent px-2 py-1 text-caption leading-none font-extrabold text-accent-ink"
+                  : result === "wrong"
+                    ? "rounded-md bg-wrong-chip px-2 py-1 text-caption leading-none font-extrabold text-[#D6DEEC]"
+                    : "rounded-md border border-line-strong px-2 py-[3px] text-caption leading-none font-extrabold text-ink-subtle"
+              }
+            >
+              {result === "correct"
+                ? `${minorityPct}% 적중`
+                : result === "wrong"
+                  ? "오답"
+                  : "결과 확정"}
+            </span>
+          ) : pending ? (
+            <span className="inline-flex items-center gap-1.5 text-caption text-ink-subtle">
+              <Icon name="hourglass_top" filled={false} size={15} />
+              결과 대기
+            </span>
+          ) : (
+            <span
+              className={`text-caption font-extrabold tabular-nums ${
+                isUrgent(issue.voteDeadlineAt, now)
+                  ? "text-accent"
+                  : "text-ink-subtle"
               }`}
             >
-              {notStarted
-                ? formatRemaining(issue.voteStartAt, now)
-                : formatRemaining(issue.voteDeadlineAt, now)}
+              {formatRemaining(issue.voteDeadlineAt, now)}
             </span>
           )}
-
-          <span
-            className={`inline-flex items-center gap-[5px] rounded-full px-[9px] py-1 text-[11.5px] leading-none font-extrabold ${badgeClass}`}
-          >
-            {pending && <Icon name="hourglass_top" filled={false} size={14} />}
-            {label}
-          </span>
         </div>
 
-        <h3 className="text-pretty text-[17px] leading-[1.4] font-extrabold tracking-[-0.03em] text-ink">
+        <h3
+          className={`text-h3 text-pretty ${pending ? "text-ink-muted" : "text-ink"}`}
+        >
           {issue.title}
         </h3>
 
-        {/* 선택지: 득표율 상위 2개 우선(투표 전이라 데이터가 없으면 텍스트만). 내 선택은
-            박스로 따로 빼지 않고 체크 아이콘 하나로만 가볍게 표시한다 — 카드 공간 절약. */}
-        <div className="flex flex-col gap-1.5">
-          {topOptions.map((option) => {
-            const pct = ratio?.[option.id]
-            const isMine = option.id === myOption?.id
-            const minority = isMine && isMinority
-            return (
-              <div key={option.id} className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5">
-                  {isMine && (
-                    <Icon name="check_circle" size={13} className="flex-none text-accent" />
-                  )}
-                  <span
-                    className={`text-[12px] ${isMine ? "font-extrabold text-ink" : "text-ink-subtle"}`}
-                  >
-                    {option.text}
-                  </span>
-                  <div className="flex-auto" />
-                  {pct !== undefined && (
-                    <span
-                      className={`text-[12px] tabular-nums ${minority ? "font-bold text-accent" : "text-ink-subtle"}`}
-                    >
-                      {pct}%{minority && " · 소수"}
-                    </span>
-                  )}
-                </div>
-                {/* 투표 전이라 pct가 없어도 빈 바(트랙만)를 그려서 카드 모양을 통일한다. */}
-                <div className="h-1.5 overflow-hidden rounded-full bg-track">
-                  {pct !== undefined && (
-                    <div className="h-full rounded-full bg-info" style={{ width: `${pct}%` }} />
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        {hiddenOptionCount > 0 && (
-          <span className="text-[12px] text-ink-faint">
-            외 선택지 {hiddenOptionCount}개 더 ·{" "}
-            {ratio ? "상세에서 확인" : notStarted ? "시작 전" : "눌러서 투표하기"}
-          </span>
+        {status === "open" && (
+          <p className="text-caption font-semibold text-ink-faint tabular-nums">
+            선택지 {issue.options.length}개 · 눌러서 투표하기 →
+          </p>
         )}
-        {!ratio && hiddenOptionCount <= 0 && (
-          <p className="text-[12px] font-semibold text-ink-faint">
-            {notStarted ? "곧 시작해요" : "눌러서 투표하기 →"}
+
+        {status === "voted" && myOption && ratio && (
+          <>
+            <div className="flex items-center gap-2.5 rounded-lg bg-sunken px-[13px] py-3">
+              <Icon
+                name="check_circle"
+                size={17}
+                className="text-accent"
+                style={{ color: "var(--accent)" }}
+              />
+              <span className="text-label">내 선택 · {myOption.text}</span>
+              <div className="flex-auto" />
+              {isMinority && (
+                <span className="rounded-md bg-[color:color-mix(in_oklab,var(--accent)_14%,transparent)] px-[7px] py-[5px] text-caption leading-none font-extrabold text-accent tabular-nums">
+                  {minorityPct}%만 이쪽
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {votedOptions.map((option) => {
+                const pct = ratio[option.id] ?? 0
+                const isMine = option.id === myOption.id
+                return (
+                  <div key={option.id} className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-caption ${isMine ? "font-extrabold text-ink" : "text-ink-subtle"}`}
+                      >
+                        {option.text}
+                      </span>
+                      <div className="flex-auto" />
+                      <span className="text-caption tabular-nums text-ink-subtle">
+                        {pct}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-track">
+                      <div
+                        className={`h-full rounded-full ${isMine ? "bg-accent" : "bg-track"}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            {hiddenOptionCount > 0 && (
+              <span className="text-caption text-ink-faint">
+                외 선택지 {hiddenOptionCount}개 더 · 상세에서 확인
+              </span>
+            )}
+          </>
+        )}
+
+        {pending && (
+          <p className="text-caption font-semibold text-ink-faint tabular-nums">
+            {myOption
+              ? `결과 판정 예정 · 내 선택 ${myOption.text}`
+              : "결과 판정 예정"}
           </p>
         )}
 
         {settled && (
-          <p
-            className={`inline-flex items-center gap-1.5 text-[12.5px] font-bold ${
-              result === "correct" ? "text-success" : "text-ink-muted"
-            }`}
-          >
-            {result === "correct" && <Icon name="check_circle" size={14} className="flex-none" />}
-            {result === "correct"
-              ? "맞혔어요"
-              : result === "wrong"
-                ? "아쉽게 틀렸어요"
-                : "결과가 확정됐어요"}
-            {correctOption && ` · 정답 · ${correctOption.text}`}
-          </p>
+          <div className="flex items-end gap-4">
+            <div className="flex flex-1 flex-col gap-1">
+              <div className={`text-label ${deltaColor}`}>
+                {result === "correct"
+                  ? "맞혔어요"
+                  : result === "wrong"
+                    ? "아쉽게 틀렸어요"
+                    : "결과가 확정됐어요"}
+              </div>
+              <div className="text-caption leading-[1.55] font-semibold text-pretty text-ink-faint">
+                {correctOption && `정답 · ${correctOption.text}`}
+                {totalVotes !== undefined &&
+                  ` · 총 ${totalVotes.toLocaleString()}명 참여`}
+              </div>
+            </div>
+          </div>
         )}
-      </div>
-
-      <div className="flex items-center gap-2 border-t border-line bg-card-faint px-[18px] py-[11px]">
-        <Icon name="group" filled={false} size={16} className="flex-none text-ink-subtle" />
-        <span className="text-[12px] font-bold text-ink-muted tabular-nums">
-          총 {(totalVotes ?? 0).toLocaleString()}명 참여
-        </span>
-        <div className="flex-auto" />
-        <span className="text-[12px] font-bold text-ink-muted">{label}</span>
       </div>
     </article>
   )

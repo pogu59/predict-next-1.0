@@ -65,7 +65,7 @@ export function ConfirmDialog({
         </DialogHeader>
 
         {error && (
-          <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-wrong">
+          <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
             {error}
           </div>
         )}

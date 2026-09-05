@@ -48,57 +48,39 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* 우리 화면 전용 3단계 radius 스케일 — rounded-s/m/l로 사용. shadcn 프리미티브(Button/Dialog)가 쓰는
-   위 --radius-sm/md/lg/xl 등과는 별개 네임스페이스라 서로 덮어쓰지 않는다. */
-@theme {
-  --radius-s: 0.5rem; /* 8px — 칩/작은 배지/버튼 */
-  --radius-m: 0.625rem; /* 10px — 인풋/박스 */
-  --radius-l: 0.875rem; /* 14px — 카드/패널 */
-}
-
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  /* Surfaces — 헤더만 다크 크롬으로 남기고 본문은 밝은 테마(design_handoff_predict_home_bright) */
-  --bg: #f1f1f3;
-  --chrome: #16151a;
-  --sunken: #f5f5f7;
-  --card: #ffffff;
-  --card-faint: #fbfbfc;
-  --control: #f5f5f7;
-  --hot: #ffefeb;
-  --track: #f2f2f4;
-  --fill-neutral: #d6d6db;
+  /* Surfaces (어두운 → 밝은 순) */
+  --bg: #100f12;
+  --chrome: #141317;
+  --sunken: #161519;
+  --card: #1b1a1f;
+  --control: #26242c;
+  --hot: #221518;
+  --track: #2a2831;
 
   /* Brand */
-  --accent: #ff5436;
+  --accent: #ff5a48;
   --accent-ink: #170d0c;
-  --accent-deep: #e23f22;
+  --accent-deep: #d93b6b;
 
   /* State */
-  --wrong: #b42318;
-  --wrong-chip: #fbeaea;
+  --wrong: #8d97ab;
+  --wrong-chip: #2a2e38;
   --void: #f2c14e;
-  --success: #0e7a4b;
-  --success-bg: #f1faf4;
-  --success-border: #cdebd9;
-  --warn: #946612;
-  --warn-bg: #fff7e4;
-  --warn-border: #f1dfaf;
-  --info: #3b7de0;
 
   /* Text */
-  --ink: #16151a;
-  --ink-muted: color-mix(in oklab, var(--ink) 66%, transparent);
-  --ink-subtle: color-mix(in oklab, var(--ink) 50%, transparent);
-  --ink-faint: color-mix(in oklab, var(--ink) 40%, transparent);
+  --ink: #f5f3f0;
+  --ink-muted: color-mix(in oklab, var(--ink) 60%, transparent);
+  --ink-subtle: color-mix(in oklab, var(--ink) 45%, transparent);
+  --ink-faint: color-mix(in oklab, var(--ink) 33%, transparent);
 
   /* Hairline */
-  --line: rgb(22 21 26 / 0.09);
-  --line-strong: #cfcfd6;
+  --line: rgb(255 255 255 / 0.07);
+  --line-strong: rgb(255 255 255 / 0.14);
 
   /* Categories */
-  --cat-all: #ff5436;
   --cat-politics: #a97bff;
   --cat-sports: #4c8dff;
   --cat-esports: #2ed3c0;
@@ -110,11 +92,11 @@
 }
 
 /*
- * 이 앱은 라이트/다크 토글이 없는 상시 단일 테마라 <html>에 .dark 클래스를 준 적이 없다.
+ * 이 앱은 라이트/다크 토글이 없는 상시 다크 테마라 <html>에 .dark 클래스를 준 적이 없다.
  * 그런데 shadcn의 Button/Dialog 등은 --primary/--border/--background 같은 값을
  * .dark{} 블록에서만 정의해뒀어서, 그 블록이 활성화된 적이 없다 보니 이 변수들이
  * 전부 미정의 상태였다(버튼 배경/테두리가 안 보이고 텍스트만 남는 원인).
- * 앱이 이미 쓰고 있는 팔레트 변수로 매핑해 :root에서 바로 정의해준다.
+ * 앱이 이미 쓰고 있는 다크 팔레트 변수로 매핑해 :root에서 바로 정의해준다.
  */
 :root {
   --background: var(--bg);
@@ -186,12 +168,9 @@
   --color-headerBg: var(--chrome);
   --color-sunken: var(--sunken);
   --color-card: var(--card);
-  --color-card-faint: var(--card-faint);
   --color-card-hot: var(--hot);
-  --color-hot: var(--hot);
   --color-control: var(--control);
   --color-track: var(--track);
-  --color-fill-neutral: var(--fill-neutral);
 
   /* Brand & state */
   --color-accent: var(--accent);
@@ -200,13 +179,6 @@
   --color-wrong: var(--wrong);
   --color-wrong-chip: var(--wrong-chip);
   --color-void: var(--void);
-  --color-success: var(--success);
-  --color-success-bg: var(--success-bg);
-  --color-success-border: var(--success-border);
-  --color-warn: var(--warn);
-  --color-warn-bg: var(--warn-bg);
-  --color-warn-border: var(--warn-border);
-  --color-info: var(--info);
 
   /* Text */
   --color-ink: var(--ink);
@@ -219,7 +191,6 @@
   --color-line-strong: var(--line-strong);
 
   /* Categories */
-  --color-cat-all: var(--cat-all);
   --color-cat-politics: var(--cat-politics);
   --color-cat-sports: var(--cat-sports);
   --color-cat-esports: var(--cat-esports);
@@ -275,58 +246,4 @@
   --text-label: 0.8125rem;
   --text-label--line-height: 1;
   --text-label--font-weight: 700;
-}
-
-/* 위 9단계 스케일을 text- 접두사 없이 그대로 className에 쓰기 위한 별칭 유틸리티. */
-@utility title1 {
-  font-size: var(--text-title1);
-  line-height: var(--text-title1--line-height);
-  font-weight: var(--text-title1--font-weight);
-  letter-spacing: var(--text-title1--letter-spacing);
-}
-@utility title2 {
-  font-size: var(--text-title2);
-  line-height: var(--text-title2--line-height);
-  font-weight: var(--text-title2--font-weight);
-  letter-spacing: var(--text-title2--letter-spacing);
-}
-@utility title3 {
-  font-size: var(--text-title3);
-  line-height: var(--text-title3--line-height);
-  font-weight: var(--text-title3--font-weight);
-  letter-spacing: var(--text-title3--letter-spacing);
-}
-@utility h1 {
-  font-size: var(--text-h1);
-  line-height: var(--text-h1--line-height);
-  font-weight: var(--text-h1--font-weight);
-  letter-spacing: var(--text-h1--letter-spacing);
-}
-@utility h2 {
-  font-size: var(--text-h2);
-  line-height: var(--text-h2--line-height);
-  font-weight: var(--text-h2--font-weight);
-  letter-spacing: var(--text-h2--letter-spacing);
-}
-@utility h3 {
-  font-size: var(--text-h3);
-  line-height: var(--text-h3--line-height);
-  font-weight: var(--text-h3--font-weight);
-  letter-spacing: var(--text-h3--letter-spacing);
-}
-@utility body {
-  font-size: var(--text-body);
-  line-height: var(--text-body--line-height);
-  font-weight: var(--text-body--font-weight);
-}
-@utility caption {
-  font-size: var(--text-caption);
-  line-height: var(--text-caption--line-height);
-  font-weight: var(--text-caption--font-weight);
-  letter-spacing: var(--text-caption--letter-spacing);
-}
-@utility label {
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
-  font-weight: var(--text-label--font-weight);
 }

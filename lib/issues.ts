@@ -54,29 +54,6 @@ export function isUrgent(iso: string, now = new Date()) {
   return ms > 0 && ms < 1000 * 60 * 60 * 4
 }
 
-/** status가 open이어도 voteStartAt이 아직 안 됐으면 베팅 시간이 아니다("시작 전"). */
-export function hasVotingStarted(issue: Issue, now = new Date()) {
-  return new Date(issue.voteStartAt).getTime() <= now.getTime()
-}
-
-/**
- * 카드/상세 공통 상태 배지 문구 — 시작 전(voteStartAt 이전) · 진행(open/voted) ·
- * 마감(pending, 투표 끝·결과 대기) · 완료(settled, 정산 완료) 네 단어로만 표기한다.
- */
-export function stageLabel(status: IssueStatus, notStarted = false) {
-  if (notStarted) return "시작 전"
-  return status === "settled" ? "완료" : status === "pending" ? "마감" : "진행"
-}
-
-export function stageBadgeClass(status: IssueStatus, notStarted = false) {
-  if (notStarted) return "border border-line-strong bg-sunken text-ink-subtle"
-  return status === "settled"
-    ? "border border-line text-ink-subtle"
-    : status === "pending"
-      ? "border border-warn-border bg-warn-bg text-warn"
-      : "bg-hot text-accent"
-}
-
 /** 1초마다 갱신되는 현재 시각. 남은 시간 카운트다운을 새로고침 없이 자동으로 최신화하는 데 쓴다. */
 export function useNow(intervalMs = 1000) {
   const [now, setNow] = useState(() => new Date())

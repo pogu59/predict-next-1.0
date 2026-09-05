@@ -5,18 +5,7 @@ import { useState } from "react"
 import { Coins } from "lucide-react"
 
 import { categoryMeta } from "@/lib/categoryMeta"
-import {
-  formatRemaining,
-  hasVotingStarted,
-  issueStatus,
-  isUrgent,
-  settlementResult,
-  stageBadgeClass,
-  stageLabel,
-  totalVoteCount,
-  useNow,
-  voteRatio,
-} from "@/lib/issues"
+import { formatRemaining, issueStatus, isUrgent, settlementResult, totalVoteCount, useNow, voteRatio } from "@/lib/issues"
 import { useMe } from "@/lib/queries/auth"
 import { useCategories } from "@/lib/queries/category"
 import { useCastVote, useCreateIssueReply, useDeleteIssueReply, useIssue, useIssueReplies } from "@/lib/queries/issue"
@@ -106,7 +95,6 @@ export default function IssueDetailPage() {
     (o) => o.id === issue.correctOptionId,
   )
   const settled = status === "settled"
-  const notStarted = status === "open" && !hasVotingStarted(issue, now)
   const ratio = status === "open" ? undefined : voteRatio(issue.options)
   const totalVotes =
     status === "open" ? undefined : totalVoteCount(issue.options)
@@ -141,22 +129,14 @@ export default function IssueDetailPage() {
             {(status === "open" || status === "voted") && (
               <span
                 className={`rounded-md px-2.5 py-1.5 text-caption font-extrabold tabular-nums ${
-                  !notStarted && isUrgent(issue.voteDeadlineAt, now)
+                  isUrgent(issue.voteDeadlineAt, now)
                     ? "bg-[color:color-mix(in_oklab,var(--accent)_14%,transparent)] text-accent"
                     : "bg-control text-ink-subtle"
                 }`}
               >
-                {notStarted
-                  ? formatRemaining(issue.voteStartAt, now)
-                  : formatRemaining(issue.voteDeadlineAt, now)}
+                {formatRemaining(issue.voteDeadlineAt, now)}
               </span>
             )}
-            <span
-              className={`inline-flex items-center gap-[5px] rounded-full px-2.5 py-1.5 text-caption font-extrabold ${stageBadgeClass(status, notStarted)}`}
-            >
-              {status === "pending" && <Icon name="hourglass_top" filled={false} size={14} />}
-              {stageLabel(status, notStarted)}
-            </span>
           </div>
 
           <div className="flex flex-col gap-[18px] rounded-2xl border border-line bg-card p-6">
@@ -171,24 +151,16 @@ export default function IssueDetailPage() {
 
             {status === "open" ? (
               <div className="flex flex-col gap-3">
-                {notStarted && (
-                  <span className="text-caption text-ink-subtle tabular-nums">
-                    {formatRemaining(issue.voteStartAt, now)} 뒤 투표가 시작돼요
-                  </span>
-                )}
                 <div className="flex flex-col gap-3">
                   {issue.options.map((option) => (
                     <button
                       key={option.id}
                       type="button"
-                      disabled={notStarted}
                       onClick={() => handleOptionSelect(option.id, option.text)}
                       className={`rounded-xl border py-5 text-h2 transition-colors ${
-                        notStarted
-                          ? "cursor-not-allowed border-line bg-sunken text-ink-faint"
-                          : selectedOption?.optionId === option.id
-                            ? "border-accent text-accent bg-control"
-                            : "border-line bg-control text-ink hover:border-accent hover:text-accent"
+                        selectedOption?.optionId === option.id
+                          ? "border-accent text-accent bg-control"
+                          : "border-line bg-control text-ink hover:border-accent hover:text-accent"
                       }`}
                     >
                       {option.text}
@@ -196,7 +168,7 @@ export default function IssueDetailPage() {
                   ))}
                 </div>
 
-                {notStarted ? null : selectedOption ? (
+                {selectedOption ? (
                   <div className="flex flex-col gap-2.5 rounded-xl border border-line bg-sunken p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-label text-ink">
@@ -250,7 +222,11 @@ export default function IssueDetailPage() {
                   const isMine = option.id === myOptionId
                   const isCorrect =
                     settled && option.id === issue.correctOptionId
-                  const barColor = isMine ? "bg-accent" : "bg-info"
+                  const barColor = isCorrect
+                    ? "bg-accent"
+                    : isMine
+                      ? "bg-accent"
+                      : "bg-track"
                   return (
                     <div
                       key={option.id}
@@ -303,7 +279,13 @@ export default function IssueDetailPage() {
 
                 {settled && (
                   <span
-                    className={`text-label ${result === "correct" ? "text-success" : "text-ink-muted"}`}
+                    className={`text-label ${
+                      result === "correct"
+                        ? "text-accent"
+                        : result === "wrong"
+                          ? "text-wrong"
+                          : "text-void"
+                    }`}
                   >
                     {result === "correct"
                       ? "맞혔어요"
@@ -328,7 +310,13 @@ export default function IssueDetailPage() {
 
         <aside className="flex w-full flex-col gap-[13px] lg:w-[290px] lg:flex-none">
           {me ? (
-            <div className="flex flex-col gap-3 rounded-2xl bg-accent p-[17px]">
+            <div
+              className="flex flex-col gap-3 rounded-2xl p-[17px]"
+              style={{
+                background:
+                  "linear-gradient(105deg, var(--accent), var(--accent-deep))",
+              }}
+            >
               <span className="flex items-center text-caption text-[color:color-mix(in_oklab,var(--accent-ink)_62%,transparent)]">
                 내 신용도 · {tierLabel(me.tier)} {tierIcon(me.tier)}
               </span>
