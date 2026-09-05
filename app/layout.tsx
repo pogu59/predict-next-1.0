@@ -1,14 +1,12 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 
 import "./globals.css"
 
+import { pretendard } from "./fonts"
 import { HeaderLayout } from "./HeaderLayout"
 import { QueryProvider } from "./QueryProvider"
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
   title: "Predict",
@@ -20,7 +18,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={cn("font-sans", inter.variable)}
+      className={cn("font-sans", pretendard.variable)}
       suppressHydrationWarning
     >
       <head>

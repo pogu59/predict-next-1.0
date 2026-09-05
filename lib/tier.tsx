@@ -24,6 +24,26 @@ const TIER_IMAGE: Record<string, string> = {
   MASTER: "/tier-icons/tier-master.svg",
 }
 
+/** design_handoff_predict_home_bright 티어 팔레트(브론즈~마스터). 헤더 티어 pill의 배경/테두리는 여기서 color-mix로 옅게 파생시킨다. */
+const TIER_COLORS: Record<string, string> = {
+  UNRANKED: "#B5B9C1",
+  BRONZE: "#D9A06A",
+  SILVER: "#C9D3DE",
+  GOLD: "#F2C14E",
+  PLATINUM: "#7FD8C8",
+  DIAMOND: "#6FC5FF",
+  MASTER: "#FF5436",
+}
+
+export function tierChipStyle(tier: string): React.CSSProperties {
+  const c = TIER_COLORS[tier] ?? TIER_COLORS.BRONZE
+  return {
+    background: `color-mix(in oklab, ${c} 14%, white)`,
+    borderColor: `color-mix(in oklab, ${c} 38%, white)`,
+    color: `color-mix(in oklab, ${c} 65%, black)`,
+  }
+}
+
 const TIER_ORDER = [
   "UNRANKED",
   "BRONZE",
@@ -43,13 +63,13 @@ const TIER_THRESHOLDS: Record<(typeof TIER_ORDER)[number], number> = {
   MASTER: 500,
 }
 
-export function tierIcon(tier: string) {
+export function tierIcon(tier: string, size = 40) {
   return (
     <Image
       src={TIER_IMAGE[tier]}
-      alt={TIER_IMAGE[tier]}
-      width={40}
-      height={40}
+      alt={tierLabel(tier)}
+      width={size}
+      height={size}
     />
   )
 }

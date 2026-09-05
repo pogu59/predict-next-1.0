@@ -85,7 +85,7 @@ export default function MyPage() {
     <div className="flex flex-col items-center gap-[22px] px-4 pt-8 pb-11 sm:px-6">
       <div className="flex w-full max-w-[760px] flex-col gap-[22px]">
         {error && (
-          <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
+          <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-wrong">
             {error.message}
           </div>
         )}
@@ -104,11 +104,7 @@ export default function MyPage() {
               </div>
             </div>
             <div
-              className="flex w-full flex-col gap-2.5 rounded-2xl p-4 sm:w-[250px] sm:flex-none"
-              style={{
-                background:
-                  "linear-gradient(105deg, var(--accent), var(--accent-deep))",
-              }}
+              className="flex w-full flex-col gap-2.5 rounded-2xl bg-accent p-4 sm:w-[250px] sm:flex-none"
             >
               <span className="text-caption text-[color:color-mix(in_oklab,var(--accent-ink)_62%,transparent)]">
                 내 신용도
