@@ -48,6 +48,14 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* 우리 화면 전용 3단계 radius 스케일 — rounded-s/m/l로 사용. shadcn 프리미티브(Button/Dialog)가 쓰는
+   위 --radius-sm/md/lg/xl 등과는 별개 네임스페이스라 서로 덮어쓰지 않는다. */
+@theme {
+  --radius-s: 0.5rem; /* 8px — 칩/작은 배지/버튼 */
+  --radius-m: 0.625rem; /* 10px — 인풋/박스 */
+  --radius-l: 0.875rem; /* 14px — 카드/패널 */
+}
+
 :root {
   color-scheme: light;
 
@@ -77,6 +85,7 @@
   --warn: #946612;
   --warn-bg: #fff7e4;
   --warn-border: #f1dfaf;
+  --info: #3b7de0;
 
   /* Text */
   --ink: #16151a;
@@ -89,6 +98,7 @@
   --line-strong: #cfcfd6;
 
   /* Categories */
+  --cat-all: #ff5436;
   --cat-politics: #a97bff;
   --cat-sports: #4c8dff;
   --cat-esports: #2ed3c0;
@@ -196,6 +206,7 @@
   --color-warn: var(--warn);
   --color-warn-bg: var(--warn-bg);
   --color-warn-border: var(--warn-border);
+  --color-info: var(--info);
 
   /* Text */
   --color-ink: var(--ink);
@@ -208,6 +219,7 @@
   --color-line-strong: var(--line-strong);
 
   /* Categories */
+  --color-cat-all: var(--cat-all);
   --color-cat-politics: var(--cat-politics);
   --color-cat-sports: var(--cat-sports);
   --color-cat-esports: var(--cat-esports);
@@ -263,4 +275,58 @@
   --text-label: 0.8125rem;
   --text-label--line-height: 1;
   --text-label--font-weight: 700;
+}
+
+/* 위 9단계 스케일을 text- 접두사 없이 그대로 className에 쓰기 위한 별칭 유틸리티. */
+@utility title1 {
+  font-size: var(--text-title1);
+  line-height: var(--text-title1--line-height);
+  font-weight: var(--text-title1--font-weight);
+  letter-spacing: var(--text-title1--letter-spacing);
+}
+@utility title2 {
+  font-size: var(--text-title2);
+  line-height: var(--text-title2--line-height);
+  font-weight: var(--text-title2--font-weight);
+  letter-spacing: var(--text-title2--letter-spacing);
+}
+@utility title3 {
+  font-size: var(--text-title3);
+  line-height: var(--text-title3--line-height);
+  font-weight: var(--text-title3--font-weight);
+  letter-spacing: var(--text-title3--letter-spacing);
+}
+@utility h1 {
+  font-size: var(--text-h1);
+  line-height: var(--text-h1--line-height);
+  font-weight: var(--text-h1--font-weight);
+  letter-spacing: var(--text-h1--letter-spacing);
+}
+@utility h2 {
+  font-size: var(--text-h2);
+  line-height: var(--text-h2--line-height);
+  font-weight: var(--text-h2--font-weight);
+  letter-spacing: var(--text-h2--letter-spacing);
+}
+@utility h3 {
+  font-size: var(--text-h3);
+  line-height: var(--text-h3--line-height);
+  font-weight: var(--text-h3--font-weight);
+  letter-spacing: var(--text-h3--letter-spacing);
+}
+@utility body {
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: var(--text-body--font-weight);
+}
+@utility caption {
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  font-weight: var(--text-caption--font-weight);
+  letter-spacing: var(--text-caption--letter-spacing);
+}
+@utility label {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: var(--text-label--font-weight);
 }

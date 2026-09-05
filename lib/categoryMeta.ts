@@ -15,7 +15,7 @@ export const CATEGORY_META: Record<string, CategoryMeta> = {
   날씨: { icon: "rainy", color: "var(--cat-weather)" },
 }
 
-export const ALL_CATEGORY_META: CategoryMeta = { icon: "bolt", color: "var(--accent)" }
+export const ALL_CATEGORY_META: CategoryMeta = { icon: "bolt", color: "var(--cat-all)" }
 
 export function categoryMeta(name: string): CategoryMeta {
   return CATEGORY_META[name] ?? ALL_CATEGORY_META

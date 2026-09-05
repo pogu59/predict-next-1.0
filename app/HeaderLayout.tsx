@@ -9,7 +9,6 @@ import { useMe } from "@/lib/queries/auth"
 import { queryKeys } from "@/lib/queries/keys"
 import { tierChipStyle, tierIcon, tierLabel } from "@/lib/tier"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { Icon } from "@/components/icon"
 
 type HeaderLayoutProps = {
   children: React.ReactNode
@@ -29,19 +28,12 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
   const queryClient = useQueryClient()
   const { data: me } = useMe()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const [search, setSearch] = useState("")
 
   function handleLogout() {
     clearSessionToken()
     queryClient.removeQueries({ queryKey: queryKeys.me })
     setShowLogoutConfirm(false)
     router.push("/login")
-  }
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    const q = search.trim()
-    router.push(q ? `/issue?q=${encodeURIComponent(q)}` : "/issue")
   }
 
   return (
@@ -82,20 +74,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
           )}
         </nav>
 
-        <form
-          onSubmit={handleSearch}
-          className="order-last flex w-full min-w-0 items-center gap-2.5 rounded-[10px] border border-white/16 bg-white/9 px-[13px] py-2.5 md:order-none md:w-auto md:max-w-[360px] md:flex-1"
-        >
-          <Icon name="search" filled={false} size={19} className="flex-none text-white/60" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="이슈 검색"
-            className="w-full min-w-0 bg-transparent text-[13.5px] font-medium text-white placeholder:text-white/60 focus:outline-none"
-          />
-        </form>
-
-        <div className="hidden flex-auto md:block" />
+        <div className="flex-auto" />
 
         <div className="flex flex-none items-center gap-2.5">
           {me ? (

@@ -3,6 +3,7 @@ import { adminApi } from "./admin"
 import { authApi } from "./auth"
 import { categoryApi } from "./category"
 import { issueApi } from "./issue"
+import { mockApi } from "./mock"
 import { postApi } from "./post"
 import { userApi } from "./user"
 
@@ -13,19 +14,24 @@ let cached: ApiInterface | null = null
  * 몇 번 호출하든 항상 같은 객체를 돌려준다 — 매번 새로 만들 이유가 없고, 각 네임스페이스
  * 구현(issueApi 등)도 client.ts의 axios 인스턴스 하나를 그대로 재사용한다.
  *
+ * NEXT_PUBLIC_USE_MOCK=1이면 백엔드 없이 로컬 UI 확인용 목데이터(mock.ts, 이슈 50개)를 쓴다.
+ *
  * 새 도메인을 추가할 때: ApiInterface(types.ts)에 타입을 먼저 추가하면, 그 네임스페이스를
  * 아래 객체에 채워 넣지 않는 한 이 파일이 컴파일 에러로 막는다.
  */
 export function Api(): ApiInterface {
   if (!cached) {
-    cached = {
-      category: categoryApi,
-      issue: issueApi,
-      post: postApi,
-      auth: authApi,
-      user: userApi,
-      admin: adminApi,
-    }
+    cached =
+      process.env.NEXT_PUBLIC_USE_MOCK === "1"
+        ? mockApi
+        : {
+            category: categoryApi,
+            issue: issueApi,
+            post: postApi,
+            auth: authApi,
+            user: userApi,
+            admin: adminApi,
+          }
   }
   return cached
 }
