@@ -139,18 +139,23 @@ export default function AdminIssueDetailPage() {
       )}
 
       {issue.status === "PENDING_RESULT" && (
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-line-strong p-4">
+        <div className="flex flex-col gap-2 rounded-xl border border-dashed border-line-strong p-4">
           <span className="text-label text-ink-subtle">결과 확정</span>
-          {issue.options.map((option) => (
-            <Button
-              key={option.id}
-              type="button"
-              disabled={busy}
-              onClick={() => setPendingConfirmOption(option)}
-            >
-              {option.text} 확정
-            </Button>
-          ))}
+          <div className="flex flex-col gap-2">
+            {issue.options.map((option) => (
+              <Button
+                key={option.id}
+                type="button"
+                variant="outline"
+                disabled={busy}
+                onClick={() => setPendingConfirmOption(option)}
+                className="w-full justify-between"
+              >
+                <span>{option.text}</span>
+                <span className="text-ink-subtle tabular-nums">{option.voteCount ?? 0}표</span>
+              </Button>
+            ))}
+          </div>
         </div>
       )}
 

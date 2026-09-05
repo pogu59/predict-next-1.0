@@ -31,7 +31,7 @@ export function HeaderLayout({ children }: HeaderLayoutProps) {
 
   function handleLogout() {
     clearSessionToken()
-    queryClient.setQueryData(queryKeys.me, undefined)
+    queryClient.removeQueries({ queryKey: queryKeys.me })
     setShowLogoutConfirm(false)
     router.push("/login")
   }

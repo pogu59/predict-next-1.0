@@ -91,6 +91,31 @@
   --radius: 0.75rem;
 }
 
+/*
+ * 이 앱은 라이트/다크 토글이 없는 상시 다크 테마라 <html>에 .dark 클래스를 준 적이 없다.
+ * 그런데 shadcn의 Button/Dialog 등은 --primary/--border/--background 같은 값을
+ * .dark{} 블록에서만 정의해뒀어서, 그 블록이 활성화된 적이 없다 보니 이 변수들이
+ * 전부 미정의 상태였다(버튼 배경/테두리가 안 보이고 텍스트만 남는 원인).
+ * 앱이 이미 쓰고 있는 다크 팔레트 변수로 매핑해 :root에서 바로 정의해준다.
+ */
+:root {
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card-foreground: var(--ink);
+  --popover: var(--card);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--bg);
+  --secondary: var(--control);
+  --secondary-foreground: var(--ink);
+  --muted: var(--control);
+  --muted-foreground: var(--ink-subtle);
+  --destructive: var(--accent-deep);
+  --border: var(--line-strong);
+  --input: var(--control);
+  --ring: var(--accent);
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
