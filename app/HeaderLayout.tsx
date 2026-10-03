@@ -17,6 +17,7 @@ type HeaderLayoutProps = {
 const NAV_LIST = [
   { label: "이슈", value: "issue" },
   { label: "커뮤니티", value: "board" },
+  { label: "미니게임", value: "game" },
   { label: "마이페이지", value: "my" },
 ]
 

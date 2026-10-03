@@ -12,7 +12,7 @@ type IconProps = {
  *
  * <link
  *   rel="stylesheet"
- *   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0"
+ *   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0..1,0&display=block"
  * />
  */
 export function Icon({ name, filled = true, size = 16, className, style }: IconProps) {

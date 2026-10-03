@@ -7,6 +7,6 @@ export default function Home() {
   const router = useRouter()
   useEffect(() => {
     router.replace("/issue")
-  })
+  }, [router])
   return <div></div>
 }

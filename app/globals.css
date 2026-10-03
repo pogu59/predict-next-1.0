@@ -186,7 +186,7 @@
   --color-ink-subtle: var(--ink-subtle);
   --color-ink-faint: var(--ink-faint);
 
-  /* Hairline �� border-line / border-line-strong */
+  /* Hairline → border-line / border-line-strong */
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
 

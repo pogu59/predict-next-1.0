@@ -44,10 +44,13 @@ const TIER_THRESHOLDS: Record<(typeof TIER_ORDER)[number], number> = {
 }
 
 export function tierIcon(tier: string) {
+  // 서버가 프론트에 없는 티어 이름을 보내면 src가 undefined가 되어 next/image가 throw한다.
+  const src = TIER_IMAGE[tier]
+  if (!src) return null
   return (
     <Image
-      src={TIER_IMAGE[tier]}
-      alt={TIER_IMAGE[tier]}
+      src={src}
+      alt={tierLabel(tier)}
       width={40}
       height={40}
     />
