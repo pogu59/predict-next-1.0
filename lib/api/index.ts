@@ -4,6 +4,7 @@ import { authApi } from "./auth"
 import { categoryApi } from "./category"
 import { issueApi } from "./issue"
 import { postApi } from "./post"
+import { uploadApi } from "./upload"
 import { userApi } from "./user"
 
 let cached: ApiInterface | null = null
@@ -22,6 +23,7 @@ export function Api(): ApiInterface {
       category: categoryApi,
       issue: issueApi,
       post: postApi,
+      upload: uploadApi,
       auth: authApi,
       user: userApi,
       admin: adminApi,
@@ -30,31 +32,4 @@ export function Api(): ApiInterface {
   return cached
 }
 
-export type {
-  AdminIssueDetail,
-  AdminIssueListItem,
-  AdminIssueListParams,
-  AdminUserDetail,
-  AdminUserListItem,
-  AdminUserListParams,
-  ApiError,
-  ApiInterface,
-  BackendIssueStatus,
-  BackendRole,
-  CastVoteReq,
-  Category,
-  CreatePostReq,
-  Issue,
-  IssueOption,
-  IssueUpsertPayload,
-  Me,
-  MyStats,
-  MyVote,
-  PageResponse,
-  PostDetail,
-  PostListItem,
-  PostListParams,
-  Reply,
-  SettlementResult,
-  VoteResult,
-} from "./types"
+export type * from "./types"

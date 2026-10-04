@@ -1,329 +1,233 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import {
+  Activity,
+  AlarmClock,
+  BadgeCheck,
+  CalendarClock,
+  ChevronRight,
+  FileText,
+  Hourglass,
+  MessageCircle,
+  Siren,
+  Users,
+  type LucideIcon,
+} from "lucide-react"
+import Link from "next/link"
 
-import { type ApiError, type BackendIssueStatus } from "@/lib/api"
-import { issueStatusLabel } from "@/lib/issueStatus"
-import { useCategories } from "@/lib/queries/category"
-import { useAdminIssues, useCreateAdminIssue } from "@/lib/queries/admin"
-import { Badge } from "@/components/admin/badge"
-import { Select, TextInput } from "@/components/admin/controls"
-import { DataTable } from "@/components/admin/dataTable"
-import { Pagination } from "@/components/admin/pagination"
-import { Button } from "@/components/ui/button"
+import { DAY, formatDateTime, leadingOption, optionPercents, remainLabel, useNow } from "@/lib/issues"
+import { useAdminReports, useAllAdminIssues, useAllAdminUsers } from "@/lib/queries/admin"
+import { cn } from "@/lib/utils"
+import { useAdminUI } from "@/components/admin/admin-ui"
+import { ActionButton } from "@/components/admin/parts"
+import { ImageBox } from "@/components/ui/image-box"
 
-const STATUS_OPTIONS: BackendIssueStatus[] = [
-  "OPEN",
-  "PENDING_RESULT",
-  "CONFIRMED",
-]
-
-function toDateTimeLocal(value: string) {
-  return value.length >= 16 ? value.slice(0, 16) : value
+type Kpi = {
+  label: string
+  value: number
+  sub: string
+  Icon: LucideIcon
+  href: string
+  cardClass: string
+  iconClass: string
 }
 
-/** <input type="datetime-local">의 min 속성/검증 기준값 — 로컬(브라우저) 시각 기준. */
-function nowDateTimeLocal() {
-  const d = new Date()
-  d.setSeconds(0, 0)
-  const pad = (n: number) => String(n).padStart(2, "0")
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
+export default function AdminDashboardPage() {
+  const now = useNow()
+  const ui = useAdminUI()
+  const { data: issuePage } = useAllAdminIssues()
+  const { data: userPage } = useAllAdminUsers()
+  const { data: reports = [] } = useAdminReports("PENDING")
 
-export default function AdminIssuesPage() {
-  const router = useRouter()
-  const [page, setPage] = useState(0)
-  const [categoryId, setCategoryId] = useState<string>("")
-  const [status, setStatus] = useState<string>("")
-  const [keyword, setKeyword] = useState("")
+  const issues = issuePage?.items ?? []
+  const open = issues.filter((i) => i.status === "OPEN")
+  const pending = issues.filter((i) => i.status === "PENDING_RESULT")
+  const soon = open
+    .filter((i) => Date.parse(i.voteDeadlineAt) - now.getTime() < DAY)
+    .sort((a, b) => Date.parse(a.voteDeadlineAt) - Date.parse(b.voteDeadlineAt))
+  const users = userPage?.items ?? []
 
-  const [showCreateForm, setShowCreateForm] = useState(false)
-  const [createError, setCreateError] = useState<string | null>(null)
-  const [form, setForm] = useState({
-    categoryId: "",
-    title: "",
-    description: "",
-    voteStartAt: "",
-    voteDeadlineAt: "",
-    options: ["", ""],
-  })
-
-  const { data: categories = [] } = useCategories()
-  const {
-    data: listResult,
-    isLoading: loading,
-    error,
-  } = useAdminIssues({
-    categoryId: categoryId ? Number(categoryId) : undefined,
-    status: (status as BackendIssueStatus) || undefined,
-    keyword: keyword || undefined,
-    page,
-    size: 20,
-  })
-  const items = listResult?.items ?? []
-  const totalPages = listResult?.totalPages ?? 0
-
-  const createIssue = useCreateAdminIssue()
-
-  async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setCreateError(null)
-    const options = form.options.map((o) => o.trim()).filter(Boolean)
-    if (
-      !form.categoryId ||
-      !form.title ||
-      !form.voteStartAt ||
-      !form.voteDeadlineAt ||
-      options.length < 2
-    ) {
-      setCreateError(
-        "카테고리/제목/시작·마감 시각/선택지(2개 이상)는 필수입니다",
-      )
-      return
-    }
-    const now = new Date()
-    const start = new Date(form.voteStartAt)
-    const deadline = new Date(form.voteDeadlineAt)
-    if (start < now || deadline < now) {
-      setCreateError("시작·마감 시각은 현재 시각 이후로 설정해야 합니다")
-      return
-    }
-    if (deadline <= start) {
-      setCreateError("마감 시각은 시작 시각보다 늦어야 합니다")
-      return
-    }
-    setCreateError(null)
-    try {
-      await createIssue.mutateAsync({
-        categoryId: Number(form.categoryId),
-        title: form.title,
-        description: form.description || null,
-        voteStartAt: form.voteStartAt,
-        voteDeadlineAt: form.voteDeadlineAt,
-        options,
-      })
-      setForm({
-        categoryId: "",
-        title: "",
-        description: "",
-        voteStartAt: "",
-        voteDeadlineAt: "",
-        options: ["", ""],
-      })
-      setShowCreateForm(false)
-      setPage(0)
-    } catch (e) {
-      setCreateError((e as ApiError).message ?? "주제 생성에 실패했습니다")
-    }
-  }
+  const kpis: Kpi[] = [
+    {
+      label: "진행 중 이슈",
+      value: open.length,
+      sub: `마감 임박 ${soon.length}개`,
+      Icon: Activity,
+      href: "/admin/issues?status=OPEN",
+      cardClass: "bg-brand text-white",
+      iconClass: "bg-white/18",
+    },
+    {
+      label: "결과 확정 대기",
+      value: pending.length,
+      sub: "마감 후 정답 확정 필요",
+      Icon: Hourglass,
+      href: "/admin/issues?status=PENDING_RESULT",
+      cardClass: "bg-surface text-ink",
+      iconClass: "bg-warn-soft",
+    },
+    {
+      label: "미처리 신고",
+      value: reports.length,
+      sub: "게시글·댓글 신고",
+      Icon: Siren,
+      href: "/admin/reports",
+      cardClass: "bg-surface text-ink",
+      iconClass: "bg-danger-soft",
+    },
+    {
+      label: "전체 회원",
+      value: userPage?.totalElements ?? users.length,
+      sub: `활동 정지 ${users.filter((u) => u.suspended).length}명`,
+      Icon: Users,
+      href: "/admin/users",
+      cardClass: "bg-surface text-ink",
+      iconClass: "bg-track",
+    },
+  ]
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <Select
-          value={categoryId}
-          onChange={(e) => {
-            setPage(0)
-            setCategoryId(e.target.value)
-          }}
-        >
-          <option value="">전체 카테고리</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </Select>
-
-        <Select
-          value={status}
-          onChange={(e) => {
-            setPage(0)
-            setStatus(e.target.value)
-          }}
-        >
-          <option value="">전체 상태</option>
-          {STATUS_OPTIONS.map((s) => (
-            <option key={s} value={s}>
-              {issueStatusLabel(s)}
-            </option>
-          ))}
-        </Select>
-
-        <TextInput
-          value={keyword}
-          onChange={(e) => {
-            setPage(0)
-            setKeyword(e.target.value)
-          }}
-          placeholder="제목 검색"
-        />
-
-        <div className="flex-auto" />
-
-        <Button type="button" onClick={() => setShowCreateForm((v) => !v)}>
-          {showCreateForm ? "닫기" : "새 주제 등록"}
-        </Button>
+    <>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5">
+        {kpis.map((k) => (
+          <Link
+            key={k.label}
+            href={k.href}
+            className={cn(
+              "flex flex-col gap-3.5 rounded-[22px] px-[22px] py-5 shadow-card transition-transform duration-150 hover:-translate-y-0.5",
+              k.cardClass,
+            )}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] font-semibold opacity-75">{k.label}</span>
+              <span className={cn("grid size-9 place-items-center rounded-[11px]", k.iconClass)}>
+                <k.Icon className="size-[18px]" />
+              </span>
+            </div>
+            <span className="text-[38px] leading-none font-extrabold tracking-[-0.045em] tabular-nums">{k.value}</span>
+            <span className="text-xs font-semibold opacity-65">{k.sub}</span>
+          </Link>
+        ))}
       </div>
 
-      {showCreateForm && (
-        <form
-          onSubmit={handleCreate}
-          className="flex flex-col gap-3 rounded-xl border border-dashed border-line-strong p-4"
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(380px,1fr))] gap-3.5">
+        <Panel
+          Icon={Hourglass}
+          iconClass="text-warn-ink"
+          title="결과 확정 대기"
+          extra={
+            <span className="rounded-[7px] bg-warn-soft px-2 py-[3px] text-xs font-bold text-warn-ink">
+              {pending.length}
+            </span>
+          }
+          empty={pending.length === 0 ? "대기 중인 이슈가 없어요" : undefined}
         >
-          <div className="flex flex-wrap gap-2">
-            <Select
-              value={form.categoryId}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, categoryId: e.target.value }))
-              }
-            >
-              <option value="">카테고리 선택</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </Select>
-            <TextInput
-              value={form.title}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, title: e.target.value }))
-              }
-              placeholder="제목"
-              className="min-w-60 flex-1"
-            />
-          </div>
-          <TextInput
-            value={form.description}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, description: e.target.value }))
-            }
-            placeholder="설명(선택)"
-          />
-          <div className="flex flex-col gap-1.5">
-            <label className="text-label text-ink-subtle">
-              선택지(2개 이상)
-            </label>
-            {form.options.map((option, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <TextInput
-                  value={option}
-                  onChange={(e) =>
-                    setForm((f) => ({
-                      ...f,
-                      options: f.options.map((o, oi) =>
-                        oi === i ? e.target.value : o,
-                      ),
-                    }))
-                  }
-                  placeholder={`선택지 ${i + 1}`}
-                  className="min-w-60 flex-1"
+          {pending.map((i) => {
+            const lead = leadingOption(i.options)
+            const pct = optionPercents(i.options)
+            return (
+              <Row key={i.id}>
+                <ImageBox src={i.coverImageUrl} className="size-12 flex-none rounded-xl" iconSize={18} />
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  <span className="truncate text-sm font-semibold">{i.title}</span>
+                  <span className="text-xs text-muted">
+                    {formatDateTime(i.voteDeadlineAt)} 마감 · 선두 {lead ? `${lead.text} ${pct[lead.id]}%` : "-"}
+                  </span>
+                </div>
+                <ActionButton
+                  Icon={BadgeCheck}
+                  label="결과 확정"
+                  tone="primary"
+                  className="px-3.5"
+                  onClick={() => ui.askConfirmResult(i)}
                 />
-                {form.options.length > 2 && (
-                  <Button
-                    type="button"
-                    onClick={() =>
-                      setForm((f) => ({
-                        ...f,
-                        options: f.options.filter((_, oi) => oi !== i),
-                      }))
-                    }
-                  >
-                    삭제
-                  </Button>
-                )}
+              </Row>
+            )
+          })}
+        </Panel>
+
+        <Panel
+          Icon={AlarmClock}
+          iconClass="text-danger-ink"
+          title="마감 임박"
+          extra={<span className="text-xs text-muted">24시간 이내</span>}
+          empty={soon.length === 0 ? "임박한 이슈가 없어요" : undefined}
+        >
+          {soon.map((i) => (
+            <Row key={i.id}>
+              <ImageBox src={i.coverImageUrl} className="size-12 flex-none rounded-xl" iconSize={18} />
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="truncate text-sm font-semibold">{i.title}</span>
+                <span className="text-xs font-semibold text-danger-ink tabular-nums">
+                  {remainLabel(Date.parse(i.voteDeadlineAt) - now.getTime())}
+                </span>
               </div>
-            ))}
-            <Button
-              type="button"
-              onClick={() =>
-                setForm((f) => ({ ...f, options: [...f.options, ""] }))
-              }
-            >
-              선택지 추가
-            </Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="text-label text-ink-subtle">투표 시작</label>
-            <TextInput
-              type="datetime-local"
-              min={nowDateTimeLocal()}
-              value={toDateTimeLocal(form.voteStartAt)}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, voteStartAt: e.target.value }))
-              }
-            />
-            <label className="text-label text-ink-subtle">마감</label>
-            <TextInput
-              type="datetime-local"
-              min={form.voteStartAt || nowDateTimeLocal()}
-              value={toDateTimeLocal(form.voteDeadlineAt)}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, voteDeadlineAt: e.target.value }))
-              }
-            />
-          </div>
-          {createError && (
-            <div className="text-label text-wrong">{createError}</div>
-          )}
-          <Button type="submit" disabled={createIssue.isPending}>
-            {createIssue.isPending ? "등록 중..." : "등록"}
-          </Button>
-        </form>
-      )}
+              <ActionButton Icon={CalendarClock} label="마감 연장" className="px-3.5" onClick={() => ui.askExtend(i)} />
+            </Row>
+          ))}
+        </Panel>
 
-      {error && (
-        <div className="rounded-lg border border-wrong bg-wrong-chip px-4 py-2.5 text-caption text-[#D6DEEC]">
-          {error.message}
-        </div>
-      )}
+        <Panel
+          Icon={Siren}
+          iconClass="text-danger-ink"
+          title="최근 신고"
+          extra={
+            <>
+              <span className="flex-1" />
+              <Link href="/admin/reports" className="flex items-center gap-0.5 text-[13px] font-semibold text-brand">
+                전체 보기
+                <ChevronRight className="size-[15px]" />
+              </Link>
+            </>
+          }
+          empty={reports.length === 0 ? "미처리 신고가 없어요" : undefined}
+        >
+          {reports.slice(0, 4).map((r) => {
+            const Icon = r.kind === "post" ? FileText : MessageCircle
+            return (
+              <Row key={r.id}>
+                <span className="grid size-[34px] flex-none place-items-center rounded-[10px] bg-track text-sub">
+                  <Icon className="size-4" />
+                </span>
+                <span className="min-w-0 flex-1 truncate text-sm">{r.excerpt}</span>
+                <span className="flex-none text-xs font-semibold text-danger-ink">{r.reason}</span>
+              </Row>
+            )
+          })}
+        </Panel>
+      </div>
+    </>
+  )
+}
 
-      <DataTable
-        rows={items}
-        rowKey={(issue) => issue.id}
-        onRowClick={(issue) => router.push(`/admin/issues/${issue.id}`)}
-        loading={loading}
-        emptyMessage="조건에 맞는 주제가 없어요"
-        minWidth="720px"
-        columns={[
-          {
-            header: "제목",
-            render: (t) => (
-              <span className="font-bold text-ink">{t.title}</span>
-            ),
-          },
-          {
-            header: "카테고리",
-            render: (t) => (
-              <span className="text-ink-muted">{t.categoryName}</span>
-            ),
-          },
-          {
-            header: "상태",
-            render: (t) => <Badge>{issueStatusLabel(t.status)}</Badge>,
-          },
-          {
-            header: "참여자",
-            render: (t) => (
-              <span className="text-ink-muted tabular-nums">
-                {t.totalVotes}
-              </span>
-            ),
-          },
-          {
-            header: "마감시각",
-            render: (t) => (
-              <span className="text-ink-muted tabular-nums">
-                {new Date(t.voteDeadlineAt).toLocaleString("ko-KR")}
-              </span>
-            ),
-          },
-        ]}
-      />
-
-      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+function Panel({
+  Icon,
+  iconClass,
+  title,
+  extra,
+  empty,
+  children,
+}: {
+  Icon: LucideIcon
+  iconClass: string
+  title: string
+  extra?: React.ReactNode
+  empty?: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex flex-col gap-1 rounded-[22px] bg-surface px-[22px] py-5">
+      <div className="flex items-center gap-2 pb-2">
+        <Icon className={cn("size-[18px]", iconClass)} />
+        <span className="text-[17px] font-extrabold">{title}</span>
+        {extra}
+      </div>
+      {children}
+      {empty && <span className="py-6 text-center text-[13px] text-faint">{empty}</span>}
     </div>
   )
+}
+
+function Row({ children }: { children: React.ReactNode }) {
+  return <div className="flex items-center gap-3 border-t border-line-3 py-3">{children}</div>
 }

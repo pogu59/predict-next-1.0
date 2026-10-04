@@ -22,6 +22,7 @@ export const adminIssueApi: ApiInterface["admin"]["issue"] = {
 
   get: (issueId) => request<AdminIssueDetail>({ method: "GET", url: PATHS.detail(issueId) }),
 
+  // categoryId를 비우면 서버가 기본 카테고리에 넣는다(UI에서 카테고리를 없앴다).
   create: (payload: IssueUpsertPayload) =>
     request<AdminIssueDetail>({ method: "POST", url: PATHS.list, data: payload }),
 
@@ -43,4 +44,6 @@ export const adminIssueApi: ApiInterface["admin"]["issue"] = {
     }),
 
   correct: (issueId) => request<AdminIssueDetail>({ method: "POST", url: PATHS.correct(issueId) }),
+
+  delete: (issueId) => request<void>({ method: "DELETE", url: PATHS.detail(issueId) }),
 }

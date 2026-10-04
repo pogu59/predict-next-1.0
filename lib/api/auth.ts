@@ -1,9 +1,13 @@
-import { getSessionToken } from "@/lib/auth"
+import { getApiBaseUrl, getSessionToken } from "@/lib/auth"
 import { request } from "./client"
-import type { ApiError, ApiInterface, Me } from "./types"
+import type { ApiError, ApiInterface, AuthTokenResult, Me, NicknameCheckResult } from "./types"
 
 const PATHS = {
   me: "/api/auth/me",
+  login: "/api/auth/login",
+  signup: "/api/auth/signup",
+  nicknameCheck: "/api/auth/nickname-check",
+  socialSignup: "/api/auth/social-signup",
 } as const
 
 export const authApi: ApiInterface["auth"] = {
@@ -16,4 +20,17 @@ export const authApi: ApiInterface["auth"] = {
     }
     return request<Me>({ method: "GET", url: PATHS.me })
   },
+
+  // 서버가 302로 /auth/callback?token=...(&isNew=true&provider=kakao) 을 돌려준다.
+  // 서버에 OAuth 클라이언트가 등록된 공급자만 동작한다(현재 kakao).
+  socialUrl: (provider) => `${getApiBaseUrl()}/oauth2/authorization/${provider}`,
+
+  loginEmail: (req) => request<AuthTokenResult>({ method: "POST", url: PATHS.login, data: req }),
+
+  signupEmail: (req) => request<AuthTokenResult>({ method: "POST", url: PATHS.signup, data: req }),
+
+  checkNickname: (nickname) =>
+    request<NicknameCheckResult>({ method: "GET", url: PATHS.nicknameCheck, params: { nickname } }),
+
+  completeSocialSignup: (req) => request<Me>({ method: "POST", url: PATHS.socialSignup, data: req }),
 }

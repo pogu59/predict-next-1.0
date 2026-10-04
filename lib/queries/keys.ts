@@ -1,4 +1,9 @@
-import type { AdminIssueListParams, AdminUserListParams, PostListParams } from "@/lib/api"
+import type {
+  AdminIssueListParams,
+  AdminUserListParams,
+  CommunityContentType,
+  PostListParams,
+} from "@/lib/api"
 
 /**
  * 쿼리 키를 여기 한 곳에 모아둔다 — invalidateQueries가 여기저기 흩어진 문자열 배열을
@@ -8,6 +13,7 @@ import type { AdminIssueListParams, AdminUserListParams, PostListParams } from "
 export const queryKeys = {
   categories: ["categories"] as const,
   me: ["me"] as const,
+  nickname: (nickname: string) => ["nickname", nickname] as const,
 
   issues: (userId?: number) => ["issues", userId] as const,
   issue: (issueId: number, userId?: number) => ["issue", issueId, userId] as const,
@@ -24,4 +30,6 @@ export const queryKeys = {
   adminIssue: (issueId: number) => ["admin", "issue", issueId] as const,
   adminUsers: (params: AdminUserListParams) => ["admin", "users", params] as const,
   adminUser: (userId: number) => ["admin", "user", userId] as const,
+  adminCommunity: (type: CommunityContentType) => ["admin", "community", type] as const,
+  adminReports: (status: "PENDING" | "DONE") => ["admin", "reports", status] as const,
 }

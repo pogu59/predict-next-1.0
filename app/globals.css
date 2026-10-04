@@ -2,43 +2,25 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
+/*
+ * shadcn 컴포넌트가 참조하는 변수만 남겨 새 팔레트로 다시 연결한다.
+ * muted/accent/card 같은 이름은 디자인 토큰(아래 @theme)과 겹쳐서 매핑하지 않는다.
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-pretendard), "Pretendard Variable", Pretendard, system-ui, sans-serif;
   --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -49,105 +31,22 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Surfaces (어두운 → 밝은 순) */
-  --bg: #100f12;
-  --chrome: #141317;
-  --sunken: #161519;
-  --card: #1b1a1f;
-  --control: #26242c;
-  --hot: #221518;
-  --track: #2a2831;
-
-  /* Brand */
-  --accent: #ff5a48;
-  --accent-ink: #170d0c;
-  --accent-deep: #d93b6b;
-
-  /* State */
-  --wrong: #8d97ab;
-  --wrong-chip: #2a2e38;
-  --void: #f2c14e;
-
-  /* Text */
-  --ink: #f5f3f0;
-  --ink-muted: color-mix(in oklab, var(--ink) 60%, transparent);
-  --ink-subtle: color-mix(in oklab, var(--ink) 45%, transparent);
-  --ink-faint: color-mix(in oklab, var(--ink) 33%, transparent);
-
-  /* Hairline */
-  --line: rgb(255 255 255 / 0.07);
-  --line-strong: rgb(255 255 255 / 0.14);
-
-  /* Categories */
-  --cat-politics: #a97bff;
-  --cat-sports: #4c8dff;
-  --cat-esports: #2ed3c0;
-  --cat-ent: #ff6fb0;
-  --cat-econ: #f2c14e;
-  --cat-weather: #6fc5ff;
+  --background: #f6f6f4;
+  --foreground: #111113;
+  --popover: #ffffff;
+  --popover-foreground: #111113;
+  --primary: #5b4bff;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f3f1;
+  --secondary-foreground: #111113;
+  --destructive: #f04452;
+  --border: #ededeb;
+  --input: #e7e7e4;
+  --ring: #5b4bff;
 
   --radius: 0.75rem;
-}
-
-/*
- * 이 앱은 라이트/다크 토글이 없는 상시 다크 테마라 <html>에 .dark 클래스를 준 적이 없다.
- * 그런데 shadcn의 Button/Dialog 등은 --primary/--border/--background 같은 값을
- * .dark{} 블록에서만 정의해뒀어서, 그 블록이 활성화된 적이 없다 보니 이 변수들이
- * 전부 미정의 상태였다(버튼 배경/테두리가 안 보이고 텍스트만 남는 원인).
- * 앱이 이미 쓰고 있는 다크 팔레트 변수로 매핑해 :root에서 바로 정의해준다.
- */
-:root {
-  --background: var(--bg);
-  --foreground: var(--ink);
-  --card-foreground: var(--ink);
-  --popover: var(--card);
-  --popover-foreground: var(--ink);
-  --primary: var(--ink);
-  --primary-foreground: var(--bg);
-  --secondary: var(--control);
-  --secondary-foreground: var(--ink);
-  --muted: var(--control);
-  --muted-foreground: var(--ink-subtle);
-  --destructive: var(--accent-deep);
-  --border: var(--line-strong);
-  --input: var(--control);
-  --ring: var(--accent);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
@@ -155,69 +54,138 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-bg text-ink;
   }
   html {
     @apply font-sans;
   }
+  input,
+  textarea,
+  button {
+    font-family: inherit;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-placeholder);
+  }
 }
 
+/* 디자인 토큰 — design_handoff_predict_redesign/README.md "Design Tokens" */
 @theme {
-  /* Surfaces */
-  --color-bg: var(--bg);
-  --color-headerBg: var(--chrome);
-  --color-sunken: var(--sunken);
-  --color-card: var(--card);
-  --color-card-hot: var(--hot);
-  --color-control: var(--control);
-  --color-track: var(--track);
+  --color-bg: #f6f6f4;
+  --color-surface: #ffffff;
+  --color-ink: #111113;
+  --color-ink-2: #2a2a2e;
+  --color-sub: #6b6b70;
+  --color-muted: #9a9aa0;
+  --color-faint: #a5a5aa;
+  --color-placeholder: #b4b4b9;
+  --color-disabled-ink: #c9c9ce;
+  --color-line: #ededeb;
+  --color-line-2: #e7e7e4;
+  --color-line-3: #f0f0ee;
+  --color-track: #f3f3f1;
+  --color-neutral-fill: #e9e9e6;
+  --color-disabled-bg: #e4e4e2;
+  --color-brand: #5b4bff;
+  --color-brand-hover: #4b3bef;
+  --color-brand-soft: #eeecff;
+  --color-brand-fill: #e4e0ff;
+  --color-brand-mine: #dcd7ff;
+  --color-brand-tint: #f0eeff;
+  --color-brand-on-dark: #a99fff;
+  --color-danger: #f04452;
+  --color-danger-ink: #e5303f;
+  --color-danger-soft: #ffecee;
+  --color-warn-ink: #a86a00;
+  --color-warn-soft: #fff4de;
+  --color-success: #1f9d63;
+  --color-success-soft: #e6f6ee;
+  --color-kakao: #fee500;
+  --color-kakao-ink: #191600;
+  --color-scrim: rgb(17 17 19 / 0.4);
 
-  /* Brand & state */
-  --color-accent: var(--accent);
-  --color-accent-ink: var(--accent-ink);
-  --color-accent-deep: var(--accent-deep);
-  --color-wrong: var(--wrong);
-  --color-wrong-chip: var(--wrong-chip);
-  --color-void: var(--void);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 12px 28px rgba(0, 0, 0, 0.08);
+  --shadow-fab: 0 8px 20px rgba(91, 75, 255, 0.35);
+  --shadow-fab-pc: 0 8px 20px rgba(91, 75, 255, 0.25);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.15);
+  --shadow-selected: inset 0 0 0 2px #5b4bff;
 
-  /* Text */
-  --color-ink: var(--ink);
-  --color-ink-muted: var(--ink-muted);
-  --color-ink-subtle: var(--ink-subtle);
-  --color-ink-faint: var(--ink-faint);
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Hairline → border-line / border-line-strong */
-  --color-line: var(--line);
-  --color-line-strong: var(--line-strong);
+  --animate-toast-in: toastIn 0.2s ease-out;
+  --animate-sheet-up: sheetUp 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-in: fadeIn 0.15s;
+  --animate-pop: pop 0.2s ease-out;
+  --animate-slide-in: slideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Categories */
-  --color-cat-politics: var(--cat-politics);
-  --color-cat-sports: var(--cat-sports);
-  --color-cat-esports: var(--cat-esports);
-  --color-cat-ent: var(--cat-ent);
-  --color-cat-econ: var(--cat-econ);
-  --color-cat-weather: var(--cat-weather);
+  @keyframes toastIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 8px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  }
+  @keyframes sheetUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
 }
 
+/*
+ * 레거시 별칭 — 아직 리디자인 대상이 아닌 /game 페이지만 쓴다(라우트 파일은 건드리지 않음).
+ * 게임 화면을 새 디자인으로 옮기면 이 블록과 아래 타이포 스케일을 함께 지운다.
+ */
 @theme {
-  /* Typography — 9-tier scale.
-     title1-3: 독립 표시 숫자. h1-3: 문서 구조 제목. body/caption/label: 나머지.
-     굵기/줄간격/자간은 --text-{name}--font-weight 등 짝 키로 함께 적용됨. */
-
-  --text-title1: 2rem;
-  --text-title1--line-height: 1;
-  --text-title1--font-weight: 800;
-  --text-title1--letter-spacing: -0.045em;
+  --color-card: #ffffff;
+  --color-control: #f3f3f1;
+  --color-accent: #5b4bff;
+  --color-accent-ink: #ffffff;
+  --color-line-strong: #e7e7e4;
+  --color-ink-muted: #6b6b70;
+  --color-ink-subtle: #9a9aa0;
+  --color-ink-faint: #a5a5aa;
+  --color-void: #a86a00;
+  --color-wrong: #6b6b70;
 
   --text-title2: 1.5rem;
   --text-title2--line-height: 1;
   --text-title2--font-weight: 800;
   --text-title2--letter-spacing: -0.04em;
-
-  --text-title3: 0.9375rem;
-  --text-title3--line-height: 1;
-  --text-title3--font-weight: 800;
-  --text-title3--letter-spacing: -0.02em;
 
   --text-h1: 1.5rem;
   --text-h1--line-height: 1.2;
@@ -229,21 +197,16 @@
   --text-h2--font-weight: 800;
   --text-h2--letter-spacing: -0.03em;
 
-  --text-h3: 1.25rem;
-  --text-h3--line-height: 1.35;
+  --text-h3: 1.0625rem;
+  --text-h3--line-height: 1.4;
   --text-h3--font-weight: 700;
-  --text-h3--letter-spacing: -0.03em;
-
-  --text-body: 0.875rem;
-  --text-body--line-height: 1.6;
-  --text-body--font-weight: 400;
+  --text-h3--letter-spacing: -0.02em;
 
   --text-caption: 0.75rem;
   --text-caption--line-height: 1.35;
   --text-caption--font-weight: 700;
-  --text-caption--letter-spacing: -0.01em;
 
-  --text-label: 0.8125rem;
+  --text-label: 0.875rem;
   --text-label--line-height: 1;
   --text-label--font-weight: 700;
 }

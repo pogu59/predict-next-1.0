@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // HTML 디자인 레퍼런스(프로토타입 런타임 포함) — 앱 코드가 아니다.
+    "design_handoff_predict_redesign/**",
   ]),
 ]);
 

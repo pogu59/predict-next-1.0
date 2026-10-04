@@ -5,8 +5,11 @@ const PATHS = {
   list: "/api/issues",
   detail: (issueId: number) => `/api/issues/${issueId}`,
   votes: (issueId: number) => `/api/issues/${issueId}/votes`,
+  myVote: (issueId: number) => `/api/issues/${issueId}/votes/me`,
   replies: (issueId: number) => `/api/issues/${issueId}/replies`,
   reply: (issueId: number, replyId: number) => `/api/issues/${issueId}/replies/${replyId}`,
+  replyLike: (issueId: number, replyId: number) => `/api/issues/${issueId}/replies/${replyId}/like`,
+  replyReports: (issueId: number, replyId: number) => `/api/issues/${issueId}/replies/${replyId}/reports`,
 } as const
 
 export const issueApi: ApiInterface["issue"] = {
@@ -18,6 +21,10 @@ export const issueApi: ApiInterface["issue"] = {
   vote: (issueId, req: CastVoteReq) =>
     request<VoteResult>({ method: "POST", url: PATHS.votes(issueId), data: req }),
 
+  changeVote: async (issueId, optionId) => {
+    await request<VoteResult>({ method: "PUT", url: PATHS.myVote(issueId), data: { optionId } })
+  },
+
   replies: {
     list: (issueId) => request<Reply[]>({ method: "GET", url: PATHS.replies(issueId) }),
 
@@ -26,5 +33,12 @@ export const issueApi: ApiInterface["issue"] = {
 
     delete: (issueId, replyId) =>
       request<void>({ method: "DELETE", url: PATHS.reply(issueId, replyId) }),
+
+    like: async (issueId, replyId) => {
+      await request({ method: "POST", url: PATHS.replyLike(issueId, replyId) })
+    },
+
+    report: (issueId, replyId, reason) =>
+      request<void>({ method: "POST", url: PATHS.replyReports(issueId, replyId), data: { reason } }),
   },
 }

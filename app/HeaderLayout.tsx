@@ -1,115 +1,133 @@
 "use client"
 
-import { usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
-import { useQueryClient } from "@tanstack/react-query"
+import { ChartNoAxesColumn, House, MessagesSquare, UserRound } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
-import { clearSessionToken } from "@/lib/auth"
 import { useMe } from "@/lib/queries/auth"
-import { queryKeys } from "@/lib/queries/keys"
-import { tierLabel } from "@/lib/tier"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { TierIcon } from "@/lib/tier"
+import { cn } from "@/lib/utils"
+import { Avatar, Logo } from "@/components/ui/brand"
 
-type HeaderLayoutProps = {
-  children: React.ReactNode
-}
+const AUTH_PREFIXES = ["/login", "/signup", "/auth"]
 
-const NAV_LIST = [
-  { label: "이슈", value: "issue" },
-  { label: "커뮤니티", value: "board" },
-  { label: "미니게임", value: "game" },
-  { label: "마이페이지", value: "my" },
+const PC_NAV = [
+  { href: "/issue", label: "예측", Icon: ChartNoAxesColumn },
+  { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
 ]
 
-const ADMIN_NAV_ITEM = { label: "관리자", value: "admin" }
+const MOBILE_TABS = [
+  { href: "/issue", label: "홈", Icon: House },
+  { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
+  { href: "/my", label: "마이", Icon: UserRound },
+]
 
-export function HeaderLayout({ children }: HeaderLayoutProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const queryClient = useQueryClient()
-  const { data: me } = useMe()
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+/**
+ * 사용자 앱 셸. PC(≥1024)는 64px 스티키 헤더 + 1200px 컨테이너, 모바일은 각 페이지가 자체 헤더를 그리고
+ * 홈·커뮤니티·마이 목록에서만 하단 탭바를 띄운다. /admin은 별도 레이아웃이라 셸을 쓰지 않는다.
+ */
+export function HeaderLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname() ?? "/"
 
-  function handleLogout() {
-    clearSessionToken()
-    queryClient.removeQueries({ queryKey: queryKeys.me })
-    setShowLogoutConfirm(false)
-    router.push("/login")
-  }
+  if (pathname.startsWith("/admin")) return <>{children}</>
+
+  const isAuth = AUTH_PREFIXES.some((p) => pathname.startsWith(p))
+  const showTabs = MOBILE_TABS.some((t) => t.href === pathname)
 
   return (
-    <div className="min-h-screen bg-bg text-ink">
-      <header className="flex min-h-[66px] flex-none flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-headerBg px-4 py-2.5 md:h-[66px] md:flex-nowrap md:gap-x-[26px] md:px-6 md:py-0">
-        <button className="text-h1 text-ink" onClick={() => router.push("/")}>
-          Predict
-        </button>
+    <div className="min-h-dvh">
+      {isAuth ? <AuthHeader /> : <AppHeader pathname={pathname} />}
+      <div className="lg:mx-auto lg:max-w-[1200px] lg:px-8 lg:pt-7 lg:pb-20">{children}</div>
+      {showTabs && <TabBar pathname={pathname} />}
+    </div>
+  )
+}
 
-        <nav className="flex items-center gap-4 md:gap-6">
-          {(me?.role === "ADMIN"
-            ? [...NAV_LIST, ADMIN_NAV_ITEM]
-            : NAV_LIST
-          ).map((menu) => {
-            const active = pathname?.startsWith(`/${menu.value}`)
+function GuestActions() {
+  return (
+    <div className="flex gap-2">
+      <Link href="/login/email" className="rounded-xl px-4 py-[9px] text-sm font-bold text-ink hover:bg-line">
+        로그인
+      </Link>
+      <Link href="/signup/email" className="rounded-xl bg-ink px-4 py-[9px] text-sm font-bold text-white">
+        회원가입
+      </Link>
+    </div>
+  )
+}
+
+function AuthHeader() {
+  return (
+    <header className="mx-auto hidden h-16 max-w-[1200px] items-center justify-between px-8 lg:flex">
+      <Link href="/login">
+        <Logo />
+      </Link>
+      <GuestActions />
+    </header>
+  )
+}
+
+function AppHeader({ pathname }: { pathname: string }) {
+  const { data: me, isLoading } = useMe()
+
+  return (
+    <header className="sticky top-0 z-30 hidden border-b border-line bg-white/88 backdrop-blur-[14px] lg:block">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-8 px-8">
+        <Link href="/issue">
+          <Logo />
+        </Link>
+        <nav className="flex gap-1">
+          {PC_NAV.map(({ href, label, Icon }) => {
+            const active = pathname.startsWith(href)
             return (
-              <button
-                key={menu.value}
-                type="button"
-                onClick={() => router.push(`/${menu.value}`)}
-                className={
-                  active
-                    ? "text-label text-ink"
-                    : "text-label text-ink-subtle transition-colors hover:text-ink"
-                }
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "flex items-center gap-[7px] rounded-xl px-3.5 py-[9px] text-[15px] font-bold hover:bg-track",
+                  active ? "bg-line-3 text-ink" : "text-[#8A8A90]",
+                )}
               >
-                {menu.label}
-              </button>
+                <Icon className="size-[18px]" />
+                {label}
+              </Link>
             )
           })}
         </nav>
-
-        <div className="flex-auto" />
-
+        <div className="flex-1" />
         {me ? (
-          <div className="flex items-center gap-2 rounded-full border border-line bg-card py-[7px] pr-[15px] pl-2">
-            <span className="rounded-md bg-void px-1.5 py-1 text-caption leading-none text-bg">
-              {tierLabel(me.tier)}
-            </span>
-            <span className="hidden text-label text-ink-muted sm:inline">
-              {me.nickname}
-            </span>
-            <span className="text-title3 tabular-nums">
-              {me.credibilityScore.toLocaleString()}
-            </span>
-            <button
-              type="button"
-              onClick={() => setShowLogoutConfirm(true)}
-              className="text-caption text-ink-faint hover:text-ink"
-            >
-              로그아웃
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => router.push("/login")}
-            className="rounded-full border border-line bg-card px-4 py-2 text-label text-ink-muted hover:text-ink"
+          <Link
+            href="/my"
+            className="flex items-center gap-2.5 rounded-full bg-surface py-[5px] pr-1.5 pl-3 shadow-[0_0_0_1px_#EDEDEB]"
           >
-            로그인
-          </button>
+            <TierIcon tier={me.tier} size={20} />
+            <span className="text-sm font-bold tabular-nums">{me.credibilityScore.toLocaleString()}</span>
+            <Avatar nickname={me.nickname} className="size-8 text-xs" />
+          </Link>
+        ) : (
+          !isLoading && <GuestActions />
         )}
-      </header>
+      </div>
+    </header>
+  )
+}
 
-      <div className="mx-auto max-w-7xl">{children}</div>
-
-      <ConfirmDialog
-        open={showLogoutConfirm}
-        onOpenChange={setShowLogoutConfirm}
-        title="로그아웃 하시겠어요?"
-        description="다시 로그인해야 투표 기록과 신용도 점수를 확인할 수 있어요."
-        confirmLabel="로그아웃"
-        variant="destructive"
-        onConfirm={handleLogout}
-      />
-    </div>
+function TabBar({ pathname }: { pathname: string }) {
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[84px] justify-around border-t border-line bg-white/92 pt-2.5 backdrop-blur-[14px] lg:hidden">
+      {MOBILE_TABS.map(({ href, label, Icon }) => {
+        const active = pathname === href
+        return (
+          <Link
+            key={href}
+            href={href}
+            className={cn("flex w-20 flex-col items-center gap-[3px]", active ? "text-ink" : "text-faint")}
+          >
+            <Icon className="size-[25px]" />
+            <span className="text-[11px] font-bold">{label}</span>
+          </Link>
+        )
+      })}
+    </nav>
   )
 }

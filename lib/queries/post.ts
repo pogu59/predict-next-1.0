@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-import { Api, type CreatePostReq, type PostListParams } from "@/lib/api"
+import { Api, type CreatePostReq, type PostListParams, type ReportReason } from "@/lib/api"
 import { queryKeys } from "./keys"
 
 export function usePosts(params?: PostListParams) {
@@ -17,22 +17,58 @@ export function usePost(postId: number) {
   })
 }
 
-export function useCreatePost() {
+function useInvalidatePost() {
   const queryClient = useQueryClient()
+  return (postId?: number) => {
+    queryClient.invalidateQueries({ queryKey: ["posts"] })
+    queryClient.invalidateQueries({ queryKey: ["admin", "community"] })
+    if (postId !== undefined) queryClient.invalidateQueries({ queryKey: queryKeys.post(postId) })
+  }
+}
+
+export function useCreatePost() {
+  const invalidate = useInvalidatePost()
   return useMutation({
     mutationFn: (req: CreatePostReq) => Api().post.create(req),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
+    onSuccess: () => invalidate(),
+  })
+}
+
+export function useUpdatePost(postId: number) {
+  const invalidate = useInvalidatePost()
+  return useMutation({
+    mutationFn: (req: CreatePostReq) => Api().post.update(postId, req),
+    onSuccess: () => invalidate(postId),
   })
 }
 
 export function useDeletePost(postId: number) {
-  const queryClient = useQueryClient()
+  const invalidate = useInvalidatePost()
   return useMutation({
     mutationFn: () => Api().post.delete(postId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] })
-      queryClient.invalidateQueries({ queryKey: queryKeys.post(postId) })
-    },
+    onSuccess: () => invalidate(postId),
+  })
+}
+
+export function useLikePost(postId: number) {
+  const invalidate = useInvalidatePost()
+  return useMutation({
+    mutationFn: () => Api().post.like(postId),
+    onSuccess: () => invalidate(postId),
+  })
+}
+
+export function useReportPost(postId: number) {
+  return useMutation({
+    mutationFn: (reason: ReportReason) => Api().post.report(postId, reason),
+  })
+}
+
+export function useHidePostAuthor(postId: number) {
+  const invalidate = useInvalidatePost()
+  return useMutation({
+    mutationFn: () => Api().post.hideAuthor(postId),
+    onSuccess: () => invalidate(),
   })
 }
 
@@ -43,18 +79,48 @@ export function usePostReplies(postId: number) {
   })
 }
 
-export function useCreatePostReply(postId: number) {
+function useInvalidatePostReplies(postId: number) {
   const queryClient = useQueryClient()
+  return () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.postReplies(postId) })
+    queryClient.invalidateQueries({ queryKey: ["posts"] })
+  }
+}
+
+export function useCreatePostReply(postId: number) {
+  const invalidate = useInvalidatePostReplies(postId)
   return useMutation({
-    mutationFn: (content: string) => Api().post.replies.create(postId, content),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.postReplies(postId) }),
+    mutationFn: ({ content, parentId }: { content: string; parentId?: number }) =>
+      Api().post.replies.create(postId, content, parentId),
+    onSuccess: invalidate,
   })
 }
 
 export function useDeletePostReply(postId: number) {
-  const queryClient = useQueryClient()
+  const invalidate = useInvalidatePostReplies(postId)
   return useMutation({
     mutationFn: (replyId: number) => Api().post.replies.delete(postId, replyId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.postReplies(postId) }),
+    onSuccess: invalidate,
+  })
+}
+
+export function useLikePostReply(postId: number) {
+  const invalidate = useInvalidatePostReplies(postId)
+  return useMutation({
+    mutationFn: (replyId: number) => Api().post.replies.like(postId, replyId),
+    onSuccess: invalidate,
+  })
+}
+
+export function useReportPostReply(postId: number) {
+  return useMutation({
+    mutationFn: ({ replyId, reason }: { replyId: number; reason: ReportReason }) =>
+      Api().post.replies.report(postId, replyId, reason),
+  })
+}
+
+export function useUploadImage() {
+  return useMutation({
+    mutationFn: (file: File) => Api().upload.image(file),
   })
 }
