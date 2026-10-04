@@ -1,6 +1,6 @@
 "use client"
 
-import { ChartNoAxesColumn, House, MessagesSquare, UserRound } from "lucide-react"
+import { ChartNoAxesColumn, House, MessagesSquare, Newspaper, UserRound } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -13,11 +13,13 @@ const AUTH_PREFIXES = ["/login", "/signup", "/auth"]
 
 const PC_NAV = [
   { href: "/issue", label: "예측", Icon: ChartNoAxesColumn },
+  { href: "/report", label: "리포트", Icon: Newspaper },
   { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
 ]
 
 const MOBILE_TABS = [
   { href: "/", label: "홈", Icon: House },
+  { href: "/report", label: "리포트", Icon: Newspaper },
   { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
   { href: "/my", label: "마이", Icon: UserRound },
 ]
@@ -122,7 +124,7 @@ function TabBar({ pathname }: { pathname: string }) {
           <Link
             key={href}
             href={href}
-            className={cn("flex w-20 flex-col items-center gap-[3px]", active ? "text-ink" : "text-faint")}
+            className={cn("flex w-[72px] flex-col items-center gap-[3px]", active ? "text-ink" : "text-faint")}
           >
             <Icon className="size-[25px]" />
             <span className="text-[11px] font-bold">{label}</span>
