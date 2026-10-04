@@ -28,6 +28,7 @@ import { IssueCardFeatured } from "@/components/issue-card"
 import { sortForFilter, useHotPosts, useIssueBuckets } from "@/components/issue-feed"
 import { Chip, Logo } from "@/components/ui/brand"
 import { LiveBanner } from "@/components/live-banner"
+import { WrappedBanner } from "@/components/wrapped-banner"
 import { ImageBox } from "@/components/ui/image-box"
 import { useToast } from "@/components/ui/toast"
 
@@ -48,6 +49,7 @@ export function HomeHub() {
   return (
     <div className="flex flex-col gap-7 pb-[110px] lg:hidden">
       <HubHeader />
+      <WrappedBanner className="mx-4 -mt-3" />
       <LiveBanner className="mx-4 -mt-3" />
       {HOME_SECTIONS.map(({ key, Section }) => (
         <Section key={key} />

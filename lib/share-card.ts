@@ -12,6 +12,15 @@ type ShareCardInput = {
   tier: string
   credit: number
   dna: PredictionDna
+  /** "wrapped"는 연말 결산 카드 — 상단 문구와 지표 3칸(예측 수·적중률·최고 수익)이 바뀐다. */
+  variant?: "dna" | "wrapped"
+  /** variant "wrapped"일 때의 결산 값. */
+  wrapped?: {
+    year: number
+    total: number
+    accuracy: number | null
+    bestDelta: number | null
+  }
 }
 
 function loadImage(src: string) {
@@ -56,7 +65,10 @@ export async function renderShareCard({
   tier,
   credit,
   dna,
+  variant = "dna",
+  wrapped,
 }: ShareCardInput): Promise<Blob> {
+  const isWrapped = variant === "wrapped" && wrapped != null
   const family = getComputedStyle(document.body).fontFamily
   await Promise.all([
     document.fonts.load(`800 116px ${family}`),
@@ -114,7 +126,13 @@ export async function renderShareCard({
   const archetype = ARCHETYPES[dna.archetype]
   ctx.font = font(600, 40)
   ctx.fillStyle = "rgba(255,255,255,0.72)"
-  ctx.fillText(`${nickname}님의 예측 성향`, PAD, 330)
+  ctx.fillText(
+    isWrapped
+      ? `${nickname}님의 ${wrapped.year} 예측 결산`
+      : `${nickname}님의 예측 성향`,
+    PAD,
+    330,
+  )
 
   ctx.font = font(800, 116)
   ctx.fillStyle = "#fff"
@@ -157,11 +175,29 @@ export async function renderShareCard({
   // 구분선 + 지표 3칸
   ctx.fillStyle = "rgba(255,255,255,0.25)"
   ctx.fillRect(PAD, 1060, W - PAD * 2, 2)
-  const stats = [
-    { value: dna.accuracy == null ? "-" : `${dna.accuracy}%`, label: "적중률" },
-    { value: `${dna.minorityHits}회`, label: "소수 의견 적중" },
-    { value: dna.bestHit ? `+${dna.bestHit.delta}` : "-", label: "최고 수익" },
-  ]
+  const stats = isWrapped
+    ? [
+        { value: `${wrapped.total}`, label: "예측 수" },
+        {
+          value: wrapped.accuracy == null ? "-" : `${wrapped.accuracy}%`,
+          label: "적중률",
+        },
+        {
+          value: wrapped.bestDelta == null ? "-" : `+${wrapped.bestDelta}`,
+          label: "최고 수익",
+        },
+      ]
+    : [
+        {
+          value: dna.accuracy == null ? "-" : `${dna.accuracy}%`,
+          label: "적중률",
+        },
+        { value: `${dna.minorityHits}회`, label: "소수 의견 적중" },
+        {
+          value: dna.bestHit ? `+${dna.bestHit.delta}` : "-",
+          label: "최고 수익",
+        },
+      ]
   const colW = (W - PAD * 2) / 3
   stats.forEach((s, i) => {
     const x = PAD + colW * i

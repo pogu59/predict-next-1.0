@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils"
 import { ChallengeRecord } from "@/components/challenge-record"
 import { CreditCard } from "@/components/credit-card"
 import { DnaTeaser } from "@/components/dna-teaser"
+import { WrappedBanner } from "@/components/wrapped-banner"
 import { Avatar, Chip } from "@/components/ui/brand"
 import { ImageBox } from "@/components/ui/image-box"
 import { ConfirmDialog } from "@/components/ui/overlay"
@@ -86,6 +87,7 @@ export default function MyPage() {
           <Settings className="size-6 text-sub" />
         </div>
         <div className="flex flex-col gap-2.5 px-4">
+          <WrappedBanner />
           <div className="flex items-center gap-3.5 rounded-[22px] bg-surface p-[18px]">
             <Avatar nickname={me.nickname} className="size-[52px] text-lg" />
             <div className="flex flex-1 flex-col gap-[5px]">
@@ -197,6 +199,7 @@ export default function MyPage() {
           </div>
         </div>
         <div className="flex flex-col gap-3.5">
+          <WrappedBanner />
           <div className="grid grid-cols-3 gap-3.5">
             {[
               { Icon: Target, value: String(stats?.totalVotes ?? 0), label: "참여한 예측" },
