@@ -15,16 +15,18 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
 import type { Issue } from "@/lib/api"
+import { parseChallenge } from "@/lib/challenge"
 import { formatDateTime, issueChip, optionPercents, payout, useNow } from "@/lib/issues"
 import { useMe } from "@/lib/queries/auth"
 import { useCastVote, useChangeVote, useIssue, useIssueReplies } from "@/lib/queries/issue"
 import { useMyVotes } from "@/lib/queries/user"
 import { TierIcon } from "@/lib/tier"
 import { cn } from "@/lib/utils"
+import { ChallengeBanner, SendChallengeButton } from "@/components/challenge-banner"
 import { IssueComments } from "@/components/issue-comments"
 import { Chip } from "@/components/ui/brand"
 import { ImageBox } from "@/components/ui/image-box"
@@ -65,6 +67,8 @@ export default function IssueDetailPage() {
   const params = useParams<{ id: string }>()
   const issueId = Number(params.id)
   const router = useRouter()
+  // /issue/[id]는 동적 라우트라 useSearchParams에 Suspense 경계가 필요 없다(next/dist/docs use-search-params "Dynamic Rendering").
+  const searchParams = useSearchParams()
   const showToast = useToast()
   const now = useNow()
 
@@ -107,6 +111,11 @@ export default function IssueDetailPage() {
   const scoreDelta = myVotes.find((v) => v.issueId === issue.id)?.scoreDelta
   const chip = issueChip(issue, { optionId: myOptionId, scoreDelta }, now)
   const result = open ? null : resultCard(issue, scoreDelta)
+  const challenge = parseChallenge(searchParams, issue, me?.nickname)
+  const challengeBanner = (className: string) =>
+    challenge && (
+      <ChallengeBanner issue={issue} challenge={challenge} loggedIn={!!me} open={open} className={className} />
+    )
 
   const note = open
     ? changing
@@ -198,6 +207,16 @@ export default function IssueDetailPage() {
           <span className={cn("relative flex-1 font-semibold", size === "mobile" ? "text-[15px]" : "text-base")}>
             {o.text}
           </span>
+          {challenge?.pick === o.id && (
+            <span
+              className={cn(
+                "relative max-w-24 truncate rounded-md bg-ink py-[3px] font-bold text-white",
+                size === "mobile" ? "px-[7px] text-[11px]" : "px-2 text-xs",
+              )}
+            >
+              {challenge.vs}
+            </span>
+          )}
           {tag && (
             <span
               className={cn(
@@ -261,6 +280,7 @@ export default function IssueDetailPage() {
             <Share className="size-[22px]" />
           </button>
         </div>
+        {challengeBanner("mx-4 mb-3.5")}
         <div className="px-4 pb-3.5">
           <ImageBox src={issue.coverImageUrl} className="h-[190px] rounded-[22px]" iconSize={32} />
         </div>
@@ -303,6 +323,8 @@ export default function IssueDetailPage() {
           </div>
         )}
 
+        {me && <SendChallengeButton issue={issue} nickname={me.nickname} className="mx-4 mt-4 w-[calc(100%-2rem)]" />}
+
         <IssueComments issue={issue} replies={replies} currentUserId={me?.userId} now={now} />
 
         {open && (
@@ -324,6 +346,7 @@ export default function IssueDetailPage() {
         </button>
         <div className="grid grid-cols-[minmax(0,1fr)_360px] items-start gap-7">
           <div className="flex flex-col gap-5">
+            {challengeBanner("")}
             <ImageBox src={issue.coverImageUrl} className="h-[340px] rounded-[28px]" iconSize={40} />
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2">
@@ -389,6 +412,7 @@ export default function IssueDetailPage() {
                 </div>
               )}
             </div>
+            {me && <SendChallengeButton issue={issue} nickname={me.nickname} />}
             <div className="flex items-center gap-2 px-2 text-xs text-muted">
               <EyeOff className="size-3.5" />
               참여 인원은 공개하지 않고 비율만 보여드려요

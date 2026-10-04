@@ -25,6 +25,7 @@ import { usePosts } from "@/lib/queries/post"
 import { useMyStats } from "@/lib/queries/user"
 import { TierIcon, tierLabel } from "@/lib/tier"
 import { cn } from "@/lib/utils"
+import { ChallengeRecord } from "@/components/challenge-record"
 import { CreditCard } from "@/components/credit-card"
 import { DnaTeaser } from "@/components/dna-teaser"
 import { Avatar, Chip } from "@/components/ui/brand"
@@ -134,6 +135,7 @@ export default function MyPage() {
               )
             })}
           </div>
+          <ChallengeRecord votes={votes} userId={me.userId} className="rounded-[22px] px-[18px] pt-[18px] pb-2" />
           <div className="flex flex-col rounded-[22px] bg-surface py-1.5">
             <Link href="/board?author=me" className={rowClass(false)}>
               {menuRow(FileText, "내가 쓴 글", false, chevron(false))}
@@ -232,6 +234,7 @@ export default function MyPage() {
               )
             })}
           </div>
+          <ChallengeRecord votes={votes} userId={me.userId} className="rounded-3xl px-6 pt-[22px] pb-2.5" />
         </div>
       </div>
 

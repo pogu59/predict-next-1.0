@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect } from "react"
 
-import { saveSessionToken } from "@/lib/auth"
+import { saveSessionToken, takeReturnTo } from "@/lib/auth"
 import { queryKeys } from "@/lib/queries/keys"
 import { useToast } from "@/components/ui/toast"
 
@@ -33,7 +33,7 @@ function SocialCallback() {
       router.replace(`/signup/nickname?via=${via}`)
       return
     }
-    router.replace("/")
+    router.replace(takeReturnTo())
     showToast("다시 오신 걸 환영해요")
   }, [router, searchParams, queryClient, showToast])
 

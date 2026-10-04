@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
+import { takeReturnTo } from "@/lib/auth"
 import { useLoginEmail } from "@/lib/queries/auth"
 import { EMAIL_RE } from "@/lib/validation"
 import { AuthField, AuthScreen } from "@/components/auth"
@@ -28,7 +29,7 @@ export default function EmailLoginPage() {
       { email, password },
       {
         onSuccess: () => {
-          router.replace("/")
+          router.replace(takeReturnTo())
           showToast("다시 오신 걸 환영해요")
         },
         onError: () => setFailed(true),
