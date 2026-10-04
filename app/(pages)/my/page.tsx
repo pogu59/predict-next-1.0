@@ -3,6 +3,7 @@
 import {
   Bell,
   ChevronRight,
+  Compass,
   FileText,
   LogOut,
   PenLine,
@@ -25,6 +26,7 @@ import { useMyStats } from "@/lib/queries/user"
 import { TierIcon, tierLabel } from "@/lib/tier"
 import { cn } from "@/lib/utils"
 import { CreditCard } from "@/components/credit-card"
+import { DnaTeaser } from "@/components/dna-teaser"
 import { Avatar, Chip } from "@/components/ui/brand"
 import { ImageBox } from "@/components/ui/image-box"
 import { ConfirmDialog } from "@/components/ui/overlay"
@@ -110,6 +112,7 @@ export default function MyPage() {
               </div>
             ))}
           </div>
+          <DnaTeaser votes={votes} className="rounded-[22px] px-[18px] py-4" />
           <div className="flex flex-col rounded-[22px] bg-surface px-[18px] pt-[18px] pb-2">
             <span className="pb-1.5 text-base font-extrabold">내 예측</span>
             {votes.map((v) => {
@@ -134,6 +137,9 @@ export default function MyPage() {
           <div className="flex flex-col rounded-[22px] bg-surface py-1.5">
             <Link href="/board?author=me" className={rowClass(false)}>
               {menuRow(FileText, "내가 쓴 글", false, chevron(false))}
+            </Link>
+            <Link href="/guide" className={rowClass(false)}>
+              {menuRow(Compass, "점수·티어 가이드", false, chevron(false))}
             </Link>
             <div className={rowClass(false)}>{menuRow(Bell, "알림 설정", false, chevron(false))}</div>
             {isAdmin && (
@@ -173,6 +179,9 @@ export default function MyPage() {
             <Link href="/board?author=me" className={rowClass(true)}>
               {menuRow(FileText, "내가 쓴 글", true, <span className="text-[13px] text-faint">{myPostCount}</span>)}
             </Link>
+            <Link href="/guide" className={rowClass(true)}>
+              {menuRow(Compass, "점수·티어 가이드", true, chevron(true))}
+            </Link>
             <div className={rowClass(true)}>{menuRow(Bell, "알림 설정", true, chevron(true))}</div>
             <div className={rowClass(true)}>{menuRow(Settings, "계정 설정", true, chevron(true))}</div>
             {isAdmin && (
@@ -199,6 +208,7 @@ export default function MyPage() {
               </div>
             ))}
           </div>
+          <DnaTeaser votes={votes} className="rounded-[22px] px-5 py-4 hover:bg-[#FAFAF9]" />
           <div className="flex flex-col rounded-3xl bg-surface px-6 pt-[22px] pb-2.5">
             <span className="pb-2 text-lg font-extrabold">내 예측</span>
             {votes.map((v) => {

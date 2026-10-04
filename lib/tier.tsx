@@ -52,6 +52,11 @@ export function TierIcon({ tier, size = 20 }: { tier: string; size?: number }) {
   )
 }
 
+/** 티어 아이콘 경로(canvas 공유 카드 등 next/image 밖에서 쓸 때). */
+export function tierImage(tier: string) {
+  return TIER_IMAGE[tier] ?? TIER_IMAGE.BRONZE
+}
+
 export function tierLabel(tier: string) {
   return TIER_LABELS[tier] ?? tier
 }
