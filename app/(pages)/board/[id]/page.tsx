@@ -21,7 +21,7 @@ import {
 } from "@/lib/queries/post"
 import { cn } from "@/lib/utils"
 import { CommentInput } from "@/components/comment-input"
-import { Avatar } from "@/components/ui/brand"
+import { Avatar, TopicBadge } from "@/components/ui/brand"
 import { ImageBox } from "@/components/ui/image-box"
 import { ActionSheet, ConfirmDialog, ReportSheet, type SheetItem } from "@/components/ui/overlay"
 import { useToast } from "@/components/ui/toast"
@@ -229,7 +229,10 @@ export default function PostDetailPage() {
               <span className="text-xs text-faint">{timeAgo(post.createdAt, now)}</span>
             </div>
           </div>
-          <h1 className="text-[21px] leading-[1.4] font-extrabold tracking-[-0.03em]">{post.title}</h1>
+          <h1 className="text-[21px] leading-[1.4] font-extrabold tracking-[-0.03em]">
+            <TopicBadge topic={post.topic} className="mr-1.5 align-[3px]" />
+            {post.title}
+          </h1>
           <p className="text-[15px] leading-[1.7] break-all whitespace-pre-wrap text-ink-2">{post.content}</p>
           {post.images.length > 0 && (
             <div className="grid grid-cols-2 gap-1.5">
@@ -276,7 +279,10 @@ export default function PostDetailPage() {
               <Ellipsis className="size-[22px]" />
             </button>
           </div>
-          <h1 className="text-[26px] leading-[1.4] font-extrabold tracking-[-0.03em]">{post.title}</h1>
+          <h1 className="text-[26px] leading-[1.4] font-extrabold tracking-[-0.03em]">
+            <TopicBadge topic={post.topic} className="mr-2 align-[5px] text-xs" />
+            {post.title}
+          </h1>
           <p className="text-base leading-[1.75] break-all whitespace-pre-wrap text-ink-2">{post.content}</p>
           {post.images.length > 0 && (
             <div className="grid grid-cols-3 gap-2">

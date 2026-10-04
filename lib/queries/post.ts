@@ -1,12 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { Api, type CreatePostReq, type PostListParams, type ReportReason } from "@/lib/api"
 import { queryKeys } from "./keys"
 
+/** 필터·검색어를 바꾸는 동안 이전 결과를 그대로 보여줘 목록이 깜빡이지 않게 한다. */
 export function usePosts(params?: PostListParams) {
   return useQuery({
     queryKey: queryKeys.posts(params),
     queryFn: () => Api().post.list(params),
+    placeholderData: keepPreviousData,
   })
 }
 

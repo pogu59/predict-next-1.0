@@ -92,7 +92,17 @@ export type Reply = {
 
 // ---- 자유 게시판 ----
 
-export type PostSort = "hot" | "new"
+/** hot = 좋아요 + 댓글x3, comments = 댓글 많은 순, views = 조회 많은 순 */
+export type PostSort = "hot" | "new" | "comments" | "views"
+
+/** 말머리. 말머리가 생기기 전에 쓴 글은 null. */
+export type PostTopic = "INFO" | "ANALYSIS" | "QUESTION" | "CHAT"
+
+/** 검색 범위 — 전체(제목·본문·닉네임) / 제목 / 작성자 */
+export type PostSearchScope = "all" | "title" | "author"
+
+/** 기간 — 전체 / 24시간 / 7일 / 30일 */
+export type PostPeriod = "all" | "day" | "week" | "month"
 
 export type PostListItem = {
   id: number
@@ -101,6 +111,8 @@ export type PostListItem = {
   /** 본문 첫 줄 미리보기. */
   contentPreview?: string
   thumbnailUrl?: string | null
+  imageCount?: number
+  topic?: PostTopic | null
   likeCount: number
   likedByMe: boolean
   viewCount: number
@@ -115,6 +127,7 @@ export type PostDetail = {
   title: string
   content: string
   images: string[]
+  topic?: PostTopic | null
   likeCount: number
   likedByMe: boolean
   viewCount: number
@@ -126,11 +139,17 @@ export type CreatePostReq = {
   content: string
   /** 업로드 API(upload.image)가 돌려준 URL. 최대 4장. */
   images?: string[]
+  topic?: PostTopic | null
 }
 
 export type PostListParams = {
   keyword?: string
+  /** 단어를 공백으로 나누면 모두 들어간 글만(AND). */
+  scope?: PostSearchScope
   sort?: PostSort
+  topic?: PostTopic
+  period?: PostPeriod
+  hasImage?: boolean
   author?: "me"
   page?: number
   size?: number

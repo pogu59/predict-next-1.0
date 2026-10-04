@@ -33,7 +33,7 @@ export default function BoardEditPage() {
   return (
     <PostEditor
       mode="edit"
-      initial={{ title: post.title, content: post.content, images: post.images }}
+      initial={{ title: post.title, content: post.content, images: post.images, topic: post.topic ?? null }}
       submitting={updatePost.isPending}
       onSubmit={(req) =>
         updatePost.mutate(req, {

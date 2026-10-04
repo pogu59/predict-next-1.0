@@ -4,9 +4,10 @@ import { Camera, ImagePlus, PenLine, X } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
-import type { CreatePostReq } from "@/lib/api"
+import type { CreatePostReq, PostTopic } from "@/lib/api"
 import { useMe } from "@/lib/queries/auth"
 import { useUploadImage } from "@/lib/queries/post"
+import { POST_TOPICS } from "@/lib/post-topics"
 import { cn } from "@/lib/utils"
 import { ImageBox } from "@/components/ui/image-box"
 import { useToast } from "@/components/ui/toast"
@@ -31,6 +32,7 @@ export function PostEditor({ mode, initial, submitting, onSubmit }: PostEditorPr
   const [title, setTitle] = useState(initial?.title ?? "")
   const [content, setContent] = useState(initial?.content ?? "")
   const [images, setImages] = useState<string[]>(initial?.images ?? [])
+  const [topic, setTopic] = useState<PostTopic | null>(initial?.topic ?? null)
 
   useEffect(() => {
     if (!meLoading && !me) router.replace("/login")
@@ -47,7 +49,7 @@ export function PostEditor({ mode, initial, submitting, onSubmit }: PostEditorPr
 
   function submit() {
     if (!ready || submitting) return
-    onSubmit({ title: title.trim(), content: content.trim(), images })
+    onSubmit({ title: title.trim(), content: content.trim(), images, topic })
   }
 
   async function addFiles(files: FileList | null) {
@@ -66,6 +68,27 @@ export function PostEditor({ mode, initial, submitting, onSubmit }: PostEditorPr
 
   const pickFiles = () => images.length < MAX_IMAGES && fileInput.current?.click()
   const removeImage = (index: number) => setImages((list) => list.filter((_, i) => i !== index))
+
+  /** 말머리 고르기 — 다시 누르면 해제(말머리 없음). */
+  const topicPicker = (pc: boolean) => (
+    <div className={cn("flex flex-wrap items-center gap-1.5", pc ? "px-7 pt-5" : "px-5 pt-4")}>
+      <span className="pr-1 text-[13px] font-semibold text-muted">말머리</span>
+      {POST_TOPICS.map((t) => (
+        <button
+          key={t.key}
+          type="button"
+          aria-pressed={topic === t.key}
+          onClick={() => setTopic((cur) => (cur === t.key ? null : t.key))}
+          className={cn(
+            "rounded-full px-3 py-1.5 text-[13px] font-bold",
+            topic === t.key ? "bg-ink text-white" : "bg-track text-sub",
+          )}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  )
 
   const thumbs = (pc: boolean) =>
     images.map((src, i) => (
@@ -111,12 +134,13 @@ export function PostEditor({ mode, initial, submitting, onSubmit }: PostEditorPr
             {submitLabel}
           </button>
         </div>
+        {topicPicker(false)}
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={60}
           placeholder="제목"
-          className="px-5 pt-5 pb-3.5 text-xl font-bold tracking-[-0.02em] outline-none"
+          className="px-5 pt-4 pb-3.5 text-xl font-bold tracking-[-0.02em] outline-none"
         />
         <div className="mx-5 h-px bg-line" />
         <textarea
@@ -151,12 +175,13 @@ export function PostEditor({ mode, initial, submitting, onSubmit }: PostEditorPr
             <X className="size-[22px] text-sub" />
           </button>
         </div>
+        {topicPicker(true)}
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={60}
           placeholder="제목"
-          className="px-7 pt-6 pb-4 text-2xl font-bold tracking-[-0.02em] outline-none"
+          className="px-7 pt-4 pb-4 text-2xl font-bold tracking-[-0.02em] outline-none"
         />
         <div className="mx-7 h-px bg-line" />
         <textarea

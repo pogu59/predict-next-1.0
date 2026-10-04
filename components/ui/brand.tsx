@@ -1,3 +1,5 @@
+import type { PostTopic } from "@/lib/api"
+import { topicMeta } from "@/lib/post-topics"
 import { cn } from "@/lib/utils"
 
 /** 로고 "predict." — 마침표만 brand 색. */
@@ -45,6 +47,17 @@ export function Chip({ className, children }: { className?: string; children: Re
   return (
     <span className={cn("rounded-[7px] px-2 py-[5px] text-xs font-bold tabular-nums", className)}>
       {children}
+    </span>
+  )
+}
+
+/** 게시글 말머리 배지(말머리가 없으면 아무것도 안 그린다). */
+export function TopicBadge({ topic, className }: { topic?: PostTopic | null; className?: string }) {
+  const meta = topicMeta(topic)
+  if (!meta) return null
+  return (
+    <span className={cn("inline-block rounded-[6px] px-1.5 py-0.5 text-[11px] font-bold", meta.className, className)}>
+      {meta.label}
     </span>
   )
 }
