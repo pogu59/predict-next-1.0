@@ -70,7 +70,16 @@ function IssueList() {
           {feed.map((issue) => (
             <IssueCardMobile key={issue.id} issue={issue} now={now} scoreDelta={deltaByIssue[issue.id]} />
           ))}
-          {feed.length === 0 && <div className="py-[60px] text-center text-sm text-faint">{status}</div>}
+          {feed.length === 0 && (
+            <div className="flex flex-col items-center gap-3 py-[60px]">
+              <span className="text-sm text-faint">{status}</span>
+              {filter === "open" && !isLoading && !error && (
+                <Link href="/rewind" className="rounded-[13px] bg-ink px-4 py-3 text-sm font-bold text-white">
+                  지난 예측 다시 풀기
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

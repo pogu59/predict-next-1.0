@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Compass,
   FingerprintPattern,
+  History,
   Hourglass,
   Scale,
   Sparkles,
@@ -379,6 +380,7 @@ function PendingList({
 const REPORT_LINKS = [
   { href: "/my/dna", label: "내 예측 성향 보기", Icon: FingerprintPattern },
   { href: "/guide", label: "점수 계산법", Icon: Compass },
+  { href: "/rewind", label: "리와인드로 감 연습하기", Icon: History },
 ]
 
 function ReportLinks() {

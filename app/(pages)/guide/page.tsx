@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 
-import { Banknote, EyeOff, Repeat, Undo2, type LucideIcon } from "lucide-react"
+import { Banknote, ChevronRight, EyeOff, History, Repeat, Undo2, type LucideIcon } from "lucide-react"
 
 import { payout } from "@/lib/issues"
 import { useMe } from "@/lib/queries/auth"
@@ -239,6 +239,12 @@ export default function GuidePage() {
               </div>
             ))}
           </section>
+
+          <Link href="/rewind" className="flex items-center gap-3 rounded-3xl bg-surface px-5 py-4">
+            <History className="size-5 text-brand" />
+            <span className="flex-1 text-[15px] font-bold">리와인드로 감 연습하기</span>
+            <ChevronRight className="size-[18px] text-disabled-ink" />
+          </Link>
 
           {!isLoading && !me && (
             <Link

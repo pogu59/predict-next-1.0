@@ -4,7 +4,7 @@
 편성안의 각 항목은 관리자 이슈 생성 API(`IssueUpsertPayload`) 필드에 편성용 필드 `series` · `resolveAt` · `note`를 더한 것이다.
 편성용 필드는 서버로 보내지 않는다.
 
-```json
+```jsonc
 // 예시 항목(실제 편성안 아님)
 {
   "series": "노벨 위크",
