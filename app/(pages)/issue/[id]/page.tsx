@@ -14,6 +14,7 @@ import {
   Share,
   type LucideIcon,
 } from "lucide-react"
+import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -286,6 +287,9 @@ export default function IssueDetailPage() {
             </div>
             <div className="flex gap-1.5">{stakeChips("flex-1")}</div>
             <span className="text-xs leading-[1.5] text-muted">{expLine}</span>
+            <Link href="/guide" className="self-start text-xs font-semibold text-brand">
+              소수 쪽을 맞히면 왜 더 오를까요?
+            </Link>
           </div>
         )}
 
@@ -364,6 +368,9 @@ export default function IssueDetailPage() {
                   <span className="text-sm font-bold">걸 신용도</span>
                   <div className="grid grid-cols-4 gap-1.5">{stakeChips("")}</div>
                   <span className="text-xs text-muted">{expLine}</span>
+                  <Link href="/guide" className="self-start text-xs font-semibold text-brand">
+                    소수 쪽을 맞히면 왜 더 오를까요?
+                  </Link>
                 </div>
               )}
               {open && cta}
