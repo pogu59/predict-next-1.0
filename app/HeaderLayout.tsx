@@ -1,10 +1,11 @@
 "use client"
 
-import { ChartNoAxesColumn, House, MessagesSquare, Newspaper, UserRound } from "lucide-react"
+import { ChartNoAxesColumn, House, MessagesSquare, Newspaper, Radio, UserRound } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { useMe } from "@/lib/queries/auth"
+import { useLiveCount } from "@/lib/queries/issue"
 import { TierIcon } from "@/lib/tier"
 import { cn } from "@/lib/utils"
 import { Avatar, Logo } from "@/components/ui/brand"
@@ -13,6 +14,7 @@ const AUTH_PREFIXES = ["/login", "/signup", "/auth"]
 
 const PC_NAV = [
   { href: "/issue", label: "예측", Icon: ChartNoAxesColumn },
+  { href: "/live", label: "라이브", Icon: Radio },
   { href: "/report", label: "리포트", Icon: Newspaper },
   { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
 ]
@@ -72,6 +74,7 @@ function AuthHeader() {
 
 function AppHeader({ pathname }: { pathname: string }) {
   const { data: me, isLoading } = useMe()
+  const liveCount = useLiveCount()
 
   return (
     <header className="sticky top-0 z-30 hidden border-b border-line bg-white/88 backdrop-blur-[14px] lg:block">
@@ -93,6 +96,9 @@ function AppHeader({ pathname }: { pathname: string }) {
               >
                 <Icon className="size-[18px]" />
                 {label}
+                {href === "/live" && liveCount > 0 && (
+                  <span className="size-1.5 rounded-full bg-danger" aria-label="진행 중인 라이브 있음" />
+                )}
               </Link>
             )
           })}

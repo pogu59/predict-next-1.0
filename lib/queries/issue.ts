@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { Api, type CastVoteReq, type Me, type ReportReason } from "@/lib/api"
+import { isLiveIssue, isLiveOpen } from "@/lib/live"
 import { queryKeys } from "./keys"
 
 /** 목록 화면에 있는 동안 다른 사람의 투표를 반영하려고 5초 간격으로 다시 조회한다. */
@@ -10,6 +11,19 @@ export function useIssues(userId?: number) {
     queryFn: () => Api().issue.list(userId),
     refetchInterval: 5000,
   })
+}
+
+/**
+ * 지금 열린 라이브 이슈 수 — 헤더 점·홈 배너용. 모든 페이지에서 쓰이므로 5초 대신 30초 간격으로만 조회한다.
+ */
+export function useLiveCount() {
+  const { data = 0 } = useQuery({
+    queryKey: queryKeys.liveCount,
+    queryFn: () => Api().issue.list(),
+    select: (issues) => issues.filter((i) => isLiveIssue(i) && isLiveOpen(i, Date.now())).length,
+    refetchInterval: 30_000,
+  })
+  return data
 }
 
 /** 다른 사람의 투표를 화면에 반영하려고 5초 간격으로 다시 조회한다 — CONFIRMED가 되면 멈춘다. */

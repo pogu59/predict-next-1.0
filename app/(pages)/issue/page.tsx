@@ -7,6 +7,7 @@ import { Suspense } from "react"
 
 import { TierIcon } from "@/lib/tier"
 import { IssueCardMobile } from "@/components/issue-card"
+import { LiveBanner } from "@/components/live-banner"
 import {
   FilterChips,
   IssuesPc,
@@ -63,6 +64,7 @@ function IssueList() {
             </Link>
           )}
         </div>
+        <LiveBanner className="mx-4 mb-3" />
         <div className="flex gap-1.5 px-5 pb-3.5">
           <FilterChips filter={filter} onChange={setFilter} counts={counts} size="mobile" />
         </div>

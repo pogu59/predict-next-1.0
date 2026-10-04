@@ -5,6 +5,7 @@ import {
   ListChecks,
   MessagesSquare,
   Plus,
+  Radio,
   ShieldCheck,
   Siren,
   Smartphone,
@@ -23,6 +24,7 @@ import { Logo } from "@/components/ui/brand"
 const PAGES = [
   { href: "/admin", label: "대시보드", Icon: LayoutDashboard, sub: "오늘 처리할 일을 한눈에 확인하세요" },
   { href: "/admin/issues", label: "이슈 관리", Icon: ListChecks, sub: "예측 이슈를 만들고, 마감·결과를 관리해요" },
+  { href: "/admin/live", label: "라이브 출제", Icon: Radio, sub: "경기 중 짧은 예측을 빠르게 열고 판정해요" },
   { href: "/admin/users", label: "회원 관리", Icon: Users, sub: "가입 회원과 권한, 활동 정지를 관리해요" },
   { href: "/admin/community", label: "커뮤니티 관리", Icon: MessagesSquare, sub: "게시글과 댓글을 숨기거나 삭제해요" },
   { href: "/admin/reports", label: "신고 처리", Icon: Siren, sub: "사용자 신고를 검토하고 처리해요" },

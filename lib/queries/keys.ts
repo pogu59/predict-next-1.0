@@ -16,6 +16,8 @@ export const queryKeys = {
   nickname: (nickname: string) => ["nickname", nickname] as const,
 
   issues: (userId?: number) => ["issues", userId] as const,
+  /** "issues" 접두어라 투표·관리자 변경 후 ["issues"] 무효화에 같이 걸린다. */
+  liveCount: ["issues", "live-count"] as const,
   issue: (issueId: number, userId?: number) => ["issue", issueId, userId] as const,
   issueReplies: (issueId: number) => ["issue", issueId, "replies"] as const,
 
