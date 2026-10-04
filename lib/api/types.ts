@@ -88,8 +88,6 @@ export type Reply = {
   authorOptionId: number | null
   /** 게시판 댓글 전용 — 1단계 대댓글. */
   replies: Reply[]
-  /** 작성자의 현재 크루 이름(없으면 null) — 닉네임 옆 배지. */
-  authorCrewName?: string | null
 }
 
 // ---- 자유 게시판 ----
@@ -108,8 +106,6 @@ export type PostListItem = {
   viewCount: number
   replyCount: number
   createdAt: string
-  /** 작성자의 현재 크루 이름(없으면 null). */
-  authorCrewName?: string | null
 }
 
 export type PostDetail = {
@@ -123,8 +119,6 @@ export type PostDetail = {
   likedByMe: boolean
   viewCount: number
   createdAt: string
-  /** 작성자의 현재 크루 이름(없으면 null). */
-  authorCrewName?: string | null
 }
 
 export type CreatePostReq = {
@@ -344,68 +338,6 @@ export type AdminReport = {
 // DTO를 봉투 없이 그대로 내려준다. 이 계약과 봉투 해제/에러 정규화는 client.ts 한 곳에만 있고,
 // 아래 인터페이스와 각 네임스페이스 구현은 그 결과 타입만 안다.
 //
-// ---- 크루 대항전 (predict-spring-1.0 CrewController / MyCrewController / AdminCrewController) ----
-
-export type Crew = {
-  id: number
-  name: string
-  slug: string
-  description: string | null
-  memberCount: number
-}
-
-/** 한 주의 크루 성적. rank가 null이면 집계 중(활성 멤버 5명 미만). scorePerMember는 소수 둘째 자리까지. */
-export type CrewWeek = {
-  weekStart: string
-  rank: number | null
-  scorePerMember: number
-  activeMembers: number
-}
-
-export type CrewDetail = Crew & { thisWeek: CrewWeek }
-
-export type CrewRankingItem = {
-  rank: number | null
-  crewId: number
-  name: string
-  scorePerMember: number
-  activeMembers: number
-  memberCount: number
-}
-
-export type CrewTopMember = {
-  nickname: string
-  tier: string
-  scoreGain: number
-}
-
-/** 가입 전이면 crew·joinedAt·nextChangeAt이 null. weekSettlements가 3 이상이면 이번 주 활성 멤버. */
-export type MyCrew = {
-  crew: Crew | null
-  joinedAt: string | null
-  nextChangeAt: string | null
-  weekScoreGain: number
-  weekSettlements: number
-}
-
-export type AdminCrew = {
-  id: number
-  name: string
-  slug: string
-  description: string | null
-  active: boolean
-  memberCount: number
-  createdAt: string
-}
-
-/** slug를 비우면 서버가 이름으로 만든다. */
-export type AdminCrewPayload = {
-  name: string
-  slug?: string
-  description?: string
-  active: boolean
-}
-
 // 모든 엔드포인트는 predict-spring-1.0 백엔드에 구현되어 있다.
 export interface ApiInterface {
   category: {
@@ -457,16 +389,6 @@ export interface ApiInterface {
     stats(userId: number): Promise<MyStats>
     votes(userId: number): Promise<MyVote[]>
   }
-  crew: {
-    list(): Promise<Crew[]>
-    get(crewId: number): Promise<CrewDetail>
-    /** week: 그 주 아무 날짜(YYYY-MM-DD). 생략하면 이번 주. */
-    ranking(week?: string): Promise<CrewRankingItem[]>
-    topMembers(crewId: number, week?: string): Promise<CrewTopMember[]>
-    mine(): Promise<MyCrew>
-    /** 30일 안에 다시 바꾸면 409(서버 message 그대로). */
-    join(crewId: number): Promise<MyCrew>
-  }
   admin: {
     issue: {
       list(params: AdminIssueListParams): Promise<PageResponse<AdminIssueListItem>>
@@ -489,11 +411,6 @@ export interface ApiInterface {
       list(params: { type: CommunityContentType }): Promise<AdminCommunityItem[]>
       setHidden(type: CommunityContentType, id: number, hidden: boolean): Promise<void>
       delete(type: CommunityContentType, id: number): Promise<void>
-    }
-    crew: {
-      list(): Promise<AdminCrew[]>
-      create(payload: AdminCrewPayload): Promise<AdminCrew>
-      update(crewId: number, payload: AdminCrewPayload): Promise<AdminCrew>
     }
     report: {
       list(params: { status: "PENDING" | "DONE" }): Promise<AdminReport[]>

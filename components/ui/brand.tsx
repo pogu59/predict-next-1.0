@@ -48,18 +48,3 @@ export function Chip({ className, children }: { className?: string; children: Re
     </span>
   )
 }
-
-/** 닉네임 옆 크루 배지(작성자 크루가 없으면 아무것도 안 그린다). */
-export function CrewBadge({ name, className }: { name?: string | null; className?: string }) {
-  if (!name) return null
-  return (
-    <span
-      className={cn(
-        "inline-block max-w-24 truncate rounded-[5px] bg-track px-1.5 py-px align-middle text-[11px] font-semibold text-sub",
-        className,
-      )}
-    >
-      {name}
-    </span>
-  )
-}

@@ -2,7 +2,6 @@ import type { ApiInterface } from "./types"
 import { adminApi } from "./admin"
 import { authApi } from "./auth"
 import { categoryApi } from "./category"
-import { crewApi } from "./crew"
 import { issueApi } from "./issue"
 import { postApi } from "./post"
 import { uploadApi } from "./upload"
@@ -27,7 +26,6 @@ export function Api(): ApiInterface {
       upload: uploadApi,
       auth: authApi,
       user: userApi,
-      crew: crewApi,
       admin: adminApi,
     }
   }

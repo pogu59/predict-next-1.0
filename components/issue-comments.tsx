@@ -14,7 +14,7 @@ import {
 } from "@/lib/queries/issue"
 import { cn } from "@/lib/utils"
 import { CommentInput } from "@/components/comment-input"
-import { Avatar, CrewBadge } from "@/components/ui/brand"
+import { Avatar } from "@/components/ui/brand"
 import { ConfirmDialog, ReportSheet } from "@/components/ui/overlay"
 import { useToast } from "@/components/ui/toast"
 
@@ -91,7 +91,6 @@ export function IssueComments({ issue, replies, currentUserId, now }: IssueComme
             <div className="flex min-w-0 flex-1 flex-col gap-[5px] lg:gap-1.5">
               <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-[13px] font-bold lg:text-sm">{c.authorNickname}</span>
-                <CrewBadge name={c.authorCrewName} />
                 {choice && (
                   <span className="rounded-[5px] bg-brand-soft px-[7px] py-0.5 text-[11px] font-bold text-brand">
                     {choice}

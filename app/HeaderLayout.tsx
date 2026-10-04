@@ -1,6 +1,6 @@
 "use client"
 
-import { ChartNoAxesColumn, House, MessagesSquare, Newspaper, Radio, Shield, UserRound } from "lucide-react"
+import { ChartNoAxesColumn, House, MessagesSquare, Newspaper, Radio, UserRound } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -17,7 +17,6 @@ const PC_NAV = [
   { href: "/live", label: "라이브", Icon: Radio },
   { href: "/report", label: "리포트", Icon: Newspaper },
   { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
-  { href: "/crew", label: "크루", Icon: Shield },
 ]
 
 const MOBILE_TABS = [

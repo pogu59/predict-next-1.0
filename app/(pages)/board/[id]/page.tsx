@@ -21,7 +21,7 @@ import {
 } from "@/lib/queries/post"
 import { cn } from "@/lib/utils"
 import { CommentInput } from "@/components/comment-input"
-import { Avatar, CrewBadge } from "@/components/ui/brand"
+import { Avatar } from "@/components/ui/brand"
 import { ImageBox } from "@/components/ui/image-box"
 import { ActionSheet, ConfirmDialog, ReportSheet, type SheetItem } from "@/components/ui/overlay"
 import { useToast } from "@/components/ui/toast"
@@ -225,9 +225,7 @@ export default function PostDetailPage() {
           <div className="flex items-center gap-2.5">
             <Avatar nickname={post.authorNickname} className="size-9 text-sm" />
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-bold">
-                {post.authorNickname} <CrewBadge name={post.authorCrewName} />
-              </span>
+              <span className="text-sm font-bold">{post.authorNickname}</span>
               <span className="text-xs text-faint">{timeAgo(post.createdAt, now)}</span>
             </div>
           </div>
@@ -266,9 +264,7 @@ export default function PostDetailPage() {
           <div className="flex items-center gap-2.5">
             <Avatar nickname={post.authorNickname} className="size-10 text-[15px]" />
             <div className="flex flex-1 flex-col gap-0.5">
-              <span className="text-[15px] font-bold">
-                {post.authorNickname} <CrewBadge name={post.authorCrewName} />
-              </span>
+              <span className="text-[15px] font-bold">{post.authorNickname}</span>
               <span className="text-xs text-faint">{timeAgo(post.createdAt, now)}</span>
             </div>
             <button
@@ -375,7 +371,6 @@ function CommentItem({ reply, pc, now, nested = false, mine, onLike, onReply, on
       <div className={cn("flex min-w-0 flex-1 flex-col", nested ? (pc ? "gap-[5px]" : "gap-1") : pc ? "gap-1.5" : "gap-[5px]")}>
         <div className="flex items-center gap-1.5">
           <span className={cn("font-bold", pc ? "text-sm" : "text-[13px]")}>{reply.authorNickname}</span>
-          <CrewBadge name={reply.authorCrewName} />
           <span className="text-xs text-faint">{timeAgo(reply.createdAt, now)}</span>
         </div>
         <span className={cn("break-all text-ink-2", pc ? "text-[15px] leading-[1.6]" : "text-sm leading-[1.55]")}>
