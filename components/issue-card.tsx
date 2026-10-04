@@ -1,6 +1,6 @@
 "use client"
 
-import { CircleCheck } from "lucide-react"
+import { CircleCheck, Clock } from "lucide-react"
 import Link from "next/link"
 
 import type { Issue } from "@/lib/api"
@@ -36,13 +36,17 @@ function cardRows(issue: Issue, count: number) {
   return { rows, hidden: issue.options.length - top.length }
 }
 
-function PercentRows({ rows, checkSize }: { rows: CardRow[]; checkSize: string }) {
+/** compact: 홈 허브 캐러셀 카드용(행 34px, 13px 글자). */
+function PercentRows({ rows, checkSize, compact }: { rows: CardRow[]; checkSize: string; compact?: boolean }) {
   return (
-    <div className="flex flex-col gap-[7px]">
+    <div className={cn("flex flex-col", compact ? "gap-1.5" : "gap-[7px]")}>
       {rows.map((row) => (
         <div
           key={row.id}
-          className="relative flex h-[38px] items-center gap-1.5 overflow-hidden rounded-[11px] bg-track px-3"
+          className={cn(
+            "relative flex items-center gap-1.5 overflow-hidden bg-track",
+            compact ? "h-[34px] rounded-[10px] px-[11px]" : "h-[38px] rounded-[11px] px-3",
+          )}
         >
           <div
             className={cn("absolute inset-y-0 left-0 transition-[width] duration-500 ease-out-expo", row.fill)}
@@ -51,13 +55,16 @@ function PercentRows({ rows, checkSize }: { rows: CardRow[]; checkSize: string }
           {row.mark && <CircleCheck className={cn("relative text-brand", checkSize)} />}
           <span
             className={cn(
-              "relative flex-1 truncate text-sm",
+              "relative flex-1 truncate",
+              compact ? "text-[13px]" : "text-sm",
               row.mark ? "font-bold" : "font-semibold",
             )}
           >
             {row.text}
           </span>
-          <span className="relative text-sm font-bold tabular-nums">{row.pct}%</span>
+          <span className={cn("relative font-bold tabular-nums", compact ? "text-[13px]" : "text-sm")}>
+            {row.pct}%
+          </span>
         </div>
       ))}
     </div>
@@ -121,6 +128,32 @@ export function IssueCardPc({ issue, now, scoreDelta, rowCount = 2 }: IssueCardP
           {issue.title}
         </span>
         <PercentRows rows={rows} checkSize="size-4" />
+      </div>
+    </Link>
+  )
+}
+
+/** 모바일 홈 허브 "지금 열린 예측" 가로 캐러셀 카드 — 폭 286, 140px 커버 위에 시계 아이콘 + 상태 칩. */
+export function IssueCardFeatured({ issue, now, scoreDelta, rowCount = 2 }: IssueCardProps) {
+  const chip = issueChip(issue, { optionId: issue.myOptionId, scoreDelta }, now)
+  const { rows } = cardRows(issue, rowCount)
+  return (
+    <Link
+      href={`/issue/${issue.id}`}
+      className="flex w-[286px] flex-none snap-start flex-col overflow-hidden rounded-3xl bg-surface shadow-card active:scale-[.985]"
+    >
+      <div className="relative h-[140px]">
+        <ImageBox src={issue.coverImageUrl} className="absolute inset-0" iconSize={26} />
+        <Chip className={cn("absolute top-3 left-3 flex items-center gap-1", chip.className)}>
+          <Clock className="size-3" />
+          {chip.label}
+        </Chip>
+      </div>
+      <div className="flex flex-col gap-2.5 px-4 pt-3.5 pb-4">
+        <span className="min-h-[45px] text-base leading-[1.4] font-bold tracking-[-0.02em] text-pretty">
+          {issue.title}
+        </span>
+        <PercentRows rows={rows} checkSize="size-[15px]" compact />
       </div>
     </Link>
   )

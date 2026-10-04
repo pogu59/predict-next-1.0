@@ -28,7 +28,7 @@ export default function EmailLoginPage() {
       { email, password },
       {
         onSuccess: () => {
-          router.replace("/issue")
+          router.replace("/")
           showToast("다시 오신 걸 환영해요")
         },
         onError: () => setFailed(true),

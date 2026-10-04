@@ -79,7 +79,7 @@ export default function IssueDetailPage() {
 
   function goBack() {
     if (window.history.length > 1) router.back()
-    else router.push("/issue")
+    else router.push("/")
   }
 
   function share() {

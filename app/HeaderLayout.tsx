@@ -17,7 +17,7 @@ const PC_NAV = [
 ]
 
 const MOBILE_TABS = [
-  { href: "/issue", label: "홈", Icon: House },
+  { href: "/", label: "홈", Icon: House },
   { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
   { href: "/my", label: "마이", Icon: UserRound },
 ]
@@ -32,7 +32,8 @@ export function HeaderLayout({ children }: { children: React.ReactNode }) {
   if (pathname.startsWith("/admin")) return <>{children}</>
 
   const isAuth = AUTH_PREFIXES.some((p) => pathname.startsWith(p))
-  const showTabs = MOBILE_TABS.some((t) => t.href === pathname)
+  // 예측 목록(/issue)은 홈에서 들어가는 화면이라 탭바를 그대로 두고 "홈"을 활성으로 표시한다.
+  const showTabs = pathname === "/issue" || MOBILE_TABS.some((t) => t.href === pathname)
 
   return (
     <div className="min-h-dvh">
@@ -73,12 +74,12 @@ function AppHeader({ pathname }: { pathname: string }) {
   return (
     <header className="sticky top-0 z-30 hidden border-b border-line bg-white/88 backdrop-blur-[14px] lg:block">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-8 px-8">
-        <Link href="/issue">
+        <Link href="/">
           <Logo />
         </Link>
         <nav className="flex gap-1">
           {PC_NAV.map(({ href, label, Icon }) => {
-            const active = pathname.startsWith(href)
+            const active = pathname.startsWith(href) || (href === "/issue" && pathname === "/")
             return (
               <Link
                 key={href}
@@ -116,7 +117,7 @@ function TabBar({ pathname }: { pathname: string }) {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[84px] justify-around border-t border-line bg-white/92 pt-2.5 backdrop-blur-[14px] lg:hidden">
       {MOBILE_TABS.map(({ href, label, Icon }) => {
-        const active = pathname === href
+        const active = pathname === href || (href === "/" && pathname === "/issue")
         return (
           <Link
             key={href}

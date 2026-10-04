@@ -38,7 +38,7 @@ export default function SignupTermsPage() {
     if (!requiredOk || pending) return
     const callbacks = {
       onSuccess: () => {
-        router.replace("/issue")
+        router.replace("/")
         showToast("가입 완료! 신용도 500을 드렸어요")
       },
       onError: (error: { message: string }) => showToast(error.message),

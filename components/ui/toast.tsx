@@ -15,7 +15,7 @@ export function useToast() {
 
 /** 모바일에서 하단 고정 요소(탭바·CTA·댓글 입력바) 위로 띄울 높이. */
 function mobileBottom(pathname: string) {
-  if (["/issue", "/board", "/my"].includes(pathname) || /^\/issue\/\d+$/.test(pathname)) return "110px"
+  if (["/", "/issue", "/board", "/my"].includes(pathname) || /^\/issue\/\d+$/.test(pathname)) return "110px"
   if (/^\/board\/\d+$/.test(pathname)) return "96px"
   return "40px"
 }

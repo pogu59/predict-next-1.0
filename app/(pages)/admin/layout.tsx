@@ -48,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex min-h-dvh flex-col items-center justify-center gap-3 px-6 text-center lg:hidden">
         <Logo />
         <span className="text-[15px] font-semibold text-sub">관리자 페이지는 PC에서 이용해 주세요</span>
-        <Link href="/issue" className="text-sm font-bold text-brand">
+        <Link href="/" className="text-sm font-bold text-brand">
           사용자 앱 보기
         </Link>
       </div>
@@ -134,7 +134,7 @@ function Sidebar({ nickname }: { nickname: string }) {
         })}
       </nav>
       <div className="flex-1" />
-      <Link href="/issue" className="flex items-center gap-2.5 rounded-xl px-3 py-[11px] text-[13px] font-semibold text-sub">
+      <Link href="/" className="flex items-center gap-2.5 rounded-xl px-3 py-[11px] text-[13px] font-semibold text-sub">
         <Smartphone className="size-[17px]" />
         사용자 앱 보기
       </Link>

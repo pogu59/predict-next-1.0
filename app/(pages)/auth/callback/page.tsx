@@ -33,7 +33,7 @@ function SocialCallback() {
       router.replace(`/signup/nickname?via=${via}`)
       return
     }
-    router.replace("/issue")
+    router.replace("/")
     showToast("다시 오신 걸 환영해요")
   }, [router, searchParams, queryClient, showToast])
 
