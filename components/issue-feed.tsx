@@ -1,6 +1,6 @@
 "use client"
 
-import { Flame, Heart, MessageCircle } from "lucide-react"
+import { Flame, Heart, MessageCircle, Shield } from "lucide-react"
 import Link from "next/link"
 import { useMemo } from "react"
 
@@ -8,10 +8,12 @@ import type { Issue } from "@/lib/api"
 import { DAY, useNow } from "@/lib/issues"
 import { useMe } from "@/lib/queries/auth"
 import { useIssues } from "@/lib/queries/issue"
+import { useCrewRanking } from "@/lib/queries/crew"
 import { usePosts } from "@/lib/queries/post"
 import { useMyVotes } from "@/lib/queries/user"
 import { cn } from "@/lib/utils"
 import { CreditCard } from "@/components/credit-card"
+import { signedScore } from "@/components/crew-picker"
 import { IssueCardPc } from "@/components/issue-card"
 
 export type IssueFilter = "open" | "soon" | "result"
@@ -120,6 +122,7 @@ export function IssuesPc({ filter, onFilter }: { filter: IssueFilter; onFilter: 
       </div>
       <aside className="sticky top-[92px] flex flex-col gap-3.5">
         <CreditCard header="profile" className="rounded-3xl p-[22px]" />
+        <CrewTopAside />
         <HotPostsAside />
       </aside>
     </div>
@@ -160,6 +163,32 @@ function HotPostsAside() {
               </span>
             </span>
           </div>
+        </Link>
+      ))}
+    </div>
+  )
+}
+
+/** 이번 주 크루 순위 Top 3(순위가 매겨진 크루가 없으면 숨긴다). */
+function CrewTopAside() {
+  const { data = [] } = useCrewRanking()
+  const top = data.filter((r) => r.rank != null).slice(0, 3)
+  if (top.length === 0) return null
+  return (
+    <div className="flex flex-col gap-1 rounded-3xl bg-surface p-5">
+      <div className="flex items-center gap-2 pb-1.5">
+        <Shield className="size-[18px] text-brand" />
+        <span className="text-base font-extrabold">이번 주 크루 순위</span>
+        <span className="flex-1" />
+        <Link href="/crew" className="text-[13px] text-muted">
+          더보기
+        </Link>
+      </div>
+      {top.map((r) => (
+        <Link key={r.crewId} href="/crew" className="flex items-center gap-2.5 border-t border-line-3 py-2.5">
+          <span className="w-4 text-[15px] font-extrabold text-brand">{r.rank}</span>
+          <span className="min-w-0 flex-1 truncate text-sm font-semibold">{r.name}</span>
+          <span className="text-sm font-bold tabular-nums">{signedScore(r.scorePerMember)}</span>
         </Link>
       ))}
     </div>

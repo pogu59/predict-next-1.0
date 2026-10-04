@@ -28,10 +28,17 @@ export const queryKeys = {
   myStats: (userId: number) => ["myStats", userId] as const,
   myVotes: (userId: number) => ["myVotes", userId] as const,
 
+  crews: ["crews"] as const,
+  crew: (crewId: number) => ["crew", crewId] as const,
+  crewRanking: (week?: string) => ["crews", "ranking", week ?? "this"] as const,
+  crewTopMembers: (crewId: number, week?: string) => ["crew", crewId, "top", week ?? "this"] as const,
+  myCrew: (userId: number) => ["myCrew", userId] as const,
+
   adminIssues: (params: AdminIssueListParams) => ["admin", "issues", params] as const,
   adminIssue: (issueId: number) => ["admin", "issue", issueId] as const,
   adminUsers: (params: AdminUserListParams) => ["admin", "users", params] as const,
   adminUser: (userId: number) => ["admin", "user", userId] as const,
   adminCommunity: (type: CommunityContentType) => ["admin", "community", type] as const,
   adminReports: (status: "PENDING" | "DONE") => ["admin", "reports", status] as const,
+  adminCrews: ["admin", "crews"] as const,
 }

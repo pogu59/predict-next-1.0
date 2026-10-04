@@ -27,6 +27,7 @@ import { TierIcon, tierLabel } from "@/lib/tier"
 import { cn } from "@/lib/utils"
 import { ChallengeRecord } from "@/components/challenge-record"
 import { CreditCard } from "@/components/credit-card"
+import { MyCrewLabel } from "@/components/crew-picker"
 import { DnaTeaser } from "@/components/dna-teaser"
 import { WrappedBanner } from "@/components/wrapped-banner"
 import { Avatar, Chip } from "@/components/ui/brand"
@@ -96,6 +97,7 @@ export default function MyPage() {
                 <TierIcon tier={me.tier} size={16} />
                 {tierLabel(me.tier)}
               </span>
+              <MyCrewLabel userId={me.userId} className="text-[13px] text-muted" />
             </div>
             <span className="text-[13px] font-semibold text-muted">편집</span>
           </div>
@@ -177,6 +179,7 @@ export default function MyPage() {
               <TierIcon tier={me.tier} size={18} />
               {tierLabel(me.tier)}
             </span>
+            <MyCrewLabel userId={me.userId} className="text-[13px] text-muted" />
           </div>
           <CreditCard header="label" className="rounded-3xl p-[22px]" />
           <div className="flex flex-col rounded-3xl bg-surface py-1.5">

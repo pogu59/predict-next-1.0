@@ -6,6 +6,7 @@ import {
   MessagesSquare,
   Plus,
   Radio,
+  Shield,
   ShieldCheck,
   Siren,
   Smartphone,
@@ -27,6 +28,7 @@ const PAGES = [
   { href: "/admin/live", label: "라이브 출제", Icon: Radio, sub: "경기 중 짧은 예측을 빠르게 열고 판정해요" },
   { href: "/admin/users", label: "회원 관리", Icon: Users, sub: "가입 회원과 권한, 활동 정지를 관리해요" },
   { href: "/admin/community", label: "커뮤니티 관리", Icon: MessagesSquare, sub: "게시글과 댓글을 숨기거나 삭제해요" },
+  { href: "/admin/crews", label: "크루 관리", Icon: Shield, sub: "크루 대항전 크루를 만들고 수정해요" },
   { href: "/admin/reports", label: "신고 처리", Icon: Siren, sub: "사용자 신고를 검토하고 처리해요" },
 ]
 

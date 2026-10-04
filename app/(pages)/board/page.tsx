@@ -11,6 +11,7 @@ import { useMe } from "@/lib/queries/auth"
 import { useIssues } from "@/lib/queries/issue"
 import { usePosts } from "@/lib/queries/post"
 import { cn } from "@/lib/utils"
+import { CrewBadge } from "@/components/ui/brand"
 import { ImageBox } from "@/components/ui/image-box"
 
 const SORTS: { key: PostSort; label: string }[] = [
@@ -158,8 +159,9 @@ function PostRow({ post, now, pc = false }: { post: PostListItem; now: Date; pc?
           </span>
         )}
         <div className={cn("flex items-center text-xs text-faint", pc ? "gap-3" : "gap-2.5")}>
-          <span>
-            {post.authorNickname} · {timeAgo(post.createdAt, now)}
+          <span className="flex min-w-0 items-center gap-1">
+            {post.authorNickname}
+            <CrewBadge name={post.authorCrewName} />· {timeAgo(post.createdAt, now)}
           </span>
           <span className={cn("flex items-center", pc ? "gap-[3px]" : "gap-0.5", post.likedByMe && "text-danger")}>
             <Heart className={pc ? "size-[13px]" : "size-3.5"} />
