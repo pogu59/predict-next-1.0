@@ -351,13 +351,181 @@ export type AdminReport = {
   createdAt: string
 }
 
+// ---- 미션 · 리워드 포인트 ----
+//
+// 리워드 포인트는 미션으로만 쌓이고 기프티콘 교환에만 쓴다. 신용도(Me.credibilityScore)와는
+// 완전히 분리된 값이라, 두 값을 더하거나 서로 바꾸는 화면·계산을 만들지 않는다.
+
+export type MissionType = "ATTENDANCE" | "BALANCE" | "SURVEY"
+
+export type MissionStatus = "DRAFT" | "OPEN" | "CLOSED"
+
+export type SubmissionStatus = "PENDING" | "APPROVED" | "REJECTED"
+
+export type MissionListItem = {
+  id: number
+  type: MissionType
+  title: string
+  description: string | null
+  rewardPoints: number
+  /** 오늘의 미션 여부(출석 제외 모두 통과하면 보너스). */
+  daily: boolean
+  endsAt: string
+  questionCount: number
+  /** 내 제출 상태. 참여 전·비로그인이면 null. 출석은 오늘 제출만 본다. */
+  myStatus: SubmissionStatus | null
+  myRejectReason: string | null
+}
+
+export type MissionQuestion = {
+  id: number
+  sortOrder: number
+  text: string
+  options: string[]
+}
+
+export type MissionDetail = Omit<MissionListItem, "questionCount"> & {
+  /** 지금 참여할 수 있는지(공개 기간·상태 기준, 내 참여 여부와는 별개). */
+  available: boolean
+  questions: MissionQuestion[]
+}
+
+export type SubmitMissionReq = {
+  /** 문항 순서대로 고른 보기 인덱스(출석은 빈 배열). */
+  answers: number[]
+  /** 미션 화면을 연 뒤 제출까지 걸린 시간. 너무 빠른 응답 판정에 쓰인다. */
+  durationMs: number
+}
+
+export type SubmitMissionResult = {
+  submissionId: number
+  status: SubmissionStatus
+  rejectReason: string | null
+  earnedPoints: number
+  /** 오늘의 미션 모두 완료 보너스(없으면 0). */
+  bonusPoints: number
+  /** 처리 후 리워드 포인트 잔액. */
+  balance: number
+}
+
+export type MissionQuestionResult = {
+  questionId: number
+  text: string
+  options: string[]
+  /** 보기 순서대로 0~100 정수, 합 100. 참여 인원은 내려오지 않는다. */
+  percents: number[]
+  myAnswer: number | null
+}
+
+export type MissionResults = {
+  missionId: number
+  title: string
+  questions: MissionQuestionResult[]
+}
+
+export type RewardTransactionType = "EARN" | "BONUS" | "EXCHANGE" | "REFUND" | "ADJUST"
+
+export type ExchangeStatus = "REQUESTED" | "SENT" | "REJECTED" | "CANCELED"
+
+export type RewardTransaction = {
+  id: number
+  type: RewardTransactionType
+  /** 부호 있는 변동량(+적립, -교환 신청). */
+  amount: number
+  balanceAfter: number
+  memo: string | null
+  createdAt: string
+}
+
+export type RewardExchange = {
+  id: number
+  productCode: string
+  productName: string
+  points: number
+  status: ExchangeStatus
+  rejectReason: string | null
+  createdAt: string
+  handledAt: string | null
+}
+
+export type RewardProduct = {
+  code: string
+  name: string
+  points: number
+}
+
+export type RewardWallet = {
+  balance: number
+  /** 확인 중인 교환 신청에 묶인 포인트(이미 잔액에서 빠져 있다). */
+  pendingExchangePoints: number
+  monthEarned: number
+  transactions: RewardTransaction[]
+  exchanges: RewardExchange[]
+  /** 포인트 오름차순. */
+  products: RewardProduct[]
+}
+
+// ---- 관리자: 미션 / 교환 승인 ----
+
+export type AdminMissionListItem = {
+  id: number
+  type: MissionType
+  title: string
+  rewardPoints: number
+  daily: boolean
+  status: MissionStatus
+  startsAt: string
+  endsAt: string
+  questionCount: number
+  approvedCount: number
+  rejectedCount: number
+}
+
+export type AdminMissionQuestionReq = {
+  text: string
+  options: string[]
+  /** 확인(주의) 문항이면 정답 보기 인덱스. */
+  attentionAnswerIndex?: number | null
+}
+
+export type AdminMissionCreateReq = {
+  type: MissionType
+  title: string
+  description?: string | null
+  rewardPoints: number
+  daily: boolean
+  /** LocalDateTime 형식(YYYY-MM-DDTHH:mm). */
+  startsAt: string
+  endsAt: string
+  questions: AdminMissionQuestionReq[]
+  openNow: boolean
+}
+
+export type AdminExchange = {
+  id: number
+  userId: number
+  nickname: string
+  productCode: string
+  productName: string
+  points: number
+  status: ExchangeStatus
+  rejectReason: string | null
+  createdAt: string
+  handledAt: string | null
+  handledByNickname: string | null
+  /** 신청자의 미션 통과·반려 수 — 부정 참여 의심을 판단하는 참고 신호. */
+  approvedSubmissions: number
+  rejectedSubmissions: number
+}
+
 // ---- API 계약 ----
 //
 // predict 백엔드는 statusCode 봉투가 아니라 실제 HTTP 상태코드를 쓰고, 성공 응답은
 // DTO를 봉투 없이 그대로 내려준다. 이 계약과 봉투 해제/에러 정규화는 client.ts 한 곳에만 있고,
 // 아래 인터페이스와 각 네임스페이스 구현은 그 결과 타입만 안다.
 //
-// 모든 엔드포인트는 predict-spring-1.0 백엔드에 구현되어 있다.
+// 모든 엔드포인트는 predict-spring-1.0 백엔드에 구현되어 있다
+// (mission · reward · admin.mission · admin.exchange는 같은 이름의 feat/mission-reward 브랜치).
 export interface ApiInterface {
   category: {
     list(): Promise<Category[]>
@@ -408,6 +576,20 @@ export interface ApiInterface {
     stats(userId: number): Promise<MyStats>
     votes(userId: number): Promise<MyVote[]>
   }
+  mission: {
+    /** 지금 참여할 수 있는 미션(오늘의 미션이 앞). 로그인했으면 내 상태가 붙는다. */
+    list(): Promise<MissionListItem[]>
+    get(missionId: number): Promise<MissionDetail>
+    submit(missionId: number, req: SubmitMissionReq): Promise<SubmitMissionResult>
+    /** 참여한 사람에게만 문항별 응답 비율(확인 문항 제외). */
+    results(missionId: number): Promise<MissionResults>
+  }
+  reward: {
+    me(): Promise<RewardWallet>
+    /** 신청 즉시 포인트가 빠지고, 반려·취소되면 돌려받는다. */
+    requestExchange(productCode: string): Promise<RewardExchange>
+    cancelExchange(exchangeId: number): Promise<RewardExchange>
+  }
   admin: {
     issue: {
       list(params: AdminIssueListParams): Promise<PageResponse<AdminIssueListItem>>
@@ -435,6 +617,19 @@ export interface ApiInterface {
       list(params: { status: "PENDING" | "DONE" }): Promise<AdminReport[]>
       reject(reportId: number): Promise<void>
       removeContent(reportId: number): Promise<void>
+    }
+    mission: {
+      list(): Promise<AdminMissionListItem[]>
+      create(req: AdminMissionCreateReq): Promise<AdminMissionListItem>
+      open(missionId: number): Promise<AdminMissionListItem>
+      close(missionId: number): Promise<AdminMissionListItem>
+    }
+    exchange: {
+      /** status를 주면 그 상태만(확인 대기는 오래된 순), 없으면 전체 최신순. */
+      list(params: { status?: ExchangeStatus }): Promise<AdminExchange[]>
+      send(exchangeId: number): Promise<AdminExchange>
+      /** 반려하면 포인트가 바로 환불된다. */
+      reject(exchangeId: number, reason: string): Promise<AdminExchange>
     }
   }
 }

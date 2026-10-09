@@ -1,6 +1,6 @@
 "use client"
 
-import { ChartNoAxesColumn, House, MessagesSquare, Newspaper, Radio, UserRound } from "lucide-react"
+import { ChartNoAxesColumn, House, MessagesSquare, Newspaper, Radio, Target, UserRound } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -14,6 +14,7 @@ const AUTH_PREFIXES = ["/login", "/signup", "/auth"]
 
 const PC_NAV = [
   { href: "/issue", label: "예측", Icon: ChartNoAxesColumn },
+  { href: "/mission", label: "미션", Icon: Target },
   { href: "/live", label: "라이브", Icon: Radio },
   { href: "/report", label: "리포트", Icon: Newspaper },
   { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
@@ -21,6 +22,7 @@ const PC_NAV = [
 
 const MOBILE_TABS = [
   { href: "/", label: "홈", Icon: House },
+  { href: "/mission", label: "미션", Icon: Target },
   { href: "/report", label: "리포트", Icon: Newspaper },
   { href: "/board", label: "커뮤니티", Icon: MessagesSquare },
   { href: "/my", label: "마이", Icon: UserRound },
@@ -28,7 +30,7 @@ const MOBILE_TABS = [
 
 /**
  * 사용자 앱 셸. PC(≥1024)는 64px 스티키 헤더 + 1200px 컨테이너, 모바일은 각 페이지가 자체 헤더를 그리고
- * 홈·커뮤니티·마이 목록에서만 하단 탭바를 띄운다. /admin은 별도 레이아웃이라 셸을 쓰지 않는다.
+ * 홈·미션·리포트·커뮤니티·마이 목록에서만 하단 탭바를 띄운다(탭이 5개라 탭 너비는 64px). /admin은 별도 레이아웃이라 셸을 쓰지 않는다.
  */
 export function HeaderLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/"
@@ -130,7 +132,7 @@ function TabBar({ pathname }: { pathname: string }) {
           <Link
             key={href}
             href={href}
-            className={cn("flex w-[72px] flex-col items-center gap-[3px]", active ? "text-ink" : "text-faint")}
+            className={cn("flex w-16 flex-col items-center gap-[3px]", active ? "text-ink" : "text-faint")}
           >
             <Icon className="size-[25px]" />
             <span className="text-[11px] font-bold">{label}</span>

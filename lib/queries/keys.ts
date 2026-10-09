@@ -2,6 +2,7 @@ import type {
   AdminIssueListParams,
   AdminUserListParams,
   CommunityContentType,
+  ExchangeStatus,
   PostListParams,
 } from "@/lib/api"
 
@@ -28,10 +29,19 @@ export const queryKeys = {
   myStats: (userId: number) => ["myStats", userId] as const,
   myVotes: (userId: number) => ["myVotes", userId] as const,
 
+  /** 미션 목록·상세는 로그인 여부에 따라 myStatus가 달라서 userId를 키에 넣는다. */
+  missions: (userId?: number) => ["missions", userId] as const,
+  mission: (missionId: number, userId?: number) => ["mission", missionId, userId] as const,
+  missionResults: (missionId: number) => ["missionResults", missionId] as const,
+  /** 리워드 포인트 지갑(잔액·내역·교환). 신용도(me)와 다른 값이라 키도 따로 둔다. */
+  wallet: (userId: number) => ["wallet", userId] as const,
+
   adminIssues: (params: AdminIssueListParams) => ["admin", "issues", params] as const,
   adminIssue: (issueId: number) => ["admin", "issue", issueId] as const,
   adminUsers: (params: AdminUserListParams) => ["admin", "users", params] as const,
   adminUser: (userId: number) => ["admin", "user", userId] as const,
   adminCommunity: (type: CommunityContentType) => ["admin", "community", type] as const,
   adminReports: (status: "PENDING" | "DONE") => ["admin", "reports", status] as const,
+  adminMissions: ["admin", "missions"] as const,
+  adminExchanges: (status?: ExchangeStatus) => ["admin", "exchanges", status] as const,
 }

@@ -28,6 +28,7 @@ import { IssueCardFeatured } from "@/components/issue-card"
 import { sortForFilter, useHotPosts, useIssueBuckets } from "@/components/issue-feed"
 import { Chip, Logo } from "@/components/ui/brand"
 import { LiveBanner } from "@/components/live-banner"
+import { HomeMissionSection } from "@/components/mission-parts"
 import { WrappedBanner } from "@/components/wrapped-banner"
 import { ImageBox } from "@/components/ui/image-box"
 import { useToast } from "@/components/ui/toast"
@@ -38,6 +39,8 @@ import { useToast } from "@/components/ui/toast"
  * 새 콘텐츠는 섹션 컴포넌트를 만들어 이 배열에 추가하면 된다.
  */
 const HOME_SECTIONS: { key: string; Section: () => React.ReactNode }[] = [
+  // 오늘의 미션·출석이 없으면 스스로 숨는다(그때 홈은 예전과 같다).
+  { key: "missions", Section: HomeMissionSection },
   { key: "open", Section: OpenIssuesSection },
   { key: "soon", Section: ClosingSoonSection },
   { key: "posts", Section: HotPostsSection },

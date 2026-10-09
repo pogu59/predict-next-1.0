@@ -100,7 +100,11 @@
   --color-warn-ink: #a86a00;
   --color-warn-soft: #fff4de;
   --color-success: #1f9d63;
+  /* 흰 배경 위 초록 글자용(#1f9d63은 3.4:1이라 작은 글자 대비가 모자람). 미션·지갑 화면에서 쓴다. */
+  --color-success-ink: #157a4c;
   --color-success-soft: #e6f6ee;
+  /* 리워드 포인트 동전("P") 색. 신용도(브랜드 보라)와 구분하는 용도로만 쓴다. */
+  --color-point: #f2c14e;
   --color-kakao: #fee500;
   --color-kakao-ink: #191600;
   --color-scrim: rgb(17 17 19 / 0.4);

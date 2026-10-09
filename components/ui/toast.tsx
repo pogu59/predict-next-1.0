@@ -15,7 +15,9 @@ export function useToast() {
 
 /** 모바일에서 하단 고정 요소(탭바·CTA·댓글 입력바) 위로 띄울 높이. */
 function mobileBottom(pathname: string) {
-  if (["/", "/issue", "/report", "/board", "/my"].includes(pathname) || /^\/issue\/\d+$/.test(pathname)) return "110px"
+  if (["/", "/issue", "/mission", "/report", "/board", "/my"].includes(pathname) || /^\/issue\/\d+$/.test(pathname)) return "110px"
+  // 미션 문항 화면은 하단 고정 버튼(안내 문구 + 이전/다음)이 더 높다.
+  if (/^\/mission\/\d+$/.test(pathname)) return "150px"
   if (/^\/board\/\d+$/.test(pathname)) return "96px"
   return "40px"
 }

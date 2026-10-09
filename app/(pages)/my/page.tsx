@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils"
 import { ChallengeRecord } from "@/components/challenge-record"
 import { CreditCard } from "@/components/credit-card"
 import { DnaTeaser } from "@/components/dna-teaser"
+import { DailyMissionBanner, WalletSummaryCard } from "@/components/mission-parts"
 import { WrappedBanner } from "@/components/wrapped-banner"
 import { Avatar, Chip } from "@/components/ui/brand"
 import { ImageBox } from "@/components/ui/image-box"
@@ -100,6 +101,8 @@ export default function MyPage() {
             <span className="text-[13px] font-semibold text-muted">편집</span>
           </div>
           <CreditCard header="label" className="rounded-[22px] p-5" />
+          <WalletSummaryCard />
+          <DailyMissionBanner />
           <div className="grid grid-cols-3 rounded-[22px] bg-surface px-2 py-[18px]">
             {[
               { value: String(stats?.totalVotes ?? 0), label: "예측" },
@@ -179,6 +182,7 @@ export default function MyPage() {
             </span>
           </div>
           <CreditCard header="label" className="rounded-3xl p-[22px]" />
+          <WalletSummaryCard className="rounded-3xl" />
           <div className="flex flex-col rounded-3xl bg-surface py-1.5">
             <Link href="/board?author=me" className={rowClass(true)}>
               {menuRow(FileText, "내가 쓴 글", true, <span className="text-[13px] text-faint">{myPostCount}</span>)}

@@ -3,9 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   Api,
   type AdminIssueListParams,
+  type AdminMissionCreateReq,
   type AdminUserListParams,
   type BackendRole,
   type CommunityContentType,
+  type ExchangeStatus,
   type IssueUpsertPayload,
 } from "@/lib/api"
 import { queryKeys } from "./keys"
@@ -187,4 +189,82 @@ const ALL_USERS_PARAMS: AdminUserListParams = { page: 0, size: 200 }
 
 export function useAllAdminUsers() {
   return useAdminUsers(ALL_USERS_PARAMS)
+}
+
+// ---- 관리자: 미션 ----
+
+export function useAdminMissions() {
+  return useQuery({
+    queryKey: queryKeys.adminMissions,
+    queryFn: () => Api().admin.mission.list(),
+  })
+}
+
+/** 미션 공개·마감은 사용자 미션 탭에도 바로 반영돼야 해서 함께 무효화한다. */
+function useInvalidateMissions() {
+  const queryClient = useQueryClient()
+  return () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.adminMissions })
+    queryClient.invalidateQueries({ queryKey: ["missions"] })
+    queryClient.invalidateQueries({ queryKey: ["mission"] })
+  }
+}
+
+export function useCreateAdminMission() {
+  const invalidate = useInvalidateMissions()
+  return useMutation({
+    mutationFn: (req: AdminMissionCreateReq) => Api().admin.mission.create(req),
+    onSuccess: invalidate,
+  })
+}
+
+export function useOpenAdminMission() {
+  const invalidate = useInvalidateMissions()
+  return useMutation({
+    mutationFn: (missionId: number) => Api().admin.mission.open(missionId),
+    onSuccess: invalidate,
+  })
+}
+
+export function useCloseAdminMission() {
+  const invalidate = useInvalidateMissions()
+  return useMutation({
+    mutationFn: (missionId: number) => Api().admin.mission.close(missionId),
+    onSuccess: invalidate,
+  })
+}
+
+// ---- 관리자: 교환 승인 ----
+
+export function useAdminExchanges(status?: ExchangeStatus) {
+  return useQuery({
+    queryKey: queryKeys.adminExchanges(status),
+    queryFn: () => Api().admin.exchange.list({ status }),
+  })
+}
+
+/** 발송·반려는 신청자 지갑(잔액·내역)도 바꾼다. */
+function useInvalidateExchanges() {
+  const queryClient = useQueryClient()
+  return () => {
+    queryClient.invalidateQueries({ queryKey: ["admin", "exchanges"] })
+    queryClient.invalidateQueries({ queryKey: ["wallet"] })
+  }
+}
+
+export function useSendAdminExchange() {
+  const invalidate = useInvalidateExchanges()
+  return useMutation({
+    mutationFn: (exchangeId: number) => Api().admin.exchange.send(exchangeId),
+    onSuccess: invalidate,
+  })
+}
+
+export function useRejectAdminExchange() {
+  const invalidate = useInvalidateExchanges()
+  return useMutation({
+    mutationFn: ({ exchangeId, reason }: { exchangeId: number; reason: string }) =>
+      Api().admin.exchange.reject(exchangeId, reason),
+    onSuccess: invalidate,
+  })
 }

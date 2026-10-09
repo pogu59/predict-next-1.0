@@ -89,5 +89,6 @@ export function useLogout() {
     queryClient.removeQueries({ queryKey: queryKeys.me })
     queryClient.removeQueries({ queryKey: ["myVotes"] })
     queryClient.removeQueries({ queryKey: ["myStats"] })
+    queryClient.removeQueries({ queryKey: ["wallet"] })
   }
 }

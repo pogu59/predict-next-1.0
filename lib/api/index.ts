@@ -3,7 +3,9 @@ import { adminApi } from "./admin"
 import { authApi } from "./auth"
 import { categoryApi } from "./category"
 import { issueApi } from "./issue"
+import { missionApi } from "./mission"
 import { postApi } from "./post"
+import { rewardApi } from "./reward"
 import { uploadApi } from "./upload"
 import { userApi } from "./user"
 
@@ -26,6 +28,8 @@ export function Api(): ApiInterface {
       upload: uploadApi,
       auth: authApi,
       user: userApi,
+      mission: missionApi,
+      reward: rewardApi,
       admin: adminApi,
     }
   }

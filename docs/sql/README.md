@@ -15,6 +15,7 @@ SQL을 **수정 / 추가 / 삭제**할 때마다 여기에 파일 한 쌍을 남
 
 | 날짜 | 유형 | 내용 | 파일 |
 |---|---|---|---|
+| 2026-10-09 | 추가 | 미션 · 리워드 포인트 — 신규 테이블 6개(`missions`, `mission_questions`, `mission_submissions`, `reward_wallets`, `reward_exchange_requests`, `reward_transactions`). 신용도와 분리된 포인트 지갑·원장·기프티콘 교환(수동 승인) | [.sql](./2026-10-09_mission-reward-schema.sql) · [.md](./2026-10-09_mission-reward-schema.md) |
 | 2026-09-02 | 추가 | 인증/계정 필수 스키마 — 신규 테이블 3개(`user_identities`, `auth_sessions`, `terms_agreements`), `users` 컬럼 4건(`status` 등). 카카오 OAuth 매핑·세션 토큰·약관 동의 이력 | [.sql](./2026-09-02_auth-account-schema.sql) · [.md](./2026-09-02_auth-account-schema.md) |
 | 2026-09-02 | 추가 | 댓글(커뮤니티) 기능 — 테이블 3개(`comments`, `comment_likes`, `comment_reports`), 저장 프로시저 5개. SQL은 초기 스키마 파일 17~19번 섹션에 이어 붙임 | [.sql](./2026-08-29_initial-schema.sql) (17~19번) · [.md](./2026-09-02_comments-feature.md) |
 | 2026-08-29 | 신규 | 예측 게임 초기 스키마 — 테이블 9개, 관리자 컬럼 3건, 저장 프로시저 7개 | [.sql](./2026-08-29_initial-schema.sql) · [.md](./2026-08-29_initial-schema.md) |
