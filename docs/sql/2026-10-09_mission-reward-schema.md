@@ -4,7 +4,7 @@
 - **SQL 파일**: [`2026-10-09_mission-reward-schema.sql`](./2026-10-09_mission-reward-schema.sql) (신규 파일)
 - **원본**: 백엔드 레포 `predict-spring-1.0`의 `schema/2026-10-09_mission-reward.sql`(브랜치 `feat/mission-reward`)과 같은 내용이다. 둘 중 하나를 고치면 다른 쪽도 맞춘다.
 - **변경 유형**: 추가 — 신규 테이블 6개. 기존 테이블은 바꾸지 않는다.
-- **선행 조건**: `users` 테이블(`user_id BIGINT UNSIGNED`)이 있어야 한다.
+- **선행 조건**: `users` 테이블이 있어야 한다. 운영 `users.user_id`는 Hibernate가 만든 부호 있는 `BIGINT`라서, 이를 가리키는 `user_id`·`handled_by`도 `BIGINT`(UNSIGNED 아님)로 둔다.
 - **실행 시점**: 백엔드가 `spring.jpa.hibernate.ddl-auto=none`이라, 미션 기능을 배포하기 **전에** 직접 실행해야 한다.
 - **저장 프로시저**: 없음
 
